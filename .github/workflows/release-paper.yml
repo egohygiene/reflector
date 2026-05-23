@@ -11,7 +11,7 @@ on:
       paper:
         description: "Paper directory"
         required: true
-        default: "papers/reflector"
+        default: "paper"
 
       tag:
         description: "Release tag"
@@ -47,11 +47,11 @@ jobs:
             if [[ "${TAG}" =~ ^([a-zA-Z0-9_-]+)-v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
               PAPER_NAME="${BASH_REMATCH[1]}"
               VERSION="v${BASH_REMATCH[2]}"
-              PAPER_DIR="papers/${PAPER_NAME}"
+              PAPER_DIR="paper"
             elif [[ "${TAG}" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
               PAPER_NAME="reflector"
               VERSION="${TAG}"
-              PAPER_DIR="papers/${PAPER_NAME}"
+              PAPER_DIR="paper"
             else
               echo "Unsupported release tag format: ${TAG}" >&2
               exit 1
@@ -130,7 +130,7 @@ jobs:
             -gg
             -cd
             -r
-            .latexmkrc
+            ../.latexmkrc
 
       - name: Assemble release artifacts
         run: |
@@ -147,12 +147,17 @@ jobs:
 
           cp "${PDF_PATH}" "${PDF_ASSET}"
 
-          for file in "paper.tex" "references.bib" ".latexmkrc"; do
+          for file in "paper.tex" "references.bib"; do
             if [[ -f "${PAPER_DIR}/${file}" ]]; then
               cp "${PAPER_DIR}/${file}" "${SOURCE_DIR}/${file}"
               cp "${PAPER_DIR}/${file}" "${ARXIV_DIR}/${file}"
             fi
           done
+
+          if [[ -f ".latexmkrc" ]]; then
+            cp ".latexmkrc" "${SOURCE_DIR}/.latexmkrc"
+            cp ".latexmkrc" "${ARXIV_DIR}/.latexmkrc"
+          fi
 
           for directory in "sections" "figures" "diagrams" "assets" "references"; do
             if [[ -d "${PAPER_DIR}/${directory}" ]]; then

@@ -2,22 +2,18 @@
 # scaffold-paper.sh — Scaffold a new paper from the shared template.
 #
 # Usage:
-#   ./scripts/scaffold-paper.sh <paper-slug>
-#
-# Example:
-#   ./scripts/scaffold-paper.sh observer
+#   ./scripts/scaffold-paper.sh [paper|reflector]
 
 set -euo pipefail
 
-PAPER_SLUG="${1:-}"
+PAPER_SLUG="${1:-paper}"
 
-if [[ -z "${PAPER_SLUG}" ]]; then
-  echo "Usage: $0 <paper-slug>" >&2
-  echo "Example: $0 observer" >&2
+if [[ "${PAPER_SLUG}" != "reflector" && "${PAPER_SLUG}" != "paper" ]]; then
+  echo "Usage: $0 [paper|reflector]" >&2
   exit 1
 fi
 
-PAPER_DIR="papers/${PAPER_SLUG}"
+PAPER_DIR="paper"
 
 if [[ -d "${PAPER_DIR}" ]]; then
   echo "Error: '${PAPER_DIR}' already exists." >&2

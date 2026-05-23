@@ -11,7 +11,7 @@
 # - validation automation
 #
 # Repository:
-#   https://github.com/egohygiene/papers
+#   https://github.com/egohygiene/reflector
 #
 # Usage:
 #   ./scripts/publishers/arxiv/mirror-policies.sh

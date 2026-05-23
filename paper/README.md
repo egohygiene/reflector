@@ -60,7 +60,7 @@ reflector/
 
 ```bash
 # From repository root
-./scripts/build-paper.sh papers/reflector
+./scripts/build-paper.sh paper
 ```
 
 ## Roadmap
