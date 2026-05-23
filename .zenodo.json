@@ -1,0 +1,27 @@
+{
+  "title": "Reflector: Reflective Development Systems for Recursive AI-Augmented Software Engineering",
+  "description": "Placeholder Zenodo metadata scaffold for reflector repository releases.",
+  "upload_type": "publication",
+  "publication_type": "article",
+  "creators": [
+    {
+      "name": "Szmyt, Alan",
+      "orcid": "0009-0008-5291-9795",
+      "affiliation": "TBD"
+    }
+  ],
+  "keywords": [
+    "AI-augmented software engineering",
+    "recursive systems",
+    "milestone synchronization",
+    "reflective systems"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/egohygiene/reflector",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "notes": "Replace placeholder ORCID/affiliation and publication identifiers before archival release."
+}

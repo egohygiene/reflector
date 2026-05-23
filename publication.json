@@ -1,6 +1,11 @@
 {
   "project": "reflector",
   "status": "draft",
+  "version": "0.0.1",
+  "release_tag": "v0.0.1",
+  "repository_url": "https://github.com/egohygiene/reflector",
+  "pages_url": "https://egohygiene.github.io/reflector/",
+  "orcid": "https://orcid.org/0009-0008-5291-9795",
   "release_channel": "github-releases",
   "version_source": "VERSION",
   "citation_source": "CITATION.cff",
