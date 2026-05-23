@@ -2,14 +2,14 @@
 # scaffold-paper.sh — Scaffold a new paper from the shared template.
 #
 # Usage:
-#   ./scripts/scaffold-paper.sh reflector
+#   ./scripts/scaffold-paper.sh [paper|reflector]
 
 set -euo pipefail
 
 PAPER_SLUG="${1:-reflector}"
 
 if [[ "${PAPER_SLUG}" != "reflector" && "${PAPER_SLUG}" != "paper" ]]; then
-  echo "Usage: $0 [reflector]" >&2
+  echo "Usage: $0 [paper|reflector]" >&2
   exit 1
 fi
 

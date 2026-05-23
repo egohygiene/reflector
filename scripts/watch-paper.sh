@@ -25,7 +25,7 @@ fi
 
 PAPER_DIR="${TARGET}"
 
-if [[ "${TARGET}" == "reflector" && -d "paper" ]]; then
+if [[ ( "${TARGET}" == "paper" || "${TARGET}" == "reflector" ) && -d "paper" ]]; then
   PAPER_DIR="paper"
 fi
 

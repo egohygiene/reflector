@@ -181,17 +181,7 @@ publish_paper() {
 }
 
 if [[ "${BUILD_ALL}" == "true" ]]; then
-    mapfile -t PAPER_DIRECTORIES < <(
-        find "${PAPER_DIRECTORY}" -mindepth 0 -maxdepth 0 -type d | sort
-    )
-
-    for directory in "${PAPER_DIRECTORIES[@]}"; do
-        if [[ -f "${directory}/paper.tex" ]]; then
-            build_paper "${directory}"
-        else
-            echo "Warning: Skipping '${directory}' — no paper.tex found." >&2
-        fi
-    done
+    build_paper "${PAPER_DIRECTORY}"
 else
     build_paper "${TARGET}"
 fi

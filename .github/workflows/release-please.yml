@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "paper/**"
-      - "reflector/**"
       - "VERSION"
       - "CHANGELOG.md"
       - "CITATION.cff"
