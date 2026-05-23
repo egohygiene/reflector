@@ -24,7 +24,7 @@ paper/
 ## Adding a New Paper
 
 1. Use the canonical `paper/` directory
-2. Copy the template from `templates/paper/`
+2. Use `./scripts/scaffold-paper.sh paper` to scaffold/refresh paper structure
 3. Update `paper/README.md` with paper metadata
 4. Add sections under `paper/sections/`
 5. Update the root `README.md` to list the new paper
