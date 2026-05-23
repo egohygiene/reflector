@@ -1,0 +1,396 @@
+\documentclass[11pt,letterpaper]{article}
+
+% ============================================================
+% reflector
+% Reflective Development Systems for
+% Recursive AI-Augmented Software Engineering
+% ============================================================
+
+% ============================================================
+% Encoding and Typography
+% ============================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage[english]{babel}
+
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ============================================================
+% Page Layout
+% ============================================================
+
+\usepackage[
+margin=1in,
+includeheadfoot,
+headheight=14pt
+]{geometry}
+
+\usepackage{setspace}
+\onehalfspacing%
+
+\usepackage{parskip}
+
+% ============================================================
+% Colors
+% ============================================================
+
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{reflectorblue}{HTML}{3B82F6}
+\definecolor{reflectorpurple}{HTML}{8B5CF6}
+\definecolor{reflectorgray}{HTML}{6B7280}
+\definecolor{reflectorborder}{HTML}{D1D5DB}
+\definecolor{reflectorbg}{HTML}{F8FAFC}
+
+% ============================================================
+% Metadata Commands
+% ============================================================
+
+\newcommand{\papertitle}{
+Reflector: Reflective Development Systems for Recursive AI-Augmented Software Engineering
+}
+
+\newcommand{\paperauthor}{
+Alan Szmyt
+}
+
+\newcommand{\paperdate}{
+\today
+}
+
+\newcommand{\paperstatus}{
+Draft
+}
+
+\newcommand{\paperrepository}{
+https://github.com/egohygiene/papers
+}
+
+\newcommand{\paperorcid}{
+0009-0008-5291-9795
+}
+
+\newcommand{\paperorcidurl}{
+https://orcid.org/\paperorcid
+}
+
+% ============================================================
+% Hyperlinks and PDF Metadata
+% ============================================================
+
+\usepackage[
+unicode=true,
+colorlinks=true,
+linkcolor=reflectorblue,
+citecolor=reflectorpurple,
+urlcolor=reflectorblue,
+pdftitle={\papertitle},
+pdfauthor={\paperauthor},
+pdfsubject={AI-Augmented Software Engineering},
+pdfkeywords={
+AI,
+recursive systems,
+governance,
+human-in-the-loop,
+software engineering,
+recursive auditing,
+milestone synchronization,
+contextual synchronization,
+recursive drift,
+reflective systems
+},
+pdfcreator={LaTeX},
+pdfproducer={reflector publication pipeline}
+]{hyperref}
+
+\usepackage{bookmark}
+
+% ============================================================
+% Bibliography
+% ============================================================
+
+\usepackage[
+backend=biber,
+style=ieee,
+sorting=nyt,
+giveninits=true,
+maxbibnames=99,
+doi=true,
+url=true,
+isbn=false,
+eprint=true
+]{biblatex}
+
+\addbibresource{references.bib}
+
+% ============================================================
+% Graphics and Figures
+% ============================================================
+
+\usepackage{graphicx}
+
+\graphicspath{
+{figures/}
+{assets/}
+{diagrams/}
+}
+
+\DeclareGraphicsExtensions{
+.pdf,
+.png,
+.jpg,
+.jpeg
+}
+
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\captionsetup{
+font=small,
+labelfont=bf,
+labelsep=period
+}
+
+% Accessibility note:
+% Provide descriptive captions and preserve high-resolution exports.
+% Future tooling may map canonical alt-text metadata into publication formats.
+
+% ============================================================
+% Tables
+% ============================================================
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+% ============================================================
+% Code Listings
+% ============================================================
+
+\usepackage{listings}
+
+\lstdefinestyle{reflector}{
+backgroundcolor=\color{reflectorbg},
+basicstyle=\ttfamily\small,
+breaklines=true,
+frame=single,
+rulecolor=\color{reflectorborder},
+numbers=left,
+numberstyle=\tiny\color{reflectorgray},
+commentstyle=\color{reflectorgray},
+keywordstyle=\color{reflectorblue},
+stringstyle=\color{ForestGreen},
+showstringspaces=false,
+tabsize=2,
+columns=fullflexible
+}
+
+\lstset{
+style=reflector
+}
+
+% ============================================================
+% Math and Formal Notation
+% ============================================================
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% ============================================================
+% Utilities
+% ============================================================
+
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{multirow}
+\usepackage{makecell}
+
+% ============================================================
+% Intelligent References
+% ============================================================
+
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+% ============================================================
+% Callouts and Boxes
+% ============================================================
+
+\usepackage[most]{tcolorbox}
+
+\tcbset{
+colback=reflectorbg,
+colframe=reflectorborder,
+arc=3pt,
+boxrule=0.5pt
+}
+
+\newtcolorbox{reflectorcallout}{
+colback=reflectorbg,
+colframe=reflectorblue,
+enhanced,
+breakable,
+left=6pt,
+right=6pt,
+top=6pt,
+bottom=6pt
+}
+
+% ============================================================
+% Header and Footer
+% ============================================================
+
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+
+\fancyhf{}
+
+\fancyhead[L]{reflector}
+\fancyhead[R]{Alan Szmyt}
+
+\fancyfoot[C]{\thepage}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ============================================================
+% Section Styling
+% ============================================================
+
+\usepackage{titlesec}
+
+\titleformat{\section}
+{\large\bfseries}
+{\thesection}
+{1em}
+{}
+
+\titleformat{\subsection}
+{\normalsize\bfseries}
+{\thesubsection}
+{1em}
+{}
+
+% ============================================================
+% Title Metadata
+% ============================================================
+
+\title{
+\vspace{-1.25cm}
+\textbf{\Huge reflector}[0.35cm]
+\Large Reflective Development Systems for\
+Recursive AI-Augmented Software Engineering
+}
+
+\author{
+\paperauthor\
+\small\href{\paperorcidurl}{ORCID: \paperorcid}\
+\small\href{\paperrepository}{\paperrepository}
+}
+
+\date{\paperdate}
+
+% ============================================================
+% Document
+% ============================================================
+
+\begin{document}
+
+% ============================================================
+% Title Page
+% ============================================================
+
+\maketitle
+
+\thispagestyle{empty}
+
+\vspace{0.35cm}
+
+\begin{center}
+	\small Version: \paperstatus
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{abstract}
+	\input{sections/abstract}
+\end{abstract}
+
+\newpage
+
+% ============================================================
+% Navigation
+% ============================================================
+
+\tableofcontents
+
+% \listoffigures
+
+\newpage
+
+% ============================================================
+% Main Sections
+% ============================================================
+
+\input{sections/introduction}
+
+\input{sections/recursive_ai_systems}
+
+\input{sections/recursive_drift}
+
+\input{sections/synchronization}
+
+\input{sections/reflective_auditing}
+
+\input{sections/milestone_execution}
+
+\input{sections/reflector_framework}
+
+\input{sections/operational_demonstration}
+
+\input{sections/limitations}
+
+\input{sections/conclusion}
+
+% ============================================================
+% Visual Summary
+% ============================================================
+
+% \input{sections/visual_summary}
+
+% ============================================================
+% Bibliography
+% ============================================================
+
+\newpage
+
+\printbibliography
+
+% ============================================================
+% Appendix
+% ============================================================
+
+% \appendix
+% \input{sections/appendix}
+
+% ============================================================
+% Future Extensions
+% ============================================================
+
+% \input{sections/related_work}
+% \input{sections/implementation_examples}
+% \input{sections/case_studies}
+
+% ============================================================
+% End Document
+% ============================================================
+
+\end{document}

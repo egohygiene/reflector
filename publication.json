@@ -1,0 +1,17 @@
+{
+  "project": "papers",
+  "status": "draft",
+  "release_channel": "github-releases",
+  "version_source": "VERSION",
+  "citation_source": "CITATION.cff",
+  "future": {
+    "zenodo_archive": {
+      "enabled": false,
+      "record_id": null
+    },
+    "doi_generation": {
+      "enabled": false,
+      "doi": null
+    }
+  }
+}

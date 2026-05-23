@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "project": "papers",
+  "current_version": "0.0.1",
+  "tag_pattern": "vMAJOR.MINOR.PATCH",
+  "changelog": "CHANGELOG.md",
+  "version_file": "VERSION",
+  "citation_file": "CITATION.cff",
+  "release_workflow": ".github/workflows/release-paper.yml",
+  "future_integrations": {
+    "zenodo": {
+      "enabled": false,
+      "concept_doi": null
+    },
+    "doi": {
+      "enabled": false,
+      "provider": null
+    }
+  }
+}

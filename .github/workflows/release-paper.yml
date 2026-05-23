@@ -1,0 +1,301 @@
+name: Release Paper
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "reflector-v*.*.*"
+
+  workflow_dispatch:
+    inputs:
+      paper:
+        description: "Paper directory"
+        required: true
+        default: "papers/reflector"
+
+      tag:
+        description: "Release tag"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release Paper
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine paper metadata
+        id: vars
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PAPER_DIR="${{ github.event.inputs.paper }}"
+            TAG="${{ github.event.inputs.tag }}"
+            PAPER_NAME="$(basename "${PAPER_DIR}")"
+            VERSION="${TAG}"
+          else
+            TAG="${{ github.ref_name }}"
+
+            if [[ "${TAG}" =~ ^([a-zA-Z0-9_-]+)-v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+              PAPER_NAME="${BASH_REMATCH[1]}"
+              VERSION="v${BASH_REMATCH[2]}"
+              PAPER_DIR="papers/${PAPER_NAME}"
+            elif [[ "${TAG}" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+              PAPER_NAME="reflector"
+              VERSION="${TAG}"
+              PAPER_DIR="papers/${PAPER_NAME}"
+            else
+              echo "Unsupported release tag format: ${TAG}" >&2
+              exit 1
+            fi
+          fi
+
+          VERSION_NO_V="${VERSION#v}"
+          RELEASE_DIR="release/${PAPER_NAME}-${TAG}"
+          PDF_PATH="${PAPER_DIR}/.cache/out/paper.pdf"
+          PDF_ASSET="${RELEASE_DIR}/${PAPER_NAME}.pdf"
+          RELEASE_BUNDLE="release/${PAPER_NAME}-${TAG}.zip"
+          ARXIV_BUNDLE="release/${PAPER_NAME}-arxiv-${TAG}.zip"
+          MANIFEST_PATH="${RELEASE_DIR}/manifest.json"
+          RELEASE_NOTES_PATH="${RELEASE_DIR}/release-notes.md"
+
+          echo "paper_dir=${PAPER_DIR}" >> "$GITHUB_OUTPUT"
+          echo "paper_name=${PAPER_NAME}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "version_no_v=${VERSION_NO_V}" >> "$GITHUB_OUTPUT"
+          echo "release_dir=${RELEASE_DIR}" >> "$GITHUB_OUTPUT"
+          echo "release_bundle=${RELEASE_BUNDLE}" >> "$GITHUB_OUTPUT"
+          echo "arxiv_bundle=${ARXIV_BUNDLE}" >> "$GITHUB_OUTPUT"
+          echo "manifest_path=${MANIFEST_PATH}" >> "$GITHUB_OUTPUT"
+          echo "release_notes_path=${RELEASE_NOTES_PATH}" >> "$GITHUB_OUTPUT"
+          echo "release_name=${PAPER_NAME} ${TAG}" >> "$GITHUB_OUTPUT"
+          echo "pdf_path=${PDF_PATH}" >> "$GITHUB_OUTPUT"
+          echo "pdf_asset=${PDF_ASSET}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate changelog includes release version
+        run: |
+          set -euo pipefail
+
+          VERSION_NO_V="${{ steps.vars.outputs.version_no_v }}"
+
+          if [[ ! -f CHANGELOG.md ]]; then
+            echo "CHANGELOG.md is required for releases." >&2
+            exit 1
+          fi
+
+          if ! grep -Eq "^## \\[${VERSION_NO_V}\\]" CHANGELOG.md; then
+            echo "Missing CHANGELOG entry for version ${VERSION_NO_V}." >&2
+            exit 1
+          fi
+
+      - name: Validate VERSION metadata
+        run: |
+          set -euo pipefail
+
+          VERSION_NO_V="${{ steps.vars.outputs.version_no_v }}"
+
+          if [[ ! -f VERSION ]]; then
+            echo "VERSION file is required for releases." >&2
+            exit 1
+          fi
+
+          VERSION_FILE_VALUE="$(tr -d '[:space:]' < VERSION)"
+          if [[ "${VERSION_FILE_VALUE}" != "${VERSION_NO_V}" ]]; then
+            echo "VERSION (${VERSION_FILE_VALUE}) does not match release tag version (${VERSION_NO_V})." >&2
+            exit 1
+          fi
+
+      - name: Build LaTeX PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: paper.tex
+          working_directory: ${{ steps.vars.outputs.paper_dir }}
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -interaction=nonstopmode
+            -synctex=1
+            -file-line-error
+            -shell-escape
+            -f
+            -gg
+            -cd
+            -r
+            .latexmkrc
+
+      - name: Assemble release artifacts
+        run: |
+          set -euo pipefail
+
+          PAPER_DIR="${{ steps.vars.outputs.paper_dir }}"
+          RELEASE_DIR="${{ steps.vars.outputs.release_dir }}"
+          SOURCE_DIR="${RELEASE_DIR}/source"
+          ARXIV_DIR="${RELEASE_DIR}/arxiv"
+          PDF_PATH="${{ steps.vars.outputs.pdf_path }}"
+          PDF_ASSET="${{ steps.vars.outputs.pdf_asset }}"
+
+          mkdir --parents "${SOURCE_DIR}" "${ARXIV_DIR}"
+
+          cp "${PDF_PATH}" "${PDF_ASSET}"
+
+          for file in "paper.tex" "references.bib" ".latexmkrc"; do
+            if [[ -f "${PAPER_DIR}/${file}" ]]; then
+              cp "${PAPER_DIR}/${file}" "${SOURCE_DIR}/${file}"
+              cp "${PAPER_DIR}/${file}" "${ARXIV_DIR}/${file}"
+            fi
+          done
+
+          for directory in "sections" "figures" "diagrams" "assets" "references"; do
+            if [[ -d "${PAPER_DIR}/${directory}" ]]; then
+              cp --recursive "${PAPER_DIR}/${directory}" "${SOURCE_DIR}/${directory}"
+              cp --recursive "${PAPER_DIR}/${directory}" "${ARXIV_DIR}/${directory}"
+            fi
+          done
+
+      - name: Generate release notes from changelog
+        run: |
+          set -euo pipefail
+
+          VERSION_NO_V="${{ steps.vars.outputs.version_no_v }}"
+          RELEASE_NOTES_PATH="${{ steps.vars.outputs.release_notes_path }}"
+
+          mkdir --parents "$(dirname "${RELEASE_NOTES_PATH}")"
+
+          {
+            printf "## %s\n\n" "${{ steps.vars.outputs.tag }}"
+            awk -v version="${VERSION_NO_V}" '
+              $0 ~ "^## \\[" version "\\]" {capture=1; next}
+              $0 ~ "^## \\[" && capture==1 {exit}
+              capture==1 {print}
+            ' CHANGELOG.md
+          } > "${RELEASE_NOTES_PATH}"
+
+      - name: Package release and arXiv bundles
+        run: |
+          set -euo pipefail
+
+          RELEASE_DIR="${{ steps.vars.outputs.release_dir }}"
+          PAPER_NAME="${{ steps.vars.outputs.paper_name }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          RELEASE_BUNDLE="${{ steps.vars.outputs.release_bundle }}"
+          ARXIV_BUNDLE="${{ steps.vars.outputs.arxiv_bundle }}"
+
+          (
+            cd "$(dirname "${RELEASE_DIR}")"
+            zip -X -r "$(basename "${RELEASE_BUNDLE}")" "$(basename "${RELEASE_DIR}")"
+          )
+
+          (
+            cd "${RELEASE_DIR}"
+            zip -X -r "../$(basename "${ARXIV_BUNDLE}")" "arxiv"
+          )
+
+      - name: Generate release manifest
+        run: |
+          set -euo pipefail
+
+          PAPER_NAME="${{ steps.vars.outputs.paper_name }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          PDF_ASSET="${{ steps.vars.outputs.pdf_asset }}"
+          RELEASE_BUNDLE="${{ steps.vars.outputs.release_bundle }}"
+          ARXIV_BUNDLE="${{ steps.vars.outputs.arxiv_bundle }}"
+          MANIFEST_PATH="${{ steps.vars.outputs.manifest_path }}"
+
+          PDF_SHA256="$(sha256sum "${PDF_ASSET}" | awk '{print $1}')"
+          RELEASE_SHA256="$(sha256sum "${RELEASE_BUNDLE}" | awk '{print $1}')"
+          ARXIV_SHA256="$(sha256sum "${ARXIV_BUNDLE}" | awk '{print $1}')"
+
+          GENERATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          PAPER_NAME="${PAPER_NAME}" \
+          TAG="${TAG}" \
+          GITHUB_SHA="${GITHUB_SHA}" \
+          GENERATED_AT="${GENERATED_AT}" \
+          PDF_ASSET="${PDF_ASSET}" \
+          PDF_SHA256="${PDF_SHA256}" \
+          RELEASE_BUNDLE="${RELEASE_BUNDLE}" \
+          RELEASE_SHA256="${RELEASE_SHA256}" \
+          ARXIV_BUNDLE="${ARXIV_BUNDLE}" \
+          ARXIV_SHA256="${ARXIV_SHA256}" \
+          MANIFEST_PATH="${MANIFEST_PATH}" \
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = {
+              "paper": os.environ["PAPER_NAME"],
+              "tag": os.environ["TAG"],
+              "commit": os.environ["GITHUB_SHA"],
+              "generated_at": os.environ["GENERATED_AT"],
+              "artifacts": {
+                  "pdf": {
+                      "path": os.environ["PDF_ASSET"],
+                      "sha256": os.environ["PDF_SHA256"],
+                  },
+                  "release_bundle": {
+                      "path": os.environ["RELEASE_BUNDLE"],
+                      "sha256": os.environ["RELEASE_SHA256"],
+                  },
+                  "arxiv_bundle": {
+                      "path": os.environ["ARXIV_BUNDLE"],
+                      "sha256": os.environ["ARXIV_SHA256"],
+                  },
+              },
+          }
+
+          Path(os.environ["MANIFEST_PATH"]).write_text(
+              json.dumps(manifest, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Verify release artifacts
+        run: |
+          set -euo pipefail
+
+          test -f "${{ steps.vars.outputs.pdf_asset }}"
+          test -f "${{ steps.vars.outputs.release_bundle }}"
+          test -f "${{ steps.vars.outputs.arxiv_bundle }}"
+          test -f "${{ steps.vars.outputs.manifest_path }}"
+          test -f "${{ steps.vars.outputs.release_notes_path }}"
+
+          echo "=== Release artifact files ==="
+          find release -maxdepth 5 -type f | sort
+
+          echo ""
+          echo "=== Release manifest ==="
+          cat "${{ steps.vars.outputs.manifest_path }}"
+
+      - name: Upload release workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.paper_name }}-release-assets-${{ steps.vars.outputs.tag }}
+          path: |
+            ${{ steps.vars.outputs.release_dir }}
+            ${{ steps.vars.outputs.release_bundle }}
+            ${{ steps.vars.outputs.arxiv_bundle }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: ${{ steps.vars.outputs.release_name }}
+          generate_release_notes: true
+          body_path: ${{ steps.vars.outputs.release_notes_path }}
+          files: |
+            ${{ steps.vars.outputs.pdf_asset }}
+            ${{ steps.vars.outputs.release_bundle }}
+            ${{ steps.vars.outputs.arxiv_bundle }}
+            ${{ steps.vars.outputs.manifest_path }}

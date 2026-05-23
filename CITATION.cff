@@ -1,0 +1,144 @@
+# Citation File Format (CFF) — https://citation-file-format.github.io/
+# Schema: https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md
+# Validator: https://github.com/citation-file-format/cffconvert
+
+cff-version: 1.2.0
+
+# ---------------------------------------------------------------------------
+# Repository-level citation metadata
+# ---------------------------------------------------------------------------
+
+message: >-
+  If you use this work, please cite it using the metadata from this file.
+
+title: >-
+  Reflector: Reflective Development Systems for
+  Recursive AI-Augmented Software Engineering
+
+# ---------------------------------------------------------------------------
+# Authors
+# ---------------------------------------------------------------------------
+
+authors:
+  - family-names: Szmyt
+    given-names: Alan
+    orcid: https://orcid.org/0009-0008-5291-9795
+    alias: szmyty
+    # affiliation: "[AFFILIATION]"  # TODO: add institutional affiliation when applicable
+
+# ---------------------------------------------------------------------------
+# Repository metadata
+# ---------------------------------------------------------------------------
+
+repository-code: https://github.com/egohygiene/papers
+
+url: https://egohygiene.github.io/papers/
+
+# ---------------------------------------------------------------------------
+# Abstract
+# ---------------------------------------------------------------------------
+
+abstract: >-
+  Recursive AI-augmented software engineering introduces a new class of
+  development systems in which autonomous agents operate within iterative
+  feedback loops, generating, evaluating, and refining software artifacts at
+  machine speed. Without explicit governance boundaries, these systems are
+  prone to recursive optimization drift, complexity collapse, and misalignment
+  with human-defined objectives. This paper introduces Reflector, a framework
+  for reflective development systems that imposes structured governance
+  contracts on recursive AI-assisted workflows. Reflector defines four core
+  mechanisms: (1) scoped autonomous agents with bounded execution contexts,
+  (2) human-in-the-loop alignment checkpoints triggered by milestone events,
+  (3) recursive auditing systems that continuously validate system state
+  against defined invariants, and (4) milestone synchronization protocols that
+  gate autonomous progression. We describe the theoretical foundations of
+  reflective development, characterize common failure modes arising from
+  unbounded recursion, and present an architectural reference model for
+  implementing Reflector-compliant systems.
+
+# ---------------------------------------------------------------------------
+# Keywords
+# ---------------------------------------------------------------------------
+
+keywords:
+  - recursive development systems
+  - AI-augmented software engineering
+  - human-in-the-loop governance
+  - autonomous agents
+  - milestone synchronization
+  - recursive drift
+  - software governance
+  - reflective systems
+  - AI safety
+  - systems thinking
+
+# ---------------------------------------------------------------------------
+# License and version
+# ---------------------------------------------------------------------------
+
+license: MIT
+
+version: 0.0.1
+
+date-released: "2026-05-22"
+
+# ---------------------------------------------------------------------------
+# Publication status
+# ---------------------------------------------------------------------------
+
+# status: in-preparation  # CFF does not have a native "status" field;
+#                          # tracked via version and date-released above.
+
+# ---------------------------------------------------------------------------
+# Preferred citation (paper-level)
+# ---------------------------------------------------------------------------
+
+preferred-citation:
+  type: article
+  title: >-
+    Reflector: Reflective Development Systems for
+    Recursive AI-Augmented Software Engineering
+  authors:
+    - family-names: Szmyt
+      given-names: Alan
+      orcid: https://orcid.org/0009-0008-5291-9795
+  year: 2026
+  # journal: "[JOURNAL]"             # TODO: fill in when submitted/accepted
+  # volume: "[VOLUME]"
+  # issue: "[ISSUE]"
+  # pages: "[PAGES]"
+  # doi: "[DOI]"                     # TODO: replace with real DOI
+  # identifiers:
+  #   - type: doi
+  #     value: "[DOI]"               # TODO: replace with real DOI
+  #   - type: other
+  #     value: "arXiv:[ARXIV_ID]"    # TODO: replace with real arXiv ID
+  #     description: arXiv preprint identifier
+  # url: "https://arxiv.org/abs/[ARXIV_ID]"  # TODO: replace with arXiv URL
+
+# ---------------------------------------------------------------------------
+# Future / placeholder identifiers
+# ---------------------------------------------------------------------------
+# The fields below are intentionally left as placeholders.
+# Replace each bracketed token when the corresponding identifier becomes available.
+#
+#   [ARXIV_ID]               — arXiv preprint identifier, e.g. 2506.00001
+#   [DOI]                    — primary publication DOI
+#   [ZENODO_DOI]             — Zenodo archive DOI, e.g. 10.5281/zenodo.XXXXXXX
+#   [PUBLICATION_DATE]       — ISO 8601 date of formal publication, e.g. 2026-06-01
+#   [HUGGINGFACE_SPACE]      — Hugging Face Space URL
+#   [IMPLEMENTATION_REPO]    — URL of the companion implementation repository
+#
+# Uncomment and populate the identifiers block below when values are ready:
+#
+# identifiers:
+#   - type: doi
+#     value: "[DOI]"
+#     description: Primary publication DOI
+#   - type: doi
+#     value: "[ZENODO_DOI]"
+#     description: Zenodo archive DOI
+#   - type: other
+#     value: "arXiv:[ARXIV_ID]"
+#     description: arXiv preprint identifier
+# ---------------------------------------------------------------------------

@@ -1,0 +1,122 @@
+name: Build Paper
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "papers/**/*.tex"
+      - "papers/**/*.bib"
+      - "papers/**/.latexmkrc"
+      - "papers/**/sections/**"
+      - "papers/**/figures/**"
+      - "papers/**/diagrams/**"
+      - "papers/**/assets/**"
+      - "papers/**/references/**"
+      - "papers/**/examples/**"
+      - "scripts/build-paper.sh"
+      - "scripts/publish-paper.sh"
+      - "scripts/watch-paper.sh"
+      - ".latexmkrc"
+      - ".latexindent.yaml"
+      - "templates/**"
+      - "config/**"
+      - "styles/**"
+      - ".github/workflows/build-paper.yml"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/release-paper.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "papers/**/*.tex"
+      - "papers/**/*.bib"
+      - "papers/**/.latexmkrc"
+      - "papers/**/sections/**"
+      - "papers/**/figures/**"
+      - "papers/**/diagrams/**"
+      - "papers/**/assets/**"
+      - "papers/**/references/**"
+      - "papers/**/examples/**"
+      - "scripts/build-paper.sh"
+      - "scripts/publish-paper.sh"
+      - "scripts/watch-paper.sh"
+      - ".latexmkrc"
+      - ".latexindent.yaml"
+      - "templates/**"
+      - "config/**"
+      - "styles/**"
+      - ".github/workflows/build-paper.yml"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/release-paper.yml"
+
+  workflow_dispatch:
+    inputs:
+      paper:
+        description: "Paper directory"
+        required: false
+        default: "papers/reflector"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Paper
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        paper:
+          - papers/reflector
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set artifact names
+        id: vars
+        run: |
+          PAPER_NAME="$(basename "${{ matrix.paper }}")"
+
+          echo "paper_name=${PAPER_NAME}" >> "$GITHUB_OUTPUT"
+          echo "pdf_artifact=${PAPER_NAME}-pdf" >> "$GITHUB_OUTPUT"
+          echo "build_artifact=${PAPER_NAME}-build-artifacts" >> "$GITHUB_OUTPUT"
+
+      - name: Build LaTeX PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: paper.tex
+          working_directory: ${{ matrix.paper }}
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -interaction=nonstopmode
+            -synctex=1
+            -file-line-error
+            -shell-escape
+            -f
+            -gg
+            -cd
+            -r
+            .latexmkrc
+
+      - name: Upload PDF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.pdf_artifact }}
+          path: ${{ matrix.paper }}/.cache/out/paper.pdf
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload build artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.build_artifact }}
+          path: ${{ matrix.paper }}/.cache/
+          if-no-files-found: warn
+          retention-days: 7
