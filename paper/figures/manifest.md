@@ -15,7 +15,7 @@ figures:
   - id: reflector-hero
     file: hero.png
     title: Reflector system overview
-    alt_text: "TODO: Replace with final publication alt text."
-    long_description: "TODO: Add detailed accessibility description."
-    source_diagram: "TODO: Reference canonical Excalidraw source file."
+    alt_text: "Hero infographic showing the Reflector framework and its recursive synchronization, governance, and auditing loops."
+    long_description: "A vertical architecture map that connects recursive synchronization, reflective orchestration, cognition-aware recursive systems, semantic stabilization, and governance checkpoints as linked system layers."
+    source_diagram: "paper/diagrams/system-overview.excalidraw"
 ```
