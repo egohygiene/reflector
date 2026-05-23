@@ -234,6 +234,9 @@ __marimo__/
 *.xdv
 _minted-*/
 
+# Audit logs (explicitly tracked — must appear after *.log above to override it)
+!audits/**
+
 # LaTeX build cache directories (per-paper)
 paper/.cache/
 
