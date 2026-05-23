@@ -108,7 +108,7 @@ class WorkflowRunner:
             Panel(
                 "[yellow]Step 6: Synchronization boundary reached.[/yellow]\n\n"
                 "Autonomous execution has paused. The audit report above "
-                "summarises all actions taken in this pass.\n\n"
+                "summarizes all actions taken in this pass.\n\n"
                 "[bold]Step 7: Awaiting human review.[/bold]\n"
                 "[dim]Run `reflector synchronize` to inspect active boundaries.\n"
                 "Run `reflector milestone --list` to review milestone state.[/dim]",

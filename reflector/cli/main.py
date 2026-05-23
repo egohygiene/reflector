@@ -57,7 +57,7 @@ def main(
 
 @app.command()
 def run(
-    milestone_id: str = typer.Option(
+    milestone_id: str | None = typer.Option(
         None,
         "--milestone",
         "-m",
@@ -86,7 +86,7 @@ def run(
 
 @app.command()
 def synchronize(
-    boundary_id: str = typer.Argument(
+    boundary_id: str | None = typer.Argument(
         None,
         help="Synchronization boundary identifier to check or advance.",
     ),
@@ -116,7 +116,7 @@ def synchronize(
 
 @app.command()
 def audit(
-    output: str = typer.Option(
+    output: str | None = typer.Option(
         None,
         "--output",
         "-o",
@@ -157,7 +157,7 @@ def audit(
 
 @app.command()
 def milestone(
-    milestone_id: str = typer.Argument(
+    milestone_id: str | None = typer.Argument(
         None,
         help="Milestone identifier to inspect or advance.",
     ),
