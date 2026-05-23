@@ -4,10 +4,10 @@
 set -euo pipefail
 
 REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
-PAPERS_DIRECTORY="${REPOSITORY_ROOT}/papers"
+PAPER_DIRECTORY="${REPOSITORY_ROOT}/paper"
 DOCS_DIRECTORY="${REPOSITORY_ROOT}/docs"
 
-DEFAULT_PAPER="reflector"
+DEFAULT_PAPER="paper"
 BUILD_ALL=false
 OPEN_PDF=false
 PUBLISH_PDF=false
@@ -23,9 +23,9 @@ Usage:
   ./scripts/build-paper.sh --all --publish
 
 Flags:
-  --all       Build all papers under papers/
+  --all       Build all papers under paper/
   --open      Open the generated PDF after building
-  --publish   Copy the generated publication assets into docs/<slug>/ and docs/papers/<slug>/
+  --publish   Copy the generated publication PDF into docs/<slug>.pdf
 USAGE
 }
 
@@ -54,13 +54,13 @@ open_pdf() {
 resolve_paper_directory() {
     local input="$1"
 
-    if [[ -d "${input}" ]]; then
-        printf '%s\n' "${input}"
+    if [[ "${input}" == "reflector" && -d "${PAPER_DIRECTORY}" ]]; then
+        printf '%s\n' "${PAPER_DIRECTORY}"
         return
     fi
 
-    if [[ -d "${PAPERS_DIRECTORY}/${input}" ]]; then
-        printf '%s\n' "${PAPERS_DIRECTORY}/${input}"
+    if [[ -d "${input}" ]]; then
+        printf '%s\n' "${input}"
         return
     fi
 
@@ -69,7 +69,7 @@ resolve_paper_directory() {
         return
     fi
 
-    printf '%s\n' "${PAPERS_DIRECTORY}/${input}"
+    printf '%s\n' "${input}"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -104,7 +104,7 @@ build_paper() {
     paper_directory="$(resolve_paper_directory "${target}")"
 
     local paper_file="${paper_directory}/paper.tex"
-    local latexmkrc_file="${paper_directory}/.latexmkrc"
+    local latexmkrc_file="${REPOSITORY_ROOT}/.latexmkrc"
     local output_directory="${paper_directory}/.cache/out"
     local output_pdf="${output_directory}/paper.pdf"
 
@@ -140,7 +140,7 @@ build_paper() {
             -f \
             -gg \
             -cd \
-            -r ".latexmkrc" \
+            -r "${latexmkrc_file}" \
             "paper.tex"
     )
 
@@ -167,38 +167,22 @@ publish_paper() {
     slug="$(basename "${paper_directory}")"
 
     local source_pdf="${paper_directory}/.cache/out/paper.pdf"
-    local dest_dir="${DOCS_DIRECTORY}/${slug}"
-    local dest_pdf="${dest_dir}/${slug}.pdf"
-    local compat_dir="${DOCS_DIRECTORY}/papers/${slug}"
-    local compat_pdf="${compat_dir}/${slug}.pdf"
-    local figures_source_dir="${paper_directory}/figures"
-    local figures_dest_dir="${dest_dir}/figures"
-    local figures_compat_dir="${compat_dir}/figures"
-    local publish_dir
+    local dest_pdf="${DOCS_DIRECTORY}/${slug}.pdf"
 
     if [[ ! -f "${source_pdf}" ]]; then
         echo "Error: Cannot publish — PDF not found at '${source_pdf}'." >&2
         exit 1
     fi
 
-    mkdir -p "${dest_dir}" "${compat_dir}"
+    mkdir -p "${DOCS_DIRECTORY}"
     cp "${source_pdf}" "${dest_pdf}"
-    cp "${source_pdf}" "${compat_pdf}"
-
-    if [[ -d "${figures_source_dir}" ]]; then
-        for publish_dir in "${figures_dest_dir}" "${figures_compat_dir}"; do
-            mkdir -p "${publish_dir}"
-            cp -R "${figures_source_dir}/." "${publish_dir}/"
-        done
-    fi
 
     echo "Published: ${dest_pdf}"
-    echo "Published: ${compat_pdf}"
 }
 
 if [[ "${BUILD_ALL}" == "true" ]]; then
     mapfile -t PAPER_DIRECTORIES < <(
-        find "${PAPERS_DIRECTORY}" -mindepth 1 -maxdepth 1 -type d | sort
+        find "${PAPER_DIRECTORY}" -mindepth 0 -maxdepth 0 -type d | sort
     )
 
     for directory in "${PAPER_DIRECTORIES[@]}"; do

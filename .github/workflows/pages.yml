@@ -6,27 +6,11 @@ on:
       - main
     paths:
       - "docs/**"
-      - "papers/**/*.tex"
-      - "papers/**/*.bib"
-      - "papers/**/.latexmkrc"
-      - "papers/**/sections/**"
-      - "papers/**/figures/**"
-      - "papers/**/diagrams/**"
-      - "papers/**/assets/**"
-      - "papers/**/references/**"
-      - "papers/**/examples/**"
+      - "paper/**"
       - "scripts/build-paper.sh"
-      - "scripts/publish-paper.sh"
-      - "scripts/watch-paper.sh"
       - ".latexmkrc"
-      - ".latexindent.yaml"
-      - "templates/**"
-      - "config/**"
-      - "styles/**"
-      - ".github/workflows/build-paper.yml"
       - ".github/workflows/pages.yml"
-      - ".github/workflows/release-paper.yml"
-
+      - ".github/workflows/build-paper.yml"
   workflow_dispatch:
 
 permissions:
@@ -55,7 +39,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: paper.tex
-          working_directory: papers/reflector
+          working_directory: paper
           extra_system_packages: "biber"
           args: >-
             -pdf
@@ -67,132 +51,60 @@ jobs:
             -gg
             -cd
             -r
-            .latexmkrc
+            ../.latexmkrc
 
-      - name: Synchronize built PDFs into docs routes
+      - name: Synchronize publication assets into docs
         run: |
           set -euo pipefail
 
-          PAPER_DIRECTORY="papers/reflector"
-          PAPER_SLUG="$(basename "${PAPER_DIRECTORY}")"
-          PDF_SOURCE="${PAPER_DIRECTORY}/.cache/out/paper.pdf"
-          FIGURES_SOURCE_DIRECTORY="${PAPER_DIRECTORY}/figures"
+          PAPER_SLUG="reflector"
           CACHE_BUSTER="${GITHUB_SHA::12}"
-          DOCS_ROOT_DIRECTORY="docs/${PAPER_SLUG}"
-          DOCS_PREFIX_DIRECTORY="docs/papers/${PAPER_SLUG}"
-          DOCS_ROOT_PDF="${DOCS_ROOT_DIRECTORY}/${PAPER_SLUG}.pdf"
-          DOCS_PREFIX_PDF="${DOCS_PREFIX_DIRECTORY}/${PAPER_SLUG}.pdf"
-          DOCS_ROOT_LATEST_PDF="${DOCS_ROOT_DIRECTORY}/${PAPER_SLUG}-latest.pdf"
-          DOCS_PREFIX_LATEST_PDF="${DOCS_PREFIX_DIRECTORY}/${PAPER_SLUG}-latest.pdf"
-          DOCS_ROOT_VERSIONED_PDF="${DOCS_ROOT_DIRECTORY}/${PAPER_SLUG}-${CACHE_BUSTER}.pdf"
-          DOCS_PREFIX_VERSIONED_PDF="${DOCS_PREFIX_DIRECTORY}/${PAPER_SLUG}-${CACHE_BUSTER}.pdf"
-          HERO_IMAGE_RELATIVE_PATH="figures/hero.png"
-          HERO_IMAGE_ALT="Reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures."
-          FIGURES_DESTINATION_DIRECTORIES=(
-            "${DOCS_ROOT_DIRECTORY}/figures"
-            "${DOCS_PREFIX_DIRECTORY}/figures"
-          )
-          GENERATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          PUBLICATION_MANIFEST="$(jq -cn \
-            --arg paper "${PAPER_SLUG}" \
-            --arg sha "${GITHUB_SHA}" \
-            --arg short_sha "${CACHE_BUSTER}" \
-            --arg generated_at "${GENERATED_AT}" \
-            --arg latest_pdf "${PAPER_SLUG}-latest.pdf" \
-            --arg versioned_pdf "${PAPER_SLUG}-${CACHE_BUSTER}.pdf" \
-            --arg hero_image "${HERO_IMAGE_RELATIVE_PATH}" \
-            --arg hero_image_alt "${HERO_IMAGE_ALT}" \
-            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, latest_pdf: $latest_pdf, versioned_pdf: $versioned_pdf, hero: {image: $hero_image, alt: $hero_image_alt}}')"
+          PDF_SOURCE="paper/.cache/out/paper.pdf"
+          DOCS_PDF="docs/${PAPER_SLUG}.pdf"
+          DOCS_LATEST_PDF="docs/${PAPER_SLUG}-latest.pdf"
+          DOCS_MANIFEST="docs/publication.json"
 
           if [[ ! -f "${PDF_SOURCE}" ]]; then
             echo "Error: Expected PDF not found at '${PDF_SOURCE}'" >&2
             exit 1
           fi
 
-          mkdir --parents "${DOCS_ROOT_DIRECTORY}" "${DOCS_PREFIX_DIRECTORY}"
-          cp "${PDF_SOURCE}" "${DOCS_ROOT_PDF}"
-          cp "${PDF_SOURCE}" "${DOCS_PREFIX_PDF}"
-          cp "${PDF_SOURCE}" "${DOCS_ROOT_LATEST_PDF}"
-          cp "${PDF_SOURCE}" "${DOCS_PREFIX_LATEST_PDF}"
-          cp "${PDF_SOURCE}" "${DOCS_ROOT_VERSIONED_PDF}"
-          cp "${PDF_SOURCE}" "${DOCS_PREFIX_VERSIONED_PDF}"
+          cp "${PDF_SOURCE}" "${DOCS_PDF}"
+          cp "${PDF_SOURCE}" "${DOCS_LATEST_PDF}"
+          sed -i "s/__CACHE_BUSTER__/${CACHE_BUSTER}/g" docs/index.html
 
-          if [[ -d "${FIGURES_SOURCE_DIRECTORY}" ]]; then
-            for figures_destination_directory in "${FIGURES_DESTINATION_DIRECTORIES[@]}"; do
-              mkdir --parents "${figures_destination_directory}"
-              cp --recursive "${FIGURES_SOURCE_DIRECTORY}/." "${figures_destination_directory}/"
-            done
-          fi
+          jq -cn \
+            --arg paper "${PAPER_SLUG}" \
+            --arg sha "${GITHUB_SHA}" \
+            --arg short_sha "${CACHE_BUSTER}" \
+            --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg pdf "${PAPER_SLUG}.pdf" \
+            --arg latest_pdf "${PAPER_SLUG}-latest.pdf" \
+            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, pdf: $pdf, latest_pdf: $latest_pdf}' \
+            > "${DOCS_MANIFEST}"
 
-          printf '%s\n' "${PUBLICATION_MANIFEST}" > "${DOCS_ROOT_DIRECTORY}/publication.json"
-          printf '%s\n' "${PUBLICATION_MANIFEST}" > "${DOCS_PREFIX_DIRECTORY}/publication.json"
-
-          sed -i "s/__CACHE_BUSTER__/${CACHE_BUSTER}/g" \
-            docs/index.html \
-            docs/reflector/index.html \
-            docs/papers/reflector/index.html
-
-          echo "Copied PDF: ${PDF_SOURCE}"
-          echo "Cache buster: ${CACHE_BUSTER}"
+          echo "Published PDF: ${DOCS_PDF}"
+          echo "Published latest PDF: ${DOCS_LATEST_PDF}"
+          echo "Publication manifest: ${DOCS_MANIFEST}"
 
       - name: Verify publication synchronization
         run: |
           set -euo pipefail
 
-          PAPER_DIRECTORY="papers/reflector"
-          PAPER_SLUG="$(basename "${PAPER_DIRECTORY}")"
-          PDF_SOURCE="${PAPER_DIRECTORY}/.cache/out/paper.pdf"
-          CACHE_BUSTER="${GITHUB_SHA::12}"
-          DOCS_ROOT_PDF="docs/${PAPER_SLUG}/${PAPER_SLUG}.pdf"
-          DOCS_PREFIX_PDF="docs/papers/${PAPER_SLUG}/${PAPER_SLUG}.pdf"
-          DOCS_ROOT_LATEST_PDF="docs/${PAPER_SLUG}/${PAPER_SLUG}-latest.pdf"
-          DOCS_PREFIX_LATEST_PDF="docs/papers/${PAPER_SLUG}/${PAPER_SLUG}-latest.pdf"
-          DOCS_ROOT_VERSIONED_PDF="docs/${PAPER_SLUG}/${PAPER_SLUG}-${CACHE_BUSTER}.pdf"
-          DOCS_PREFIX_VERSIONED_PDF="docs/papers/${PAPER_SLUG}/${PAPER_SLUG}-${CACHE_BUSTER}.pdf"
-          DOCS_ROOT_HERO="docs/${PAPER_SLUG}/figures/hero.png"
-          DOCS_PREFIX_HERO="docs/papers/${PAPER_SLUG}/figures/hero.png"
-          SITE_PDF="_site/${PAPER_SLUG}/${PAPER_SLUG}.pdf"
-          SITE_PREFIX_PDF="_site/papers/${PAPER_SLUG}/${PAPER_SLUG}.pdf"
-          SITE_ROOT_LATEST_PDF="_site/${PAPER_SLUG}/${PAPER_SLUG}-latest.pdf"
-          SITE_PREFIX_LATEST_PDF="_site/papers/${PAPER_SLUG}/${PAPER_SLUG}-latest.pdf"
-          SITE_ROOT_VERSIONED_PDF="_site/${PAPER_SLUG}/${PAPER_SLUG}-${CACHE_BUSTER}.pdf"
-          SITE_PREFIX_VERSIONED_PDF="_site/papers/${PAPER_SLUG}/${PAPER_SLUG}-${CACHE_BUSTER}.pdf"
-          SITE_ROOT_HERO="_site/${PAPER_SLUG}/figures/hero.png"
-          SITE_PREFIX_HERO="_site/papers/${PAPER_SLUG}/figures/hero.png"
-          SITE_ROOT_MANIFEST="_site/${PAPER_SLUG}/publication.json"
-          SITE_PREFIX_MANIFEST="_site/papers/${PAPER_SLUG}/publication.json"
+          PDF_SOURCE="paper/.cache/out/paper.pdf"
+          DOCS_PDF="docs/reflector.pdf"
 
           mkdir --parents _site
           cp --recursive docs/. _site/
 
-          if [[ ! -f "${PDF_SOURCE}" ]]; then
-            echo "Error: Build artifact PDF missing: ${PDF_SOURCE}" >&2
-            exit 1
-          fi
-
           for required_path in \
-            "${DOCS_ROOT_PDF}" \
-            "${DOCS_PREFIX_PDF}" \
-            "${DOCS_ROOT_LATEST_PDF}" \
-            "${DOCS_PREFIX_LATEST_PDF}" \
-            "${DOCS_ROOT_VERSIONED_PDF}" \
-            "${DOCS_PREFIX_VERSIONED_PDF}" \
-            "${DOCS_ROOT_HERO}" \
-            "${DOCS_PREFIX_HERO}" \
-            "${SITE_PDF}" \
-            "${SITE_PREFIX_PDF}" \
-            "${SITE_ROOT_LATEST_PDF}" \
-            "${SITE_PREFIX_LATEST_PDF}" \
-            "${SITE_ROOT_VERSIONED_PDF}" \
-            "${SITE_PREFIX_VERSIONED_PDF}" \
-            "${SITE_ROOT_HERO}" \
-            "${SITE_PREFIX_HERO}" \
-            "${SITE_ROOT_MANIFEST}" \
-            "${SITE_PREFIX_MANIFEST}" \
+            "${PDF_SOURCE}" \
+            "${DOCS_PDF}" \
+            "docs/index.html" \
+            "docs/publication.json" \
             "_site/index.html" \
-            "_site/${PAPER_SLUG}/index.html" \
-            "_site/papers/index.html" \
-            "_site/papers/${PAPER_SLUG}/index.html"
+            "_site/reflector.pdf" \
+            "_site/publication.json"
           do
             if [[ ! -f "${required_path}" ]]; then
               echo "Error: Expected published file is missing: ${required_path}" >&2
@@ -201,51 +113,21 @@ jobs:
           done
 
           SOURCE_SHA="$(sha256sum "${PDF_SOURCE}" | awk '{print $1}')"
-          DOCS_ROOT_SHA="$(sha256sum "${DOCS_ROOT_PDF}" | awk '{print $1}')"
-          DOCS_PREFIX_SHA="$(sha256sum "${DOCS_PREFIX_PDF}" | awk '{print $1}')"
-          SITE_ROOT_SHA="$(sha256sum "${SITE_PDF}" | awk '{print $1}')"
-          SITE_PREFIX_SHA="$(sha256sum "${SITE_PREFIX_PDF}" | awk '{print $1}')"
+          DOCS_SHA="$(sha256sum "${DOCS_PDF}" | awk '{print $1}')"
+          SITE_SHA="$(sha256sum "_site/reflector.pdf" | awk '{print $1}')"
 
-          echo "source         sha256: ${SOURCE_SHA}"
-          echo "docs/root      sha256: ${DOCS_ROOT_SHA}"
-          echo "docs/papers    sha256: ${DOCS_PREFIX_SHA}"
-          echo "_site/root     sha256: ${SITE_ROOT_SHA}"
-          echo "_site/papers   sha256: ${SITE_PREFIX_SHA}"
+          echo "source sha256: ${SOURCE_SHA}"
+          echo "docs   sha256: ${DOCS_SHA}"
+          echo "_site  sha256: ${SITE_SHA}"
 
-          for published_sha in "${DOCS_ROOT_SHA}" "${DOCS_PREFIX_SHA}" "${SITE_ROOT_SHA}" "${SITE_PREFIX_SHA}"
-          do
-            if [[ "${SOURCE_SHA}" != "${published_sha}" ]]; then
-              echo "Error: PDF checksum mismatch between build output and published routes." >&2
-              exit 1
-            fi
-          done
+          if [[ "${SOURCE_SHA}" != "${DOCS_SHA}" || "${SOURCE_SHA}" != "${SITE_SHA}" ]]; then
+            echo "Error: PDF checksum mismatch between build output and published routes." >&2
+            exit 1
+          fi
 
-          echo ""
-          echo "=== Build cache contents ==="
-          find papers/reflector/.cache -maxdepth 5 -type f | sort || true
-
-          echo ""
-          echo "=== Assembled _site/ contents ==="
-          find _site -maxdepth 5 -type f | sort
-
-          echo ""
-          echo "=== docs/${PAPER_SLUG} contents ==="
-          ls -lah "docs/${PAPER_SLUG}/"
-
-          echo ""
-          echo "=== _site/${PAPER_SLUG} contents ==="
-          ls -lah "_site/${PAPER_SLUG}/"
-
-          echo ""
-          echo "=== _site/papers/${PAPER_SLUG} contents ==="
-          ls -lah "_site/papers/${PAPER_SLUG}/"
-
-          echo ""
-          echo "=== Routed publication URLs ==="
-          echo "https://egohygiene.github.io/papers/${PAPER_SLUG}/"
-          echo "https://egohygiene.github.io/papers/${PAPER_SLUG}/${PAPER_SLUG}-latest.pdf?v=${CACHE_BUSTER}"
-          echo "Compatibility route path: /papers/${PAPER_SLUG}/"
-          echo "Compatibility PDF path: /papers/${PAPER_SLUG}/${PAPER_SLUG}-latest.pdf?v=${CACHE_BUSTER}"
+          echo "Published routes:"
+          echo "- /reflector/"
+          echo "- /reflector/reflector.pdf"
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -262,12 +144,7 @@ jobs:
       - name: Print deployed Pages endpoint
         run: |
           set -euo pipefail
-
-          CACHE_BUSTER="${GITHUB_SHA::12}"
-
           echo "Deployed page_url: ${{ steps.deployment.outputs.page_url }}"
           echo "Route checks:"
-          echo "- ${{ steps.deployment.outputs.page_url }}reflector/"
-          echo "- ${{ steps.deployment.outputs.page_url }}reflector/reflector-latest.pdf?v=${CACHE_BUSTER}"
-          echo "- /papers/reflector/"
-          echo "- /papers/reflector/reflector-latest.pdf?v=${CACHE_BUSTER}"
+          echo "- ${{ steps.deployment.outputs.page_url }}"
+          echo "- ${{ steps.deployment.outputs.page_url }}reflector.pdf"

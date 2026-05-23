@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "project": "papers",
+  "project": "reflector",
   "current_version": "0.0.1",
   "tag_pattern": "vMAJOR.MINOR.PATCH",
   "changelog": "CHANGELOG.md",

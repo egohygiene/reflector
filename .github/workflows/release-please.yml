@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "paper/**"
+      - "reflector/**"
+      - "VERSION"
+      - "CHANGELOG.md"
+      - "CITATION.cff"
+      - ".release-please-config.json"
+      - ".release-please-manifest.json"
+      - ".github/workflows/release-please.yml"
+      - ".github/workflows/release-paper.yml"
   workflow_dispatch:
 
 permissions:

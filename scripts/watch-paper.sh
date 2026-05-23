@@ -5,7 +5,7 @@
 #   ./scripts/watch-paper.sh <paper-path|paper-slug>
 #
 # Examples:
-#   ./scripts/watch-paper.sh papers/reflector
+#   ./scripts/watch-paper.sh paper
 #   ./scripts/watch-paper.sh reflector
 #
 # Requirements:
@@ -19,14 +19,14 @@ TARGET="${1:-}"
 
 if [[ -z "${TARGET}" ]]; then
   echo "Usage: $0 <paper-path|paper-slug>" >&2
-  echo "Examples: $0 papers/reflector | $0 reflector" >&2
+  echo "Examples: $0 paper | $0 reflector" >&2
   exit 1
 fi
 
 PAPER_DIR="${TARGET}"
 
-if [[ ! -d "${PAPER_DIR}" && -d "papers/${TARGET}" ]]; then
-  PAPER_DIR="papers/${TARGET}"
+if [[ "${TARGET}" == "reflector" && -d "paper" ]]; then
+  PAPER_DIR="paper"
 fi
 
 if [[ ! -d "${PAPER_DIR}" ]]; then
@@ -60,7 +60,7 @@ echo ""
     -f \
     -gg \
     -cd \
-    -r ".latexmkrc" \
+    -r "../.latexmkrc" \
     -pvc \
     "paper.tex"
 )

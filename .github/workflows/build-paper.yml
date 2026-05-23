@@ -5,20 +5,18 @@ on:
     branches:
       - main
     paths:
-      - "papers/**/*.tex"
-      - "papers/**/*.bib"
-      - "papers/**/.latexmkrc"
-      - "papers/**/sections/**"
-      - "papers/**/figures/**"
-      - "papers/**/diagrams/**"
-      - "papers/**/assets/**"
-      - "papers/**/references/**"
-      - "papers/**/examples/**"
+      - "paper/**/*.tex"
+      - "paper/**/*.bib"
+      - "paper/**/sections/**"
+      - "paper/**/figures/**"
+      - "paper/**/diagrams/**"
+      - "paper/**/assets/**"
+      - "paper/**/references/**"
+      - "paper/**/examples/**"
       - "scripts/build-paper.sh"
-      - "scripts/publish-paper.sh"
       - "scripts/watch-paper.sh"
       - ".latexmkrc"
-      - ".latexindent.yaml"
+      - ".latexindent.yml"
       - "templates/**"
       - "config/**"
       - "styles/**"
@@ -30,20 +28,18 @@ on:
     branches:
       - main
     paths:
-      - "papers/**/*.tex"
-      - "papers/**/*.bib"
-      - "papers/**/.latexmkrc"
-      - "papers/**/sections/**"
-      - "papers/**/figures/**"
-      - "papers/**/diagrams/**"
-      - "papers/**/assets/**"
-      - "papers/**/references/**"
-      - "papers/**/examples/**"
+      - "paper/**/*.tex"
+      - "paper/**/*.bib"
+      - "paper/**/sections/**"
+      - "paper/**/figures/**"
+      - "paper/**/diagrams/**"
+      - "paper/**/assets/**"
+      - "paper/**/references/**"
+      - "paper/**/examples/**"
       - "scripts/build-paper.sh"
-      - "scripts/publish-paper.sh"
       - "scripts/watch-paper.sh"
       - ".latexmkrc"
-      - ".latexindent.yaml"
+      - ".latexindent.yml"
       - "templates/**"
       - "config/**"
       - "styles/**"
@@ -56,7 +52,7 @@ on:
       paper:
         description: "Paper directory"
         required: false
-        default: "papers/reflector"
+        default: "paper"
 
 permissions:
   contents: read
@@ -70,7 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         paper:
-          - papers/reflector
+          - paper
 
     steps:
       - name: Checkout repository
@@ -101,7 +97,7 @@ jobs:
             -gg
             -cd
             -r
-            .latexmkrc
+            ../.latexmkrc
 
       - name: Upload PDF artifact
         if: always()
