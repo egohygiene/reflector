@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-PAPER_SLUG="${1:-reflector}"
+PAPER_SLUG="${1:-paper}"
 
 if [[ "${PAPER_SLUG}" != "reflector" && "${PAPER_SLUG}" != "paper" ]]; then
   echo "Usage: $0 [paper|reflector]" >&2

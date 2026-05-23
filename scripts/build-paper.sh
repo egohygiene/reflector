@@ -54,7 +54,7 @@ open_pdf() {
 resolve_paper_directory() {
     local input="$1"
 
-    if [[ "${input}" == "reflector" && -d "${PAPER_DIRECTORY}" ]]; then
+    if [[ ( "${input}" == "paper" || "${input}" == "reflector" ) && -d "${PAPER_DIRECTORY}" ]]; then
         printf '%s\n' "${PAPER_DIRECTORY}"
         return
     fi
