@@ -25,12 +25,12 @@ repos:
 
       - id: prevent-ds-store
         name: prevent .DS_Store files
-        entry: bash -c 'if git diff --cached --name-only --diff-filter=A | grep -Eq "(^|/)\.DS_Store$"; then echo "Do not commit .DS_Store files."; exit 1; fi'
+        entry: bash -c 'if git diff --cached --name-only --diff-filter=AM | grep -Eq "(^|/)\.DS_Store$"; then echo "Do not commit .DS_Store files."; exit 1; fi'
         language: system
         pass_filenames: false
 
       - id: latexindent-format
         name: latexindent format (when available)
-        entry: bash -c 'if ! command -v latexindent >/dev/null 2>&1; then echo "latexindent not found; skipping LaTeX formatting."; exit 0; fi; for file in "$@"; do latexindent -w -l .latexindent.yml "$file" >/dev/null; find "$(dirname "$file")" -maxdepth 1 -name "$(basename "$file").bak*" -delete; done' --
+        entry: bash -c 'if ! command -v latexindent >/dev/null 2>&1; then echo "latexindent not found; skipping LaTeX formatting."; exit 0; fi; for file in "$@"; do latexindent -w -l .latexindent.yml "$file" || exit 1; find "$(dirname "$file")" -maxdepth 1 -name "$(basename "$file").bak*" -delete; done' --
         language: system
         files: \.(tex|bib)$

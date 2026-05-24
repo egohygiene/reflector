@@ -13,9 +13,32 @@ import yaml
 SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 
 
-def load_json(path: Path) -> dict:
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+def load_json(path: Path) -> dict | None:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except FileNotFoundError:
+        fail(f"Missing required metadata file: {path}.")
+    except json.JSONDecodeError as error:
+        fail(f"Invalid JSON in {path}: {error}.")
+    return None
+
+
+def load_yaml(path: Path) -> dict | None:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            data = yaml.safe_load(handle)
+    except FileNotFoundError:
+        fail(f"Missing required metadata file: {path}.")
+        return None
+    except yaml.YAMLError as error:
+        fail(f"Invalid YAML in {path}: {error}.")
+        return None
+
+    if not isinstance(data, dict):
+        fail(f"Expected mapping at root of {path}.")
+        return None
+    return data
 
 
 def fail(message: str) -> int:
@@ -34,9 +57,9 @@ def main() -> int:
     publication = load_json(repository_root / "publication.json")
     release_manifest = load_json(repository_root / "release-manifest.json")
     release_please_manifest = load_json(repository_root / ".release-please-manifest.json")
-
-    with (repository_root / "CITATION.cff").open("r", encoding="utf-8") as handle:
-        citation = yaml.safe_load(handle)
+    citation = load_yaml(repository_root / "CITATION.cff")
+    if any(item is None for item in (publication, release_manifest, release_please_manifest, citation)):
+        return 1
 
     checks = [
         ("publication.json.version", publication.get("version")),
