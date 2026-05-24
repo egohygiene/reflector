@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-json
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.33.0
+    hooks:
+      - id: check-github-workflows
+
+  - repo: local
+    hooks:
+      - id: validate-repository-metadata
+        name: validate repository metadata
+        entry: python scripts/validate-metadata.py
+        language: python
+        additional_dependencies:
+          - pyyaml>=6.0
+        pass_filenames: false
+
+      - id: prevent-ds-store
+        name: prevent .DS_Store files
+        entry: bash -c 'if git diff --cached --name-only --diff-filter=A | grep -Eq "(^|/)\.DS_Store$"; then echo "Do not commit .DS_Store files."; exit 1; fi'
+        language: system
+        pass_filenames: false
+
+      - id: latexindent-format
+        name: latexindent format (when available)
+        entry: bash -c 'if ! command -v latexindent >/dev/null 2>&1; then echo "latexindent not found; skipping LaTeX formatting."; exit 0; fi; for file in "$@"; do latexindent -w -l .latexindent.yml "$file" >/dev/null; find "$(dirname "$file")" -maxdepth 1 -name "$(basename "$file").bak*" -delete; done' --
+        language: system
+        files: \.(tex|bib)$

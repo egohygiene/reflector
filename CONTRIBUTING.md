@@ -51,6 +51,19 @@ paper/
 - Diagram source files use `kebab-case.excalidraw`
 - Figure exports use `kebab-case.pdf` or `kebab-case.png`; reserve `hero.png` as the canonical publication preview asset
 
+## Pre-Commit Hooks
+
+Install and run hooks locally:
+
+```bash
+python -m pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+The hook set keeps checks lightweight and focused on repository hygiene,
+YAML/JSON/workflow validation, release metadata consistency, and LaTeX formatting.
+
 ## Commit Messages
 
 Follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
