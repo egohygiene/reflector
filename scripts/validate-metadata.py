@@ -18,9 +18,9 @@ def load_json(path: Path) -> dict | None:
         with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)
     except FileNotFoundError:
-        fail(f"Missing required metadata file: {path}.")
+        print_error(f"Missing required metadata file: {path}.")
     except json.JSONDecodeError as error:
-        fail(f"Invalid JSON in {path}: {error}.")
+        print_error(f"Invalid JSON in {path}: {error}.")
     return None
 
 
@@ -29,19 +29,19 @@ def load_yaml(path: Path) -> dict | None:
         with path.open("r", encoding="utf-8") as handle:
             data = yaml.safe_load(handle)
     except FileNotFoundError:
-        fail(f"Missing required metadata file: {path}.")
+        print_error(f"Missing required metadata file: {path}.")
         return None
     except yaml.YAMLError as error:
-        fail(f"Invalid YAML in {path}: {error}.")
+        print_error(f"Invalid YAML in {path}: {error}.")
         return None
 
     if not isinstance(data, dict):
-        fail(f"Expected mapping at root of {path}.")
+        print_error(f"Expected mapping at root of {path}.")
         return None
     return data
 
 
-def fail(message: str) -> int:
+def print_error(message: str) -> int:
     print(f"[metadata] {message}", file=sys.stderr)
     return 1
 
@@ -50,9 +50,12 @@ def main() -> int:
     repository_root = Path(__file__).resolve().parent.parent
 
     version_path = repository_root / "VERSION"
-    version = version_path.read_text(encoding="utf-8").strip()
+    try:
+        version = version_path.read_text(encoding="utf-8").strip()
+    except FileNotFoundError:
+        return print_error(f"Missing required metadata file: {version_path}.")
     if not SEMVER_PATTERN.fullmatch(version):
-        return fail(f"VERSION must be semantic version MAJOR.MINOR.PATCH, got '{version}'.")
+        return print_error(f"VERSION must be semantic version MAJOR.MINOR.PATCH, got '{version}'.")
 
     publication = load_json(repository_root / "publication.json")
     release_manifest = load_json(repository_root / "release-manifest.json")
