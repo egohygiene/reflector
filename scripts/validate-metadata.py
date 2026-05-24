@@ -11,6 +11,7 @@ import yaml
 
 
 SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
+MISSING = object()
 
 
 def load_json(path: Path) -> dict | None:
@@ -66,11 +67,11 @@ def main() -> int:
         return 1
 
     checks = [
-        ("publication.json.version", publication.get("version")),
-        ("publication.json.release_tag", publication.get("release_tag")),
-        ("release-manifest.json.current_version", release_manifest.get("current_version")),
-        (".release-please-manifest.json['.']", release_please_manifest.get(".")),
-        ("CITATION.cff.version", citation.get("version")),
+        ("publication.json.version", publication.get("version", MISSING)),
+        ("publication.json.release_tag", publication.get("release_tag", MISSING)),
+        ("release-manifest.json.current_version", release_manifest.get("current_version", MISSING)),
+        (".release-please-manifest.json['.']", release_please_manifest.get(".", MISSING)),
+        ("CITATION.cff.version", citation.get("version", MISSING)),
     ]
 
     expected_values = {
@@ -79,6 +80,11 @@ def main() -> int:
 
     has_error = False
     for name, actual_value in checks:
+        if actual_value is MISSING:
+            has_error = True
+            log_error(f"Missing required metadata field: {name}.")
+            continue
+
         expected = expected_values.get(name, version)
         if actual_value != expected:
             has_error = True

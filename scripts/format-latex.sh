@@ -9,5 +9,9 @@ fi
 
 for file in "$@"; do
   latexindent -w -l .latexindent.yml "${file}"
-  find "$(dirname "${file}")" -maxdepth 1 -name "$(basename "${file}").bak*" -delete
+  shopt -s nullglob
+  backups=("${file}.bak"*)
+  if (( ${#backups[@]} > 0 )); then
+    rm -f "${backups[@]}"
+  fi
 done
