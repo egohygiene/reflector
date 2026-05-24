@@ -11,6 +11,7 @@ and automation workflows used to build and publish the draft.
 - Publication site: `docs/`
 - Build and publication scripts: `scripts/`
 - CI and release workflows: `.github/workflows/`
+- Progress dashboard: [`PROGRESS.md`](./PROGRESS.md)
 
 ## Publication links
 
@@ -18,6 +19,7 @@ and automation workflows used to build and publish the draft.
 - Repository: https://github.com/egohygiene/reflector
 - Citation metadata: [`CITATION.cff`](./CITATION.cff)
 - Publication metadata: [`publication.json`](./publication.json)
+- Progress dashboard: [`PROGRESS.md`](./PROGRESS.md)
 
 ## Build instructions
 
