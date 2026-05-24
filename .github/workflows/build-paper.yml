@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set artifact names
         id: vars
@@ -76,7 +76,7 @@ jobs:
           echo "build_artifact=${PAPER_NAME}-build-artifacts" >> "$GITHUB_OUTPUT"
 
       - name: Build LaTeX PDF
-        uses: xu-cheng/latex-action@v3
+        uses: xu-cheng/latex-action@v4
         with:
           root_file: paper.tex
           working_directory: ${{ matrix.paper }}
@@ -95,7 +95,7 @@ jobs:
 
       - name: Upload PDF artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.vars.outputs.pdf_artifact }}
           path: ${{ matrix.paper }}/.cache/out/paper.pdf
@@ -104,7 +104,7 @@ jobs:
 
       - name: Upload build artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.vars.outputs.build_artifact }}
           path: ${{ matrix.paper }}/.cache/
