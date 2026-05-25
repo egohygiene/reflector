@@ -37,9 +37,28 @@ to prevent uncontrolled optimization drift and recursive complexity collapse.
 
 ## Related Work to Survey
 
-- Constitutional AI (Anthropic)
-- HITL systems in robotics and safety-critical systems
-- Formal methods in software verification
-- Agile and DevOps governance frameworks
-- Agent frameworks: LangGraph, AutoGen, CrewAI
-- AI safety alignment literature
+### Canonical Research Categories (Citation Grounding)
+
+1. **Recursive AI-Assisted Systems**
+   Keys: `Chen2021Codex`, `Jimenez2024SWEBench`, `Yang2024SWEAgent`
+   Sections: introduction, recursive\_ai\_systems, reflector\_framework, operational\_demonstration
+
+2. **Human-in-the-Loop Systems**
+   Keys: `Amershi2014InteractiveML`, `Shneiderman2020HCAI`
+   Sections: synchronization, milestone\_execution, limitations, reflector\_framework
+
+3. **Cybernetics and Feedback Systems**
+   Keys: `Wiener1948Cybernetics`, `Beer1972BrainFirm`
+   Sections: synchronization, reflective\_auditing, milestone\_execution, reflector\_framework
+
+4. **Cognitive Systems and Bounded Cognition**
+   Keys: `Simon1957ModelsMan`, `Sweller1988CognitiveLoad`, `Hutchins1995CognitionWild`
+   Sections: introduction, recursive\_drift, synchronization, limitations
+
+5. **Software Engineering Complexity**
+   Keys: `Brooks1987NoSilverBullet`, `Parnas1972Modularization`
+   Sections: recursive\_drift, milestone\_execution, reflector\_framework, limitations
+
+6. **Distributed Systems and Synchronization**
+   Keys: `Lamport1978TimeClocks`, `Chandy1985DistributedSnapshots`, `Vogels2009EventuallyConsistent`
+   Sections: synchronization, milestone\_execution, reflector\_framework
