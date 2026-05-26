@@ -22,20 +22,19 @@ that imposes structured governance contracts on recursive AI-assisted workflows.
 |---------|------|--------|
 | Abstract | `sections/abstract.tex` | 🚧 Draft |
 | Introduction | `sections/introduction.tex` | 🚧 Draft |
-| The Emergence of Recursive AI-Assisted Systems | `sections/recursive_ai_systems.tex` | 🚧 Draft |
-| Recursive Drift and Contextual Entropy | `sections/recursive_drift.tex` | 🚧 Draft |
-| Human Synchronization and Contextual Recompression | `sections/synchronization.tex` | 🚧 Draft |
-| Reflective Auditing and Perspective Cycling | `sections/reflective_auditing.tex` | 🚧 Draft |
-| Milestone-Constrained Recursive Execution | `sections/milestone_execution.tex` | 🚧 Draft |
-| The reflector Framework | `sections/reflector_framework.tex` | 🚧 Draft |
-| Operational Demonstration and Future Implementations | `sections/operational_demonstration.tex` | 🚧 Draft |
-| Limitations and Failure Modes | `sections/limitations.tex` | 🚧 Draft |
+| Recursive Drift | `sections/recursive_drift.tex` | 🚧 Draft |
+| Reflective Auditing | `sections/reflective_auditing.tex` | 🚧 Draft |
+| Synchronization and Governance | `sections/synchronization.tex` | 🚧 Draft |
+| Reflector Framework | `sections/reflector_framework.tex` | 🚧 Draft |
+| Mixed-Initiative Recursive Systems | `sections/mixed_initiative_recursive_systems.tex` | 🚧 Draft |
+| Operational Demonstration | `sections/operational_demonstration.tex` | 🚧 Draft |
+| Implementation Examples | `sections/implementation_examples.tex` | 🚧 Draft |
+| Case Studies | `sections/case_studies.tex` | 🚧 Draft |
+| Limitations | `sections/limitations.tex` | 🚧 Draft |
+| Related Work | `sections/related_work.tex` | 🚧 Draft |
+| Future Directions | `sections/future_directions.tex` | 🚧 Draft |
 | Conclusion | `sections/conclusion.tex` | 🚧 Draft |
-| *(Optional)* Visual Summary | `sections/visual_summary.tex` | 🧩 Scaffolded |
-| *(Optional)* Appendix | `sections/appendix.tex` | 🧩 Scaffolded |
-| *(Optional)* Related Work | `sections/related_work.tex` | 🧩 Scaffolded |
-| *(Optional)* Implementation Examples | `sections/implementation_examples.tex` | 🧩 Scaffolded |
-| *(Optional)* Case Studies | `sections/case_studies.tex` | 🧩 Scaffolded |
+| Appendix | `sections/appendix.tex` | 🚧 Draft |
 
 ## Directory Structure
 
