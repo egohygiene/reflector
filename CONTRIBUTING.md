@@ -4,22 +4,41 @@ Thank you for your interest in contributing to this repository.
 
 ## Repository Structure
 
+The paper uses a publisher-agnostic publication architecture that separates
+semantic content, metadata, rendering style, and build infrastructure:
+
 ```
 paper/
-├── paper.tex           # Main LaTeX document
+├── paper.tex           # Thin orchestration wrapper
 ├── references.bib      # BibTeX bibliography
 ├── README.md           # Paper overview
 ├── abstract.md         # Abstract draft (plain text)
 ├── outline.md          # Section outline
 ├── notes.md            # Research notes and brainstorming
 ├── roadmap.md          # Development roadmap
-├── sections/           # LaTeX section files
+├── macros/
+│   └── metadata.tex    # Paper metadata commands (\papertitle, \paperauthor, etc.)
+├── styles/
+│   └── reflector.sty   # Publication style (packages, colors, layout, typography)
+├── sections/           # LaTeX section files (semantic content)
 ├── figures/            # Generated figures and exports
 ├── diagrams/           # Source diagram files (Excalidraw, etc.)
 ├── assets/             # Static assets (images, logos, etc.)
 ├── references/         # Reference documents and PDFs
 └── examples/           # Example artifacts and code snippets
 ```
+
+### Publication Architecture Layers
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| Content | `sections/` | Semantic paper content |
+| Metadata | `macros/metadata.tex` | Author, title, version, repository |
+| Style | `styles/reflector.sty` | Packages, colors, layout, typography |
+| Build | `.latexmkrc`, `scripts/` | Compilation and packaging |
+
+Future publisher targets (IEEE, ACM, etc.) can be supported by adding a new
+`.sty` file under `styles/` and updating the `\usepackage` line in `paper.tex`.
 
 ## Adding a New Paper
 
