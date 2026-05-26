@@ -13,7 +13,9 @@ This framing keeps recursive workflows tractable. Scope remains explicit, synchr
 
 The core lifecycle is:
 \begin{center}
-Human Goal $\rightarrow$ Scoped Issue Creation $\rightarrow$ Specification Alignment $\rightarrow$ AI-Assisted Execution $\rightarrow$ Artifact Generation $\rightarrow$ Reflective Audit $\rightarrow$ Synchronization Review $\rightarrow$ Recursive Continuation
+Human Goal $\rightarrow$ Scoped Issue Creation $\rightarrow$ Specification Alignment\\
+$\rightarrow$ AI-Assisted Execution $\rightarrow$ Artifact Generation $\rightarrow$ Reflective Audit\\
+$\rightarrow$ Synchronization Review $\rightarrow$ Recursive Continuation
 \end{center}
 
 In practice, issue decomposition defines bounded units of work with clear acceptance criteria. AI systems then execute within that scope to produce artifacts such as code changes, tests, diagrams, prose, and progress traces. Recursive continuation is conditioned on reconciliation: if audits expose drift, the workflow branches into correction, rescoping, or pause states before any further delegation.
@@ -37,7 +39,14 @@ A typical cycle can include: issue-scoped planning notes, implementation commits
 
 Reflective audit checkpoints evaluate whether generated artifacts remain aligned with declared scope and architectural commitments. The audit surface is intentionally broad: section text can be checked against specification intent, figure placeholders can be validated for consistency, references can be reconciled, and repository diffs can be reviewed for boundary violations.
 
-Operationally, each checkpoint asks four questions: what changed, whether the change matches scoped intent, whether it preserves cross-artifact consistency, and what must happen before continuation. This recursive audit loop makes divergence observable early and supports controlled correction before incoherence compounds.
+Operationally, each checkpoint asks four questions:
+\begin{itemize}
+  \item What changed?
+  \item Does the change match scoped intent?
+  \item Does it preserve cross-artifact consistency?
+  \item What must happen before continuation?
+\end{itemize}
+This recursive audit loop makes divergence observable early and supports controlled correction before incoherence compounds.
 
 \subsection{Human-AI Mixed-Initiative Operation}
 
