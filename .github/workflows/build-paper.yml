@@ -7,7 +7,10 @@ on:
     paths:
       - "paper/**/*.tex"
       - "paper/**/*.bib"
+      - "paper/**/*.sty"
       - "paper/**/sections/**"
+      - "paper/**/macros/**"
+      - "paper/**/styles/**"
       - "paper/**/figures/**"
       - "paper/**/diagrams/**"
       - "paper/**/assets/**"
@@ -27,7 +30,10 @@ on:
     paths:
       - "paper/**/*.tex"
       - "paper/**/*.bib"
+      - "paper/**/*.sty"
       - "paper/**/sections/**"
+      - "paper/**/macros/**"
+      - "paper/**/styles/**"
       - "paper/**/figures/**"
       - "paper/**/diagrams/**"
       - "paper/**/assets/**"

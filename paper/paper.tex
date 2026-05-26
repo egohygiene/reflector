@@ -7,277 +7,33 @@
 % ============================================================
 
 % ============================================================
-% Encoding and Typography
+% Paper Metadata
+%
+% Defines paper-specific commands (\papertitle, \paperauthor,
+% etc.) consumed by the publication style and document body.
+% Must be loaded before the style.
 % ============================================================
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-
-\usepackage[english]{babel}
-
-\usepackage{lmodern}
-\usepackage{microtype}
+\input{macros/metadata}
 
 % ============================================================
-% Page Layout
+% Publication Style
+%
+% Loads the reflector publication style — packages, colors,
+% layout, typography, listings, math, callouts, and headers.
+% Swap this line to target a different publisher.
 % ============================================================
 
-\usepackage[
-margin=1in,
-includeheadfoot,
-headheight=14pt
-]{geometry}
-
-\usepackage{setspace}
-\onehalfspacing%
-
-\usepackage{parskip}
+\usepackage{reflector}
 
 % ============================================================
-% Colors
+% Bibliography Resource
+%
+% Paper-specific bibliography file; declared after the style
+% loads biblatex.
 % ============================================================
-
-\usepackage[dvipsnames]{xcolor}
-
-\definecolor{reflectorblue}{HTML}{3B82F6}
-\definecolor{reflectorpurple}{HTML}{8B5CF6}
-\definecolor{reflectorgray}{HTML}{6B7280}
-\definecolor{reflectorborder}{HTML}{D1D5DB}
-\definecolor{reflectorbg}{HTML}{F8FAFC}
-
-% ============================================================
-% Metadata Commands
-% ============================================================
-
-\newcommand{\papertitle}{
-Reflector: Reflective Development Systems for Recursive AI-Augmented Software Engineering
-}
-
-\newcommand{\paperauthor}{
-Alan Szmyt
-}
-
-\newcommand{\paperdate}{
-\today
-}
-
-\newcommand{\paperstatus}{
-Draft
-}
-
-\newcommand{\paperrepository}{
-https://github.com/egohygiene/reflector
-}
-
-\newcommand{\paperorcid}{
-0009-0008-5291-9795
-}
-
-\newcommand{\paperorcidurl}{
-https://orcid.org/\paperorcid
-}
-
-% ============================================================
-% Hyperlinks and PDF Metadata
-% ============================================================
-
-\usepackage[
-unicode=true,
-colorlinks=true,
-linkcolor=reflectorblue,
-citecolor=reflectorpurple,
-urlcolor=reflectorblue,
-pdftitle={\papertitle},
-pdfauthor={\paperauthor},
-pdfsubject={AI-Augmented Software Engineering},
-pdfkeywords={
-AI,
-recursive systems,
-governance,
-human-in-the-loop,
-software engineering,
-recursive auditing,
-milestone synchronization,
-contextual synchronization,
-recursive drift,
-reflective systems
-},
-pdfcreator={LaTeX},
-pdfproducer={reflector publication pipeline}
-]{hyperref}
-
-\usepackage{bookmark}
-
-% ============================================================
-% Bibliography
-% ============================================================
-
-\usepackage[
-backend=biber,
-style=ieee,
-sorting=nyt,
-giveninits=true,
-maxbibnames=99,
-doi=true,
-url=true,
-isbn=false,
-eprint=true
-]{biblatex}
 
 \addbibresource{references.bib}
-
-% ============================================================
-% Graphics and Figures
-% ============================================================
-
-\usepackage{graphicx}
-
-\graphicspath{
-{figures/}
-{assets/}
-{diagrams/}
-}
-
-\DeclareGraphicsExtensions{
-.pdf,
-.png,
-.jpg,
-.jpeg
-}
-
-\usepackage{float}
-\usepackage{caption}
-\usepackage{subcaption}
-
-\captionsetup{
-font=small,
-labelfont=bf,
-labelsep=period
-}
-
-% Accessibility note:
-% Provide descriptive captions and preserve high-resolution exports.
-% Future tooling may map canonical alt-text metadata into publication formats.
-
-% ============================================================
-% Tables
-% ============================================================
-
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{longtable}
-\usepackage{tabularx}
-
-% ============================================================
-% Code Listings
-% ============================================================
-
-\usepackage{listings}
-
-\lstdefinestyle{reflector}{
-backgroundcolor=\color{reflectorbg},
-basicstyle=\ttfamily\small,
-breaklines=true,
-frame=single,
-rulecolor=\color{reflectorborder},
-numbers=left,
-numberstyle=\tiny\color{reflectorgray},
-commentstyle=\color{reflectorgray},
-keywordstyle=\color{reflectorblue},
-stringstyle=\color{ForestGreen},
-showstringspaces=false,
-tabsize=2,
-columns=fullflexible
-}
-
-\lstset{
-style=reflector
-}
-
-% ============================================================
-% Math and Formal Notation
-% ============================================================
-
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsthm}
-\usepackage{mathtools}
-\usepackage{bm}
-
-% ============================================================
-% Utilities
-% ============================================================
-
-\usepackage{enumitem}
-\usepackage{csquotes}
-\usepackage{multirow}
-\usepackage{makecell}
-
-% ============================================================
-% Intelligent References
-% ============================================================
-
-\usepackage[nameinlink,noabbrev]{cleveref}
-
-% ============================================================
-% Callouts and Boxes
-% ============================================================
-
-\usepackage[most]{tcolorbox}
-
-\tcbset{
-colback=reflectorbg,
-colframe=reflectorborder,
-arc=3pt,
-boxrule=0.5pt
-}
-
-\newtcolorbox{reflectorcallout}{
-colback=reflectorbg,
-colframe=reflectorblue,
-enhanced,
-breakable,
-left=6pt,
-right=6pt,
-top=6pt,
-bottom=6pt
-}
-
-% ============================================================
-% Header and Footer
-% ============================================================
-
-\usepackage{fancyhdr}
-
-\pagestyle{fancy}
-
-\fancyhf{}
-
-\fancyhead[L]{reflector}
-\fancyhead[R]{Alan Szmyt}
-
-\fancyfoot[C]{\thepage}
-
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0pt}
-
-% ============================================================
-% Section Styling
-% ============================================================
-
-\usepackage{titlesec}
-
-\titleformat{\section}
-{\large\bfseries}
-{\thesection}
-{1em}
-{}
-
-\titleformat{\subsection}
-{\normalsize\bfseries}
-{\thesubsection}
-{1em}
-{}
 
 % ============================================================
 % Title Metadata

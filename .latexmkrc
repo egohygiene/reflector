@@ -24,7 +24,9 @@ make_path($aux_dir);
 ###############################################################################
 
 $ENV{"TEXINPUTS"} =
-    "./sections//:"
+    "./styles//:"
+    . "./macros//:"
+    . "./sections//:"
     . "./figures//:"
     . "./diagrams//:";
 

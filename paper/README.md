@@ -36,18 +36,42 @@ that imposes structured governance contracts on recursive AI-assisted workflows.
 | Conclusion | `sections/conclusion.tex` | 🚧 Draft |
 | Appendix | `sections/appendix.tex` | 🚧 Draft |
 
+## Architecture
+
+The paper follows a publisher-agnostic publication architecture that separates
+semantic content, rendering style, and build infrastructure:
+
+```
+Content Layer       → sections/          (what the paper says)
+Metadata Layer      → macros/            (who/what/when)
+Style Layer         → styles/            (how it looks; swap per publisher)
+Build Layer         → ../.latexmkrc, scripts/  (how it compiles)
+```
+
+Swapping the publication style is as simple as changing one line in `paper.tex`:
+
+```latex
+\usepackage{reflector}   % current draft / arXiv style
+% \usepackage{ieee}      % future: IEEE format
+% \usepackage{acm}       % future: ACM format
+```
+
 ## Directory Structure
 
 ```
 reflector/
-├── paper.tex               # Main LaTeX document
+├── paper.tex               # Thin orchestration wrapper
 ├── references.bib          # Bibliography
 ├── README.md               # This file
 ├── abstract.md             # Abstract draft (plain text)
 ├── outline.md              # Section outline
 ├── notes.md                # Research notes and brainstorming
 ├── roadmap.md              # Development roadmap
-├── sections/               # LaTeX section files
+├── macros/
+│   └── metadata.tex        # Paper metadata commands (\papertitle, \paperauthor, etc.)
+├── styles/
+│   └── reflector.sty       # Publication style (packages, colors, layout, typography)
+├── sections/               # LaTeX section files (semantic content)
 ├── figures/                # Generated figure exports (PDF, PNG); hero.png is the canonical publication preview
 ├── diagrams/               # Source diagrams (Excalidraw)
 ├── assets/                 # Static assets
