@@ -122,7 +122,9 @@ jobs:
           extra_system_packages: "biber"
           args: >-
             -pdf
+            -halt-on-error
             -interaction=nonstopmode
+            -recorder
             -synctex=1
             -file-line-error
             -shell-escape
@@ -131,6 +133,10 @@ jobs:
             -cd
             -r
             ../.latexmkrc
+
+      - name: Print LaTeX diagnostics on failure
+        if: failure()
+        run: ./scripts/print-latex-diagnostics.sh "${{ steps.vars.outputs.paper_dir }}"
 
       - name: Assemble release artifacts
         run: |
@@ -291,6 +297,16 @@ jobs:
             ${{ steps.vars.outputs.arxiv_bundle }}
           if-no-files-found: error
           retention-days: 30
+
+      - name: Upload build artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.vars.outputs.paper_name }}-${{ steps.vars.outputs.tag }}-build-artifacts
+          path: ${{ steps.vars.outputs.paper_dir }}/.cache/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3

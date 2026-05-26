@@ -8,6 +8,7 @@ on:
       - "docs/**"
       - "paper/**"
       - "scripts/build-paper.sh"
+      - "scripts/print-latex-diagnostics.sh"
       - ".latexmkrc"
       - ".github/workflows/pages.yml"
       - ".github/workflows/build-paper.yml"
@@ -43,7 +44,9 @@ jobs:
           extra_system_packages: "biber"
           args: >-
             -pdf
+            -halt-on-error
             -interaction=nonstopmode
+            -recorder
             -synctex=1
             -file-line-error
             -shell-escape
@@ -52,6 +55,10 @@ jobs:
             -cd
             -r
             ../.latexmkrc
+
+      - name: Print LaTeX diagnostics on failure
+        if: failure()
+        run: ./scripts/print-latex-diagnostics.sh paper
 
       - name: Synchronize publication assets into docs
         run: |
@@ -156,6 +163,16 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+      - name: Upload build artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reflector-pages-build-artifacts
+          path: paper/.cache/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Deploy GitHub Pages
         id: deployment
