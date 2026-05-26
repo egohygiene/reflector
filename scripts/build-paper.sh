@@ -12,6 +12,7 @@ BUILD_ALL=false
 OPEN_PDF=false
 PUBLISH_PDF=false
 TARGET="${DEFAULT_PAPER}"
+LATEX_LOG_TAIL_LINES="${LATEX_LOG_TAIL_LINES:-120}"
 
 usage() {
 cat <<USAGE
@@ -105,6 +106,7 @@ build_paper() {
 
     local paper_file="${paper_directory}/paper.tex"
     local latexmkrc_file="${REPOSITORY_ROOT}/.latexmkrc"
+    local diagnostics_script="${REPOSITORY_ROOT}/scripts/print-latex-diagnostics.sh"
     local output_directory="${paper_directory}/.cache/out"
     local output_pdf="${output_directory}/paper.pdf"
 
@@ -126,14 +128,16 @@ build_paper() {
     echo "Building: ${paper_file}"
     echo "Output:   ${output_directory}/"
 
-    (
+    if ! (
         cd "${paper_directory}"
 
         mkdir -p ".cache/aux" ".cache/out"
 
         latexmk \
             -pdf \
+            -halt-on-error \
             -interaction=nonstopmode \
+            -recorder \
             -synctex=1 \
             -file-line-error \
             -shell-escape \
@@ -142,7 +146,11 @@ build_paper() {
             -cd \
             -r "${latexmkrc_file}" \
             "paper.tex"
-    )
+    ); then
+        echo "LaTeX build failed. Printing focused diagnostics..." >&2
+        LATEX_LOG_TAIL_LINES="${LATEX_LOG_TAIL_LINES}" "${diagnostics_script}" "${paper_directory}" || true
+        exit 1
+    fi
 
     if [[ ! -f "${output_pdf}" ]]; then
         echo "Error: Expected PDF not found at '${output_pdf}'." >&2
