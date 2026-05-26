@@ -1,17 +1,63 @@
-\\section{Human Synchronization, Governance, and Contextual Recompression}
+\section{Synchronization, Governance, and Bounded Recursive Continuation}
 \label{sec:synchronization}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tincidunt ligula sed erat malesuada, eu facilisis lorem tristique. Quisque luctus, nisl vitae faucibus consectetur, justo nulla malesuada velit, vitae convallis odio lorem et odio.
+If reflective auditing describes how recursive systems recover alignment, synchronization and governance define the conditions under which aligned continuation remains possible. Recursive AI-assisted systems do not merely generate outputs; they repeatedly transform those outputs into the context for subsequent execution. Each cycle therefore creates new coordination demands across artifacts, assumptions, and actors. Without explicit synchronization boundaries, recursive work can continue locally while the larger system becomes progressively less interpretable, less coherent, and less governable.
 
-The provisional discussion references \Cref{fig:figure4} to keep navigation and hyperlink anchors stable as writing iterates.
+This section argues that synchronization is a stabilization requirement rather than an administrative overhead. In recursive settings, execution speed can exceed the rate at which humans can reconstruct evolving system state, and artifacts can drift out of alignment even when each local step appears reasonable. Governance layers are therefore needed to determine when autonomy may continue, when evidence must be reconciled, and when human intervention is required.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{figure4.png}
-  \caption{Placeholder synchronization and governance boundary figure.}
+  \caption{Conceptual placeholder for recursive synchronization and governance: human intent is scoped into bounded delegation, translated into AI execution and artifact generation, reconciled at synchronization checkpoints, reviewed through governance layers, and either authorized for recursive continuation or redirected for correction.}
   \label{fig:figure4}
 \end{figure}
 
-\subsection{Boundary Placeholder}
+\Cref{fig:figure4} summarizes the control claim developed in this section: recursive execution remains stable only when continuation passes through explicit checkpoints that restore a shared view of scope, evidence, and authority.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit volutpat velit, a sagittis ligula suscipit nec. Donec vel magna nunc.
+\subsection{Why Recursive Systems Require Synchronization Boundaries}
+
+Recursive systems naturally desynchronize because they operate through repeated handoffs rather than through a single uninterrupted control surface. Plans become tasks, tasks become artifacts, artifacts become summaries, and summaries become prompts for later execution. At each transformation, some meaning is compressed, omitted, or reinterpreted. The result is not necessarily immediate failure, but a gradual separation between intended scope, observed system state, and the assumptions used to justify further action.
+
+This desynchronization pressure is intensified by asymmetric speed. AI systems can update code, tests, documentation, and workflow state faster than human operators can continuously reconstruct their combined implications. Under bounded rationality, human oversight cannot remain effective if it must infer system coherence only after multiple recursive cycles have already completed \cite{Simon1957ModelsMan,Sweller1988CognitiveLoad}. Synchronization boundaries are therefore necessary because they periodically stop local momentum long enough to produce an interpretable global snapshot.
+
+In this sense, synchronization plays a role analogous to stabilization in distributed systems: it creates a bounded interval within which local activity may proceed, and a checkpoint at which state must be reconciled before additional propagation occurs \cite{Lamport1978TimeClocks,Chandy1985DistributedSnapshots}. For recursive AI-assisted development, the synchronized object is broader than process state alone. It includes generated artifacts, architectural assumptions, acceptance criteria, decision rationale, and the current interpretation of human intent.
+
+\subsection{Synchronization Checkpoints as Recursive Stabilization Points}
+
+We define a \textit{synchronization checkpoint} as an explicit boundary at which recursive execution is paused so that the current artifact set can be compared against intended scope before further delegation. Checkpoints convert a fast-moving recursive process into bounded execution intervals separated by moments of reconciliation. Their purpose is not to eliminate autonomy, but to ensure that autonomy proceeds from a refreshed and inspectable state rather than from accumulated ambiguity.
+
+Several kinds of checkpoint are particularly important in recursive engineering workflows:
+\begin{itemize}
+  \item \textbf{Specification checkpoints,} where issue definitions, task decompositions, and acceptance criteria are re-synchronized before additional implementation proceeds.
+  \item \textbf{Artifact checkpoints,} where code, tests, documentation, and generated plans are checked for mutual consistency.
+  \item \textbf{Architectural checkpoints,} where local changes are reconciled against interfaces, invariants, and system-wide design commitments.
+  \item \textbf{Milestone checkpoints,} where a bounded unit of work is evaluated for readiness to continue, integrate, or stop for revision.
+\end{itemize}
+
+These checkpoints serve as recursive stabilization points. They reduce drift by making hidden divergence observable before it becomes structural, and they create a common synchronization surface for both humans and automated systems. In practical terms, issue reviews, pull request checkpoints, architecture reviews, milestone validation, and artifact reconciliation all function as instances of the same systems primitive: bounded recursive continuation.
+
+\subsection{Governance Layers and Bounded Autonomy}
+
+Synchronization alone is insufficient if no authority structure determines how checkpoint evidence should affect continuation. Recursive systems therefore require \textit{governance layers}: differentiated control surfaces that decide what may be delegated, what must be reviewed, and what requires explicit approval. Governance is not introduced here as a punitive or purely bureaucratic mechanism. It is the coordination infrastructure that connects observability to authority.
+
+At a minimum, governance operates across three layers. First, \textit{local execution governance} constrains what an AI system may do within a delegated task: files it may change, tests it must run, or specifications it must satisfy. Second, \textit{workflow governance} evaluates whether the resulting artifacts remain aligned with milestone goals, repository rules, and architectural boundaries. Third, \textit{human governance} retains final authority over scope revision, exception handling, and the decision to continue recursive execution under uncertainty \cite{Amershi2014InteractiveML,Shneiderman2020HCAI}.
+
+This structure enables \textit{bounded autonomy}. AI systems can act with substantial local freedom, but only within scopes that preserve auditability and only until the next checkpoint requires renewed authorization. Unchecked autonomy is destabilizing not because autonomous action is inherently undesirable, but because recursive systems amplify unreviewed assumptions. A locally successful step can still deepen architectural inconsistency, encode stale requirements, or erase the rationale needed for later interpretation. Governance layers bound that amplification by ensuring that continuation remains conditional rather than automatic.
+
+\subsection{Mixed-Initiative Stability and Human Oversight}
+
+Recursive AI-assisted systems are mixed-initiative systems: humans and machine agents jointly participate in planning, execution, interpretation, and correction. Their strengths are complementary. AI systems accelerate search, transformation, and artifact production; humans contribute contextual judgment, normative interpretation, and the ability to resolve ambiguity that is not fully represented in the current artifact set \cite{Hutchins1995CognitionWild,Shneiderman2020HCAI}.
+
+Human oversight in this setting should not be understood as continuous micromanagement of every local action. Such a model would collapse the throughput advantages of AI assistance without restoring recursive coherence. Instead, oversight functions as selective intervention at governance boundaries. Humans interpret whether generated evidence is sufficient, whether task scope still reflects the original objective, whether trade-offs remain acceptable, and whether the system should continue, rescope, or stop.
+
+Mixed-initiative stability therefore depends on synchronization mechanisms that keep human interpretation coupled to machine execution. When checkpoints are absent, humans inherit only partial artifacts and delayed summaries, making it increasingly difficult to reconstruct why the system is doing what it is doing. When checkpoints are explicit, human oversight remains tractable because it engages the system at meaningful stabilization points rather than after drift has already compounded.
+
+\subsection{Temporal Synchronization and Recursive Continuity}
+
+Recursive systems do not only desynchronize across artifacts; they also desynchronize across time. Specifications evolve, repositories change, interfaces shift, and external constraints are updated while delegated work is still in progress. A plan that was locally valid at one checkpoint may become stale by the next. Temporal synchronization is therefore necessary to preserve continuity between past authorization and present execution.
+
+This temporal dimension matters because recursive workflows routinely reuse prior artifacts as current context. Generated summaries, architecture notes, issue threads, and implementation diffs all become compressed representations of earlier state. If those representations are not periodically refreshed, the system continues under historical assumptions that no longer match the repository, the milestone, or the human objective. Temporal checkpoints mitigate this problem by requiring revalidation before continuation: not only ``did the system complete the task,'' but also ``is the task still the right one under the current state of the workflow?''
+
+Synchronization thus preserves recursive continuity in two directions at once. It reconciles parallel artifacts in the present, and it reconnects current execution to the most recent valid interpretation of intent. This is what allows recursive systems to remain coherent over time rather than merely productive in isolated bursts.
+
+Taken together, synchronization boundaries, governance layers, bounded autonomy, and human oversight define the operational conditions for stable recursive execution. Reflective auditing identifies when alignment must be examined; synchronization and governance determine how that examination structures continuation. The next section builds on these control primitives by introducing the Reflector framework as an operational recursive governance architecture that embeds checkpoints, delegation boundaries, and continuation rules directly into the development workflow (\Cref{sec:reflector-framework}).
