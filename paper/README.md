@@ -33,6 +33,7 @@ that imposes structured governance contracts on recursive AI-assisted workflows.
 | Limitations | `sections/limitations.tex` | 🚧 Draft |
 | Related Work | `sections/related_work.tex` | 🚧 Draft |
 | Future Directions | `sections/future_directions.tex` | 🚧 Draft |
+| Visual Summary | `sections/visual_summary.tex` | 🚧 Draft |
 | Conclusion | `sections/conclusion.tex` | 🚧 Draft |
 | Appendix | `sections/appendix.tex` | 🚧 Draft |
 
