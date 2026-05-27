@@ -1,0 +1,37 @@
+# ============================================================
+# Canonical Citation Metadata
+#
+# Single source of truth for all citation-level metadata used
+# to populate CITATION.cff, Zenodo records, and any future
+# citation surfaces.
+#
+# This file defines the citation contract for the Reflector
+# publication. Downstream files (CITATION.cff, .zenodo.json)
+# should remain consistent with the values declared here.
+# ============================================================
+
+# ---------------------------------------------------------------------------
+# CFF-level fields
+# ---------------------------------------------------------------------------
+
+cff_version: "1.2.0"
+
+message: >-
+  If you use this work, please cite it using the metadata from this file.
+
+# ---------------------------------------------------------------------------
+# Zenodo upload metadata
+# ---------------------------------------------------------------------------
+
+zenodo:
+  upload_type: publication
+  publication_type: article
+  description: >-
+    Placeholder Zenodo metadata scaffold for reflector repository releases.
+  notes: >-
+    Replace placeholder ORCID/affiliation and publication identifiers before
+    archival release.
+  related_identifiers:
+    - identifier: "https://github.com/egohygiene/reflector"
+      relation: isSupplementTo
+      scheme: url

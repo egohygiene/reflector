@@ -14,10 +14,14 @@ SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 MISSING = object()
 
 # Canonical paper title — single source of truth for title consistency checks.
-# Must match the value defined in paper/config/title.tex (\papertitlefull).
+# Must match the value defined in paper/config/title.tex (\papertitlefull) and
+# metadata/publication.yaml (title.full).
 CANONICAL_TITLE = (
     "reflector: reflective synchronization systems for recursive AI-assisted software engineering"
 )
+
+# Canonical ORCID identifier — must match metadata/authors.yaml and all downstream surfaces.
+CANONICAL_ORCID = "0009-0008-5291-9795"
 
 
 def load_json(path: Path) -> dict | None:
@@ -98,6 +102,33 @@ def _normalise_title(value: object) -> object:
     return " ".join(value.split())
 
 
+def _extract_citation_orcid(citation: dict) -> object:
+    """Extract the bare ORCID identifier from CITATION.cff authors[0].
+
+    The CFF spec stores orcid as a full URL (https://orcid.org/XXXX-XXXX-XXXX-XXXX).
+    This helper returns only the bare identifier portion so it can be compared
+    against CANONICAL_ORCID.
+    """
+    authors = citation.get("authors", [])
+    if not isinstance(authors, list) or not authors:
+        return MISSING
+    orcid_url = authors[0].get("orcid", MISSING)
+    if orcid_url is MISSING or not isinstance(orcid_url, str):
+        return MISSING
+    prefix = "https://orcid.org/"
+    if orcid_url.startswith(prefix):
+        return orcid_url[len(prefix):]
+    return orcid_url
+
+
+def _extract_zenodo_orcid(zenodo: dict) -> object:
+    """Extract the bare ORCID identifier from .zenodo.json creators[0]."""
+    creators = zenodo.get("creators", [])
+    if not isinstance(creators, list) or not creators:
+        return MISSING
+    return creators[0].get("orcid", MISSING)
+
+
 def main() -> int:
     repository_root = Path(__file__).resolve().parent.parent
 
@@ -110,6 +141,83 @@ def main() -> int:
     if not SEMVER_PATTERN.fullmatch(version):
         log_error(f"VERSION must be semantic version MAJOR.MINOR.PATCH, got '{version}'.")
         return 1
+
+    # ---------------------------------------------------------------------------
+    # Canonical metadata layer — metadata/ is the primary source of truth.
+    # ---------------------------------------------------------------------------
+
+    meta_publication = load_yaml(repository_root / "metadata" / "publication.yaml")
+    meta_repository = load_yaml(repository_root / "metadata" / "repository.yaml")
+    meta_authors = load_yaml(repository_root / "metadata" / "authors.yaml")
+    meta_citations = load_yaml(repository_root / "metadata" / "citations.yaml")
+    meta_renderers = load_yaml(repository_root / "metadata" / "renderers.yaml")
+    if any(
+        item is None
+        for item in (meta_publication, meta_repository, meta_authors, meta_citations, meta_renderers)
+    ):
+        return 1
+
+    has_error = False
+
+    # Validate canonical publication title.
+    title_block = meta_publication.get("title")
+    canonical_title_full = title_block.get("full", MISSING) if isinstance(title_block, dict) else MISSING
+    if canonical_title_full is MISSING:
+        has_error = True
+        log_error("Missing required field: metadata/publication.yaml title.full.")
+    elif _normalise_title(canonical_title_full) != CANONICAL_TITLE:
+        has_error = True
+        log_error(
+            f"metadata/publication.yaml title.full does not match canonical title.\n"
+            f"  expected: '{CANONICAL_TITLE}'\n"
+            f"  found:    '{_normalise_title(canonical_title_full)}'"
+        )
+
+    # Validate canonical publication version agrees with VERSION file.
+    canonical_version = meta_publication.get("version", MISSING)
+    if canonical_version is MISSING:
+        log_error("Missing required field: metadata/publication.yaml version.")
+        return 1
+    if str(canonical_version) != version:
+        log_error(
+            f"metadata/publication.yaml version must equal VERSION ('{version}'), "
+            f"found '{canonical_version}'."
+        )
+        return 1
+
+    # Validate canonical author ORCID.
+    _raw_authors = meta_authors.get("authors")
+    canonical_authors = _raw_authors if isinstance(_raw_authors, list) else []
+    if not canonical_authors:
+        has_error = True
+        log_error("metadata/authors.yaml authors list is missing or empty.")
+    else:
+        first_author_orcid = canonical_authors[0].get("orcid", MISSING)
+        if first_author_orcid is MISSING:
+            has_error = True
+            log_error("metadata/authors.yaml authors[0].orcid is missing.")
+        elif str(first_author_orcid) != CANONICAL_ORCID:
+            has_error = True
+            log_error(
+                f"metadata/authors.yaml authors[0].orcid does not match canonical ORCID.\n"
+                f"  expected: '{CANONICAL_ORCID}'\n"
+                f"  found:    '{first_author_orcid}'"
+            )
+
+    # Validate canonical repository URLs are present.
+    canonical_repo_github_url = meta_repository.get("github_url", MISSING)
+    canonical_repo_pages_url = meta_repository.get("pages_url", MISSING)
+    for field_name, field_value in [
+        ("metadata/repository.yaml github_url", canonical_repo_github_url),
+        ("metadata/repository.yaml pages_url", canonical_repo_pages_url),
+    ]:
+        if field_value is MISSING:
+            has_error = True
+            log_error(f"Missing required field: {field_name}.")
+
+    # ---------------------------------------------------------------------------
+    # Downstream metadata files — must remain consistent with metadata/ layer.
+    # ---------------------------------------------------------------------------
 
     publication = load_json(repository_root / "publication.json")
     release_manifest = load_json(repository_root / "release-manifest.json")
@@ -135,7 +243,6 @@ def main() -> int:
         "publication.json.release_tag": f"v{version}",
     }
 
-    has_error = False
     for name, actual_value in checks:
         if actual_value is MISSING:
             has_error = True
@@ -183,6 +290,53 @@ def main() -> int:
                 f"  expected: '{CANONICAL_TITLE}'\n"
                 f"  found:    '{actual_title}'"
             )
+
+    # ---------------------------------------------------------------------------
+    # ORCID consistency — canonical ORCID must match all downstream surfaces.
+    # ---------------------------------------------------------------------------
+
+    orcid_checks = [
+        ("CITATION.cff.authors[0].orcid", _extract_citation_orcid(citation)),
+        (".zenodo.json.creators[0].orcid", _extract_zenodo_orcid(zenodo)),
+    ]
+
+    for name, actual_orcid in orcid_checks:
+        if actual_orcid is MISSING:
+            has_error = True
+            log_error(f"Missing required ORCID field: {name}.")
+            continue
+        if actual_orcid != CANONICAL_ORCID:
+            has_error = True
+            log_error(
+                f"{name} does not match canonical ORCID.\n"
+                f"  expected: '{CANONICAL_ORCID}'\n"
+                f"  found:    '{actual_orcid}'"
+            )
+
+    # ---------------------------------------------------------------------------
+    # Repository URL consistency — canonical URLs must match downstream surfaces.
+    # ---------------------------------------------------------------------------
+
+    if canonical_repo_github_url is not MISSING and canonical_repo_pages_url is not MISSING:
+        repo_url_checks = [
+            ("publication.json.repository_url", publication.get("repository_url", MISSING), canonical_repo_github_url),
+            ("publication.json.pages_url", publication.get("pages_url", MISSING), canonical_repo_pages_url),
+            ("paper/00README.json.publication.repository", readme_json.get("publication", {}).get("repository", MISSING), canonical_repo_github_url),
+            ("paper/00README.json.publication.pages_url", readme_json.get("publication", {}).get("pages_url", MISSING), canonical_repo_pages_url),
+        ]
+
+        for name, actual_url, expected_url in repo_url_checks:
+            if actual_url is MISSING:
+                has_error = True
+                log_error(f"Missing required URL field: {name}.")
+                continue
+            if actual_url != expected_url:
+                has_error = True
+                log_error(
+                    f"{name} does not match canonical URL.\n"
+                    f"  expected: '{expected_url}'\n"
+                    f"  found:    '{actual_url}'"
+                )
 
     if has_error:
         return 1

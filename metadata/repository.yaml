@@ -1,0 +1,45 @@
+# ============================================================
+# Canonical Repository Metadata
+#
+# Single source of truth for all repository-level metadata
+# used across the publication pipeline: workflows, release
+# manifests, GitHub Pages, and any future renderer targets.
+# ============================================================
+
+# ---------------------------------------------------------------------------
+# Repository identity
+# ---------------------------------------------------------------------------
+
+name: reflector
+owner: egohygiene
+github_url: "https://github.com/egohygiene/reflector"
+pages_url: "https://egohygiene.github.io/reflector/"
+
+# ---------------------------------------------------------------------------
+# Publication status and release
+# ---------------------------------------------------------------------------
+
+status: draft
+release_channel: github-releases
+version_source: VERSION
+changelog: CHANGELOG.md
+citation_source: CITATION.cff
+tag_pattern: "vMAJOR.MINOR.PATCH"
+
+# ---------------------------------------------------------------------------
+# Future integrations (placeholders)
+# ---------------------------------------------------------------------------
+
+future_integrations:
+  zenodo:
+    enabled: false
+    concept_doi: null          # TODO: replace when Zenodo concept DOI is assigned
+  doi:
+    enabled: false
+    provider: null             # TODO: replace with DOI provider when assigned
+  huggingface:
+    enabled: false
+    space_url: null            # TODO: replace with Hugging Face Space URL when created
+  implementation_repo:
+    enabled: false
+    url: null                  # TODO: replace with companion implementation repo URL

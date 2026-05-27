@@ -1,0 +1,88 @@
+# ============================================================
+# Canonical Publication Metadata
+#
+# Single source of truth for all publication-level metadata
+# used across the publication pipeline: LaTeX macros,
+# CITATION.cff, Zenodo records, GitHub Pages, and any future
+# renderer targets.
+#
+# Intentional lowercase title formatting is preserved here
+# and must be propagated consistently to all renderer surfaces.
+# ============================================================
+
+# ---------------------------------------------------------------------------
+# Title
+# ---------------------------------------------------------------------------
+
+title:
+  main: "reflector"
+  subtitle: "reflective synchronization systems for recursive AI-assisted software engineering"
+  full: "reflector: reflective synchronization systems for recursive AI-assisted software engineering"
+
+# ---------------------------------------------------------------------------
+# Abstract
+# ---------------------------------------------------------------------------
+
+abstract: >-
+  Recursive AI-augmented software engineering introduces a new class of
+  development systems in which autonomous agents operate within iterative
+  feedback loops, generating, evaluating, and refining software artifacts at
+  machine speed. Without explicit governance boundaries, these systems are
+  prone to recursive optimization drift, complexity collapse, and misalignment
+  with human-defined objectives. This paper introduces Reflector, a framework
+  for reflective development systems that imposes structured governance
+  contracts on recursive AI-assisted workflows. Reflector defines four core
+  mechanisms: (1) scoped autonomous agents with bounded execution contexts,
+  (2) human-in-the-loop alignment checkpoints triggered by milestone events,
+  (3) recursive auditing systems that continuously validate system state
+  against defined invariants, and (4) milestone synchronization protocols that
+  gate autonomous progression. We describe the theoretical foundations of
+  reflective development, characterize common failure modes arising from
+  unbounded recursion, and present an architectural reference model for
+  implementing Reflector-compliant systems.
+
+# ---------------------------------------------------------------------------
+# Keywords
+# ---------------------------------------------------------------------------
+
+keywords:
+  - recursive development systems
+  - AI-augmented software engineering
+  - human-in-the-loop governance
+  - autonomous agents
+  - milestone synchronization
+  - recursive drift
+  - software governance
+  - reflective systems
+  - AI safety
+  - systems thinking
+
+# ---------------------------------------------------------------------------
+# Version and status
+# ---------------------------------------------------------------------------
+
+version: "0.0.1"
+status: draft
+date_released: "2026-05-22"
+license: MIT
+
+# ---------------------------------------------------------------------------
+# Publication identifiers (placeholders until formal publication)
+# ---------------------------------------------------------------------------
+
+identifiers:
+  doi: null               # TODO: replace with real DOI when assigned
+  arxiv_id: null          # TODO: replace with real arXiv ID, e.g. 2506.00001
+  zenodo_doi: null        # TODO: replace with Zenodo archive DOI, e.g. 10.5281/zenodo.XXXXXXX
+
+# ---------------------------------------------------------------------------
+# Preferred citation metadata
+# ---------------------------------------------------------------------------
+
+preferred_citation:
+  type: article
+  year: 2026
+  # journal: "[JOURNAL]"   # TODO: fill in when submitted/accepted
+  # volume: "[VOLUME]"
+  # issue: "[ISSUE]"
+  # pages: "[PAGES]"
