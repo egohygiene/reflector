@@ -1,6 +1,6 @@
 # Reflector
 
-**Reflective Development Systems for Recursive AI-Augmented Software Engineering**
+**reflective synchronization systems for recursive AI-assisted software engineering**
 
 ## Status
 
@@ -43,8 +43,9 @@ The paper follows a publisher-agnostic publication architecture that separates
 semantic content, rendering style, and build infrastructure:
 
 ```
+Title Layer         → config/           (canonical title — single source of truth)
 Content Layer       → sections/          (what the paper says)
-Metadata Layer      → macros/            (who/what/when)
+Metadata Layer      → macros/            (who/what/when; inputs config/title.tex)
 Style Layer         → styles/            (how it looks; swap per publisher)
 Build Layer         → ../.latexmkrc, scripts/  (how it compiles)
 ```
@@ -68,8 +69,10 @@ reflector/
 ├── outline.md              # Section outline
 ├── notes.md                # Research notes and brainstorming
 ├── roadmap.md              # Development roadmap
+├── config/
+│   └── title.tex           # Canonical title source (\papertitlemain, \papertitlesubtitle, \papertitlefull)
 ├── macros/
-│   └── metadata.tex        # Paper metadata commands (\papertitle, \paperauthor, etc.)
+│   └── metadata.tex        # Paper metadata commands (\papertitle, \paperauthor, etc.); inputs config/title.tex
 ├── styles/
 │   └── reflector.sty       # Publication style (packages, colors, layout, typography)
 ├── sections/               # LaTeX section files (semantic content)

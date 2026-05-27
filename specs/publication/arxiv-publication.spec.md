@@ -72,4 +72,3 @@ This specification does not:
 - mirror arXiv implementation details one-to-one
 - implement full arXiv submission automation
 - replace current build scripts immediately
-

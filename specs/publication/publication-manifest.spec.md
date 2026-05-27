@@ -94,4 +94,3 @@ Current Reflector layout maps naturally to this model:
 - metadata layer: `paper/macros/metadata.tex`
 - style/render layer: `paper/styles/reflector.sty`
 - build orchestration: `.latexmkrc`, `scripts/build-paper.sh`
-

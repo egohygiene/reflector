@@ -76,4 +76,3 @@ Reflector currently provides foundational workflow components:
 - publication automation workflows: `.github/workflows/build-paper.yml`, `.github/workflows/pages.yml`
 
 This specification formalizes those patterns as reusable publication architecture.
-
