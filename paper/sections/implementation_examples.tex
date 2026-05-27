@@ -32,19 +32,18 @@ Together, these specification types form a recursive coordination infrastructure
 
 \subsection{Repository-Centric Recursive Systems}
 
-The repository is Reflector's primary memory substrate. Rather than relying on ephemeral conversation history or isolated agent state, Reflector persists recursive context in the repository: as issue threads that define execution boundaries, as committed artifacts that record generation outputs, as pull request deltas that expose local changes for review, and as workflow run logs that document execution history.
+In Reflector, repositories are treated as recursive memory systems rather than passive storage. They accumulate scoped intent (issues and specifications), execution evidence (commits and generated artifacts), governance state (reviews and approvals), and operational traces (workflow outcomes). As recursive depth grows, this accumulated state becomes the working memory that subsequent cycles consult before producing new outputs.
 
-This design choice has significant consequences for recursive coherence. Repository-committed artifacts are versioned, addressable, and inspectable independently of the agent systems that produced them. Any participant---human or automated---can reconstruct the current state of a recursive workflow by reading the repository rather than by reconstructing conversational context from logs. This makes it possible to re-enter a recursive workflow at any checkpoint without losing the accumulated synchronization history \cite{Lamport1978TimeClocks}.
+This shift from ``files'' to ``memory substrate'' is operationally important. Generated artifacts do not terminate a cycle; they become inputs for the next one. A generated section draft informs later figure revisions, updated figures reshape explanatory text, and revised manifests alter downstream publication behavior. Repository history therefore functions as recursively inspectable state: a durable record from which both human and AI participants can reconstruct synchronization context at any checkpoint \cite{Lamport1978TimeClocks}.
 
-The repository-centric model maps directly onto widely available version control infrastructure:
-\begin{itemize}
-  \item \textbf{Issues} function as scoped execution boundaries with explicit acceptance criteria, constraining what a delegated task may change and what evidence it must produce.
-  \item \textbf{Pull requests} function as synchronization checkpoints, making the diff between a prior stable state and a proposed new state inspectable before integration.
-  \item \textbf{Commit history} functions as the recursive audit log, preserving the sequence of artifact transformations in a form that supports both retrospective review and incremental resumption.
-  \item \textbf{Labels, milestones, and metadata} function as lightweight governance annotations, allowing teams to track which issues belong to which execution cycle and which checkpoints remain open.
-\end{itemize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figure16.png}
+  \caption{Repository synchronization placeholder: human intent is stabilized through specifications, materialized into repository state through AI execution, transformed into generated artifacts, evaluated through reflective audit, and reconciled at synchronization checkpoints that drive recursive repository evolution.}
+  \label{fig:figure16}
+\end{figure}
 
-This structure supports recursive depth without sacrificing traceability. As execution extends across many issues and cycles, the repository accumulates an inspectable record of decisions, artifacts, and synchronization events that makes architectural coherence verifiable rather than assumed \cite{Jimenez2024SWEBench,Yang2024SWEAgent}.
+\Cref{fig:figure16} captures repositories as recursive coordination infrastructure: each cycle updates shared state, and each checkpoint determines whether that updated state is coherent enough to authorize continuation.
 
 \subsection{Publication Architecture Patterns}
 
@@ -64,19 +63,13 @@ The manifest layer deserves particular attention because it makes publication in
 
 \subsection{Artifact Synchronization}
 
-Recursive workflows accumulate many artifact types: source code, tests, documentation, figures, diagrams, generated summaries, specification files, and repository metadata. The synchronization challenge is not merely keeping each artifact individually current; it is maintaining consistency relationships across artifacts that reference, depend on, or constrain one another. A figure that depicts a workflow must remain consistent with the section that describes it; a specification that defines an interface must remain consistent with the implementation that realizes it.
+Recursive workflows produce heterogeneous artifacts: architecture specifications, workflow definitions, manuscript sections, diagrams, generated summaries, build manifests, and release metadata. These artifacts act as synchronization anchors because they preserve decisions that must remain shared across participants and across time. When anchors diverge, recursive execution drifts; when anchors are synchronized, recursive execution remains interpretable.
 
-Reflector addresses cross-artifact consistency through explicit synchronization checkpoints at which the artifact set is inspected as a whole rather than as isolated components. This is analogous to distributed snapshot protocols, which capture a consistent global state by coordinating across all system participants simultaneously rather than reading each participant independently \cite{Chandy1985DistributedSnapshots}. For recursive engineering workflows, the ``participants'' are the artifact types listed above, and the ``snapshot'' is the synchronized repository state at a given checkpoint.
+Specification synchronization is the key stabilizing mechanism. Specifications coordinate what should be generated, constrain what is in scope, and define what evidence counts as completion. They function as recursive coordination layers: executable conceptual infrastructure that links intent, generation, and audit. Generated outputs are therefore accepted only when they remain reconcilable with the specification set that authorized them.
 
-Several artifact synchronization patterns emerge from this approach:
-\begin{itemize}
-  \item \textbf{Specification-artifact alignment:} generated code, tests, or documentation are checked against the specification that authorized their production, using the specification as the ground truth for scope conformance.
-  \item \textbf{Cross-reference consistency:} figures, tables, and section references are validated to confirm that labeled artifacts exist, that their captions match their conceptual role, and that internal cross-references resolve correctly.
-  \item \textbf{Metadata propagation:} version numbers, authorship fields, and status annotations are synchronized across all artifact types---source files, manifests, and repository metadata---so that the publication state remains coherent at the checkpoint level.
-  \item \textbf{Dependency freshness:} generated artifacts that depend on upstream inputs are flagged for regeneration when upstream changes exceed a declared staleness threshold, preventing silent divergence between source and derived artifacts.
-\end{itemize}
+Artifact evolution is correspondingly recursive. Outputs become future inputs, and each checkpoint reclassifies artifacts from ``new output'' to ``active context.'' This requires continuous synchronization rather than periodic cleanup: figure updates trigger text review, text revisions trigger metadata and manifest updates, and publication changes trigger workflow and validation updates. Repository observability closes the loop by making these dependencies inspectable through diffs, checkpoint records, and audit traces \cite{Chandy1985DistributedSnapshots}.
 
-Together, these patterns make artifact synchronization a tractable recursive infrastructure rather than an ad hoc cleanup activity. When each checkpoint restores cross-artifact consistency, subsequent recursive cycles inherit a coherent foundation rather than accumulating hidden inconsistencies that compound over time \cite{Wiener1948Cybernetics,Beer1972BrainFirm}.
+Viewed this way, recursive publication and documentation systems are synchronization-aware by design. Semantic content, renderer configuration, and publication manifests evolve as coupled artifacts, not isolated files. Reflector's infrastructure philosophy follows directly: repositories, specifications, artifacts, workflows, and manifests collectively form recursive synchronization infrastructure, and stability emerges from keeping those artifacts continuously aligned rather than merely stored \cite{Wiener1948Cybernetics,Beer1972BrainFirm}.
 
 \subsection{Recursive Build and Validation Systems}
 
