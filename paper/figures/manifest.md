@@ -18,6 +18,7 @@ This manifest tracks canonical figure outputs and placeholder accessibility meta
 | reflector-figure-9 | `figure9.png` | placeholder copy | Active |
 | reflector-figure-10 | `figure10.png` | placeholder copy | Active |
 | reflector-figure-11 | `figure11.png` | placeholder copy | Active |
+| reflector-figure-12 | `figure12.png` | placeholder copy | Active |
 
 ## Placeholder alt-text metadata
 
@@ -73,4 +74,8 @@ figures:
     file: figure11.png
     title: Future directions placeholder figure
     alt_text: "Placeholder figure for future systems ecosystem layout stabilization."
+  - id: reflector-figure-12
+    file: figure12.png
+    title: Milestone execution placeholder figure
+    alt_text: "Placeholder figure showing milestone-driven recursive execution and synchronization checkpoint pacing."
 ```
