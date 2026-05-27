@@ -26,12 +26,33 @@ message: >-
 zenodo:
   upload_type: publication
   publication_type: article
+  access_right: open
+  license: mit
+  language: eng
   description: >-
-    Placeholder Zenodo metadata scaffold for reflector repository releases.
+    Recursive AI-augmented software engineering introduces a new class of
+    development systems in which autonomous agents operate within iterative
+    feedback loops, generating, evaluating, and refining software artifacts at
+    machine speed. Without explicit governance boundaries, these systems are
+    prone to recursive optimization drift, complexity collapse, and misalignment
+    with human-defined objectives. This paper introduces Reflector, a framework
+    for reflective development systems that imposes structured governance
+    contracts on recursive AI-assisted workflows. Reflector defines four core
+    mechanisms: (1) scoped autonomous agents with bounded execution contexts,
+    (2) human-in-the-loop alignment checkpoints triggered by milestone events,
+    (3) recursive auditing systems that continuously validate system state
+    against defined invariants, and (4) milestone synchronization protocols that
+    gate autonomous progression. We describe the theoretical foundations of
+    reflective development, characterize common failure modes arising from
+    unbounded recursion, and present an architectural reference model for
+    implementing Reflector-compliant systems.
   notes: >-
-    Replace placeholder ORCID/affiliation and publication identifiers before
-    archival release.
+    Pre-publication draft. DOI and arXiv identifiers pending formal submission.
+    Author ORCID: https://orcid.org/0009-0008-5291-9795
   related_identifiers:
     - identifier: "https://github.com/egohygiene/reflector"
       relation: isSupplementTo
+      scheme: url
+    - identifier: "https://egohygiene.github.io/reflector/"
+      relation: isDocumentedBy
       scheme: url

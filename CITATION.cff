@@ -4,6 +4,8 @@
 
 cff-version: 1.2.0
 
+type: software
+
 # ---------------------------------------------------------------------------
 # Repository-level citation metadata
 # ---------------------------------------------------------------------------
@@ -25,6 +27,15 @@ authors:
     orcid: https://orcid.org/0009-0008-5291-9795
     alias: szmyty
     # affiliation: "[AFFILIATION]"  # TODO: add institutional affiliation when applicable
+
+# ---------------------------------------------------------------------------
+# Contact
+# ---------------------------------------------------------------------------
+
+contact:
+  - family-names: Szmyt
+    given-names: Alan
+    orcid: https://orcid.org/0009-0008-5291-9795
 
 # ---------------------------------------------------------------------------
 # Repository metadata
