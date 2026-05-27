@@ -1,11 +1,11 @@
 # Publication Readiness Audit Report
 
-Generated at: `2026-05-27T04:51:13Z`
+Generated at: `2026-05-27T04:52:01Z`
 
 ## Executive Summary
 
-- Total checks: **20**
-- Pass: **19**
+- Total checks: **21**
+- Pass: **20**
 - Warn: **1**
 - Fail: **0**
 
@@ -71,6 +71,7 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 | Check | Result | Details |
 | --- | --- | --- |
 | Required publication files | ✅ PASS | All required publication and workflow files are present. |
+| Section source files exist | ✅ PASS | Found 18 section .tex files under paper/sections. |
 
 ### arXiv compatibility
 

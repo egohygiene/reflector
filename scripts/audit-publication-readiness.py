@@ -25,6 +25,7 @@ PAPER_DIR = REPO_ROOT / "paper"
 AUDIT_OUTPUT = REPO_ROOT / "audits" / "publication-readiness.md"
 
 SUPPORTED_IMAGE_EXTENSIONS = {".png", ".pdf", ".jpg", ".jpeg", ".eps"}
+# Empty suffix is allowed for directories declared as include sources (e.g. `sections/`).
 SUPPORTED_SOURCE_EXTENSIONS = {".tex", ".bib", ".sty", ".png", ".pdf", ".jpg", ".jpeg", ".eps", ""}
 ALLOWED_SOURCE_USAGES = {"toplevel", "include", "ignore"}
 
@@ -217,7 +218,17 @@ def gather_checks() -> list[Check]:
     )
 
     # Bibliography integrity
-    tex_text = "\n".join(path.read_text(encoding="utf-8") for path in sorted((PAPER_DIR / "sections").glob("*.tex")))
+    section_tex_files = sorted((PAPER_DIR / "sections").glob("*.tex"))
+    add_check(
+        checks,
+        "Publication structure",
+        "Section source files exist",
+        bool(section_tex_files),
+        f"Found {len(section_tex_files)} section .tex files under paper/sections.",
+        "No .tex files found under paper/sections.",
+    )
+
+    tex_text = "\n".join(path.read_text(encoding="utf-8") for path in section_tex_files)
     tex_text += "\n" + (PAPER_DIR / "paper.tex").read_text(encoding="utf-8")
     bib_text = (PAPER_DIR / "references.bib").read_text(encoding="utf-8")
 
