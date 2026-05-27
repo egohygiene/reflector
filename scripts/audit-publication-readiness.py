@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -160,6 +161,54 @@ def parse_figure_manifest_entries(path: Path) -> set[str]:
     return names
 
 
+def expected_png_dimensions(filename: str) -> tuple[int, int] | None:
+    if filename == "hero.png":
+        return (1920, 1080)
+    if re.fullmatch(r"figure\d+\.png", filename):
+        return (1600, 900)
+    return None
+
+
+def read_png_dimensions(path: Path) -> tuple[int, int] | None:
+    try:
+        with path.open("rb") as handle:
+            signature = handle.read(8)
+            if signature != b"\x89PNG\r\n\x1a\n":
+                return None
+            ihdr_length = handle.read(4)
+            ihdr_type = handle.read(4)
+            if len(ihdr_length) != 4 or ihdr_type != b"IHDR":
+                return None
+            ihdr_data = handle.read(13)
+            if len(ihdr_data) != 13:
+                return None
+            width = int.from_bytes(ihdr_data[0:4], byteorder="big")
+            height = int.from_bytes(ihdr_data[4:8], byteorder="big")
+            return (width, height)
+    except OSError:
+        return None
+    return None
+
+
+def parse_markdown_headings(path: Path) -> set[str]:
+    if not path.exists():
+        return set()
+    headings: set[str] = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = re.match(r"^##\s+(.+?)\s*$", line)
+        if match:
+            headings.add(match.group(1).strip().lower())
+    return headings
+
+
+def build_prompt_path(filename: str) -> Path:
+    return PAPER_DIR / "figures" / "prompts" / f"{Path(filename).stem}.prompt.md"
+
+
+def unique_sorted(values: Iterable[str]) -> list[str]:
+    return sorted(set(values))
+
+
 def extract_figure_blocks(tex_text: str) -> list[str]:
     return re.findall(r"\\begin\{figure\*?\}.*?\\end\{figure\*?\}", tex_text, flags=re.DOTALL)
 
@@ -173,6 +222,7 @@ def gather_checks() -> list[Check]:
         REPO_ROOT / "paper" / "references.bib",
         REPO_ROOT / "paper" / "00README.json",
         REPO_ROOT / "paper" / "figures" / "manifest.md",
+        REPO_ROOT / "paper" / "figures" / "prompts" / "README.md",
         REPO_ROOT / "scripts" / "build-paper.sh",
         REPO_ROOT / "scripts" / "validate-metadata.py",
         REPO_ROOT / ".latexmkrc",
@@ -423,6 +473,74 @@ def gather_checks() -> list[Check]:
         not unsupported_graphics,
         "All figure files use supported render-safe image formats.",
         "Unsupported figure formats: " + ", ".join(unsupported_graphics),
+    )
+
+    missing_prompt_files = [
+        str(build_prompt_path(filename).relative_to(REPO_ROOT))
+        for filename in referenced_figure_filenames
+        if not build_prompt_path(filename).exists()
+    ]
+    add_check(
+        checks,
+        "Figure integrity",
+        "Referenced figures have prompt-preservation files",
+        not missing_prompt_files,
+        "All referenced figures have prompt files in paper/figures/prompts/.",
+        "Missing figure prompt files: " + ", ".join(unique_sorted(missing_prompt_files)),
+    )
+
+    required_prompt_headings = {
+        "prompt history",
+        "generation context",
+        "synchronization notes",
+        "rendering rationale",
+        "recursive checkpoints",
+    }
+    incomplete_prompt_files: list[str] = []
+    for filename in referenced_figure_filenames:
+        prompt_path = build_prompt_path(filename)
+        if not prompt_path.exists():
+            continue
+        headings = parse_markdown_headings(prompt_path)
+        if not required_prompt_headings.issubset(headings):
+            missing_headings = sorted(required_prompt_headings - headings)
+            incomplete_prompt_files.append(
+                f"{prompt_path.relative_to(REPO_ROOT)} (missing: {', '.join(missing_headings)})"
+            )
+
+    add_check(
+        checks,
+        "Figure integrity",
+        "Prompt files include recursive metadata headings",
+        not incomplete_prompt_files,
+        "All figure prompt files contain required recursive-metadata headings.",
+        "Prompt files with missing headings: " + "; ".join(unique_sorted(incomplete_prompt_files)),
+    )
+
+    noncanonical_png_dimensions: list[str] = []
+    for raw_path in graphics_paths:
+        resolved = resolve_figure_path(raw_path)
+        if resolved is None or resolved.suffix.lower() != ".png":
+            continue
+        expected_dimensions = expected_png_dimensions(resolved.name)
+        if expected_dimensions is None:
+            continue
+        actual_dimensions = read_png_dimensions(resolved)
+        if actual_dimensions is None:
+            noncanonical_png_dimensions.append(f"{resolved.name} (unreadable PNG header)")
+            continue
+        if actual_dimensions != expected_dimensions:
+            noncanonical_png_dimensions.append(
+                f"{resolved.name} ({actual_dimensions[0]}x{actual_dimensions[1]} != {expected_dimensions[0]}x{expected_dimensions[1]})"
+            )
+
+    add_check(
+        checks,
+        "Figure integrity",
+        "Referenced PNG dimensions are canonical",
+        not noncanonical_png_dimensions,
+        "All referenced PNG figures match canonical dimensions.",
+        "Referenced PNGs with non-canonical dimensions: " + ", ".join(unique_sorted(noncanonical_png_dimensions)),
     )
 
     figure_blocks = extract_figure_blocks(tex_text)

@@ -11,9 +11,10 @@ This document summarizes the primary workflows in Reflector.
 ## 2) Figure Workflow
 
 1. Manage figure identity/state in `paper/figures/manifest.md`.
-2. Keep canonical captions in `paper/figures/captions.md`.
-3. Keep LaTeX placements and labels synchronized in `paper/sections/*.tex`.
-4. Run `python3 scripts/audit-publication-readiness.py` after figure changes.
+2. Preserve recursive prompt history in `paper/figures/prompts/*.prompt.md`.
+3. Keep canonical captions in `paper/figures/captions.md`.
+4. Keep LaTeX placements and labels synchronized in `paper/sections/*.tex`.
+5. Run `python3 scripts/audit-publication-readiness.py` after figure changes.
 
 ## 3) Publication Workflow
 
@@ -24,10 +25,21 @@ This document summarizes the primary workflows in Reflector.
 
 ## 4) Placeholder Replacement Workflow
 
-1. Replace placeholder asset while preserving canonical filename/dimensions.
-2. Update figure state metadata (`placeholder` → `final`) in the manifest.
-3. Reconcile captions/placement metadata if needed.
-4. Re-run publication readiness audit.
+1. Update the figure prompt file with the latest iteration context and checkpoint notes.
+2. Replace placeholder asset while preserving canonical filename/dimensions.
+3. Update figure state metadata (`placeholder` → `final`) in the manifest.
+4. Reconcile captions/placement metadata if needed.
+5. Re-run publication readiness audit.
+
+Canonical lifecycle:
+
+`Placeholder Figure → Prompt Iteration → Candidate Figure → Synchronization Review → Final Publication Figure`
+
+Synchronization review checkpoints:
+- Prompt file updated
+- Manifest state synchronized
+- Caption/label alignment verified
+- Publication audit passes
 
 ## 5) Synchronization Audit Workflow
 
