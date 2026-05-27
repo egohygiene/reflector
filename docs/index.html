@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="reflector: reflective synchronization systems for recursive AI-assisted software engineering" />
-  <meta property="og:title" content="reflector — egohygiene / reflector" />
-  <meta property="og:description" content="reflector: reflective synchronization systems for recursive AI-assisted software engineering" />
+  <meta name="description" content="Reflector publication landing page: reflective synchronization systems for recursive AI-assisted software engineering." />
+  <meta property="og:title" content="reflector — research publication landing" />
+  <meta property="og:description" content="Publication-oriented landing page for Reflector with abstract, metadata, PDF access, and research navigation." />
   <meta property="og:type" content="article" />
   <meta property="og:image" content="https://egohygiene.github.io/reflector/figures/hero.png" />
   <meta property="og:image:alt" content="Reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="reflector — egohygiene / reflector" />
-  <meta name="twitter:description" content="reflector: reflective synchronization systems for recursive AI-assisted software engineering" />
+  <meta name="twitter:title" content="reflector — research publication landing" />
+  <meta name="twitter:description" content="Reflector publication landing page with PDF access, metadata, and synchronization-oriented research navigation." />
   <meta name="twitter:image" content="https://egohygiene.github.io/reflector/figures/hero.png" />
   <meta name="twitter:image:alt" content="Reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures." />
-  <title>reflector — egohygiene / reflector</title>
+  <title>reflector — publication landing</title>
   <style>
     :root {
       --bg: #0d1117;
       --surface: #161b22;
+      --surface-strong: #1d2530;
       --border: #30363d;
       --text: #c9d1d9;
       --text-muted: #8b949e;
       --accent: #58a6ff;
       --accent-hover: #79c0ff;
+      --ok: #3fb950;
     }
 
     * {
@@ -33,126 +35,219 @@
     }
 
     body {
-      background: var(--bg);
+      background: radial-gradient(circle at top, rgba(88, 166, 255, 0.08), transparent 50%), var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       font-size: 16px;
       line-height: 1.6;
       min-height: 100vh;
     }
 
+    .wrap {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 1.4rem;
+    }
+
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 1.5rem 2rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(22, 27, 34, 0.78);
+      backdrop-filter: blur(4px);
+      padding: 1.2rem 1.3rem;
+      margin-bottom: 1rem;
     }
 
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text);
+    .repo-line {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
     }
 
-    header h1 a {
-      color: inherit;
+    .repo-line a {
+      color: var(--accent);
       text-decoration: none;
     }
 
-    header p {
-      margin-top: 0.25rem;
+    .title-line {
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      line-height: 1.3;
+      font-weight: 650;
+      margin-bottom: 0.45rem;
+    }
+
+    .subtitle {
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: 1rem;
+      max-width: 78ch;
     }
 
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem;
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 0.65rem;
+      margin-top: 1rem;
     }
 
-    .hero-layout {
+    .meta-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      padding: 0.65rem 0.75rem;
+      min-height: 84px;
+    }
+
+    .meta-item dt {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.3rem;
+    }
+
+    .meta-item dd {
+      font-size: 0.92rem;
+      word-break: break-word;
+    }
+
+    .meta-item a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #2b5f41;
+      background: #162b22;
+      color: #8ddb9d;
+      font-size: 0.82rem;
+    }
+
+    .content-grid {
       display: grid;
       grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
-      gap: 1.5rem;
-      align-items: start;
-      margin-top: 1.5rem;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 1rem;
+    }
+
+    .card h2 {
+      font-size: 1.03rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+      color: var(--text-muted);
     }
 
     .hero-figure {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      margin: 0;
       overflow: hidden;
     }
 
     .hero-figure img {
-      display: block;
       width: 100%;
       height: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.65rem;
     }
 
     .hero-figure figcaption {
-      padding: 0.85rem 1rem 1rem;
       color: var(--text-muted);
-      font-size: 0.88rem;
-      border-top: 1px solid var(--border);
+      font-size: 0.84rem;
     }
 
-    .meta {
+    .actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-top: 1rem;
+      gap: 0.55rem;
+      margin-top: 0.85rem;
     }
 
-    .meta span {
-      padding: 0.28rem 0.65rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      background: var(--surface);
-    }
-
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 2rem 0 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .links {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1.1rem;
-    }
-
-    .links a {
+    .actions a {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 1rem;
-      background: var(--surface);
+      gap: 0.35rem;
+      padding: 0.45rem 0.8rem;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--accent);
+      border-radius: 8px;
       text-decoration: none;
+      color: var(--accent);
+      background: var(--surface-strong);
       font-size: 0.9rem;
-      transition: border-color 0.15s, color 0.15s;
     }
 
-    .links a:hover {
-      border-color: var(--accent);
+    .actions a:hover {
       color: var(--accent-hover);
+      border-color: var(--accent);
+    }
+
+    .timeline,
+    .research-nav {
+      list-style: none;
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 0.6rem;
+    }
+
+    .timeline li,
+    .research-nav li {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(13, 17, 23, 0.4);
+      padding: 0.55rem 0.65rem;
+      font-size: 0.88rem;
+    }
+
+    .research-nav a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .pdf-frame {
+      margin-top: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #11161d;
+      min-height: 70vh;
+    }
+
+    .pdf-frame iframe {
+      width: 100%;
+      min-height: 70vh;
+      border: 0;
+    }
+
+    .mobile-note {
+      display: none;
+      margin-top: 0.65rem;
+      color: var(--text-muted);
+      font-size: 0.88rem;
     }
 
     footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem 2rem;
-      text-align: center;
+      margin-top: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.84rem;
+      text-align: center;
+      background: rgba(22, 27, 34, 0.75);
     }
 
     footer a {
@@ -160,68 +255,134 @@
       text-decoration: none;
     }
 
-    footer a:hover {
-      text-decoration: underline;
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 760px) {
-      .hero-layout {
-        grid-template-columns: 1fr;
+      .wrap {
+        padding: 1rem;
+      }
+
+      .pdf-frame {
+        min-height: auto;
+      }
+
+      .pdf-frame iframe {
+        display: none;
+      }
+
+      .mobile-note {
+        display: block;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1><a href="./">egohygiene / reflector</a></h1>
-    <p>Research papers on systems thinking, AI governance, and reflective development architectures.</p>
-  </header>
+  <div class="wrap">
+    <header>
+      <p class="repo-line">
+        <a href="https://github.com/egohygiene/reflector">egohygiene/reflector</a> · publication landing page
+      </p>
+      <h1 class="title-line">Reflector: Reflective Synchronization Systems for Recursive AI-Assisted Software Engineering</h1>
+      <p class="subtitle">
+        Publication-oriented research preview with synchronization-aware metadata, canonical PDF routes,
+        and architecture navigation for reflective AI engineering workflows.
+      </p>
 
-  <main>
-    <h2>reflector: reflective synchronization systems for recursive AI-assisted software engineering</h2>
-    <p>
-      Introduces the Reflector framework for governing recursive AI-augmented development
-      systems through scoped agents, human-in-the-loop checkpoints, recursive auditing,
-      and milestone synchronization protocols.
-    </p>
-
-    <div class="hero-layout">
-      <figure class="hero-figure">
-        <img
-          src="./figures/hero.png"
-          alt="Reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures."
-          width="1024"
-          height="1536"
-        />
-        <figcaption>
-          Canonical publication hero asset for Reflector, reused for landing-page previews,
-          publication cards, and future social/share surfaces.
-        </figcaption>
-      </figure>
-
-      <section aria-label="Publication summary">
-        <div class="meta" aria-label="Publication metadata">
-          <span>Draft publication</span>
-          <span>Canonical preview: <code>figures/hero.png</code></span>
-          <span>Formats: HTML + PDF + source</span>
+      <dl class="meta-grid" aria-label="Publication metadata">
+        <div class="meta-item">
+          <dt>Publication status</dt>
+          <dd><span class="status">● Draft publication</span></dd>
         </div>
-
-        <div class="links">
-          <a href="./reflector-latest.pdf?v=__CACHE_BUSTER__">&#x1F4C4; Download latest PDF</a>
-          <a href="./publication.json">&#x1F4DD; Publication metadata</a>
-          <a href="./">&#x1F517; Canonical publication route</a>
-          <a href="https://github.com/egohygiene/reflector/tree/main/paper">&#x1F4BB; Source</a>
-          <a href="https://github.com/egohygiene/reflector">&#x2190; Repository home</a>
+        <div class="meta-item">
+          <dt>Version</dt>
+          <dd>v0.0.1 · latest route <code>reflector-latest.pdf</code></dd>
         </div>
+        <div class="meta-item">
+          <dt>Identifiers</dt>
+          <dd>DOI: pending · arXiv: pending · <a href="https://orcid.org/0009-0008-5291-9795">ORCID</a></dd>
+        </div>
+        <div class="meta-item">
+          <dt>Publication artifacts</dt>
+          <dd>PDF + metadata manifest + source + figures</dd>
+        </div>
+      </dl>
+    </header>
+
+    <main>
+      <div class="content-grid">
+        <section class="card" aria-label="Visual summary and links">
+          <figure class="hero-figure">
+            <img
+              src="./figures/hero.png"
+              alt="Reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures."
+              width="1024"
+              height="1536"
+            />
+            <figcaption>
+              Canonical publication hero asset used for landing-page previews and publication surfaces.
+            </figcaption>
+          </figure>
+
+          <div class="actions">
+            <a href="./reflector-latest.pdf?v=__CACHE_BUSTER__">📄 Latest PDF</a>
+            <a href="./reflector.pdf?v=__CACHE_BUSTER__">📚 Versioned PDF</a>
+            <a href="./publication.json">🧾 Publication manifest</a>
+            <a href="https://github.com/egohygiene/reflector/tree/main/paper">💻 Source</a>
+            <a href="https://github.com/egohygiene/reflector">↩ Repository</a>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Abstract and research navigation">
+          <h2>Abstract preview</h2>
+          <p>
+            Reflector introduces a recursive synchronization framework for AI-assisted software engineering.
+            The architecture combines scoped autonomous agents, explicit human checkpoints, milestone-aware
+            orchestration, and recursive audits to stabilize quality, governance, and research traceability
+            in reflective development systems.
+          </p>
+
+          <h3>Publication timeline</h3>
+          <ul class="timeline">
+            <li>Current stage: Draft publication landing + synchronized pages artifacts</li>
+            <li>Near-term: DOI registration and arXiv compatibility routing</li>
+            <li>Future: ORCID-aware and feed-driven publication dashboards</li>
+          </ul>
+
+          <h3>Research navigation</h3>
+          <ul class="research-nav">
+            <li><a href="./research">Research index</a> for notes and publication context</li>
+            <li><a href="./publication-architecture.md">Publication architecture</a> and deterministic build flow</li>
+            <li><a href="./workflows.md">Workflow references</a> for CI and synchronization operations</li>
+          </ul>
+        </section>
+      </div>
+
+      <section class="card" aria-label="PDF reader">
+        <h2>Read online</h2>
+        <p>
+          Embedded latest publication route for desktop reading. On smaller screens,
+          use the download links for full-screen PDF viewing.
+        </p>
+        <div class="pdf-frame">
+          <iframe
+            title="Reflector latest publication PDF"
+            src="./reflector-latest.pdf?v=__CACHE_BUSTER__#view=FitH"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <p class="mobile-note">Mobile view detected: open <a href="./reflector-latest.pdf?v=__CACHE_BUSTER__">the latest PDF</a> directly.</p>
       </section>
-    </div>
-  </main>
+    </main>
 
-  <footer>
-    <p>
+    <footer>
       By <a href="https://github.com/egohygiene">Alan Szmyt</a> ·
-      <a href="https://github.com/egohygiene/reflector">GitHub Repository</a>
-    </p>
-  </footer>
+      <a href="https://github.com/egohygiene/reflector">GitHub repository</a> ·
+      Canonical publication route: <a href="./">/reflector/</a>
+    </footer>
+  </div>
 </body>
 </html>

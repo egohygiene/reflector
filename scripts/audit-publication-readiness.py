@@ -485,7 +485,17 @@ def gather_checks() -> list[Check]:
         checks,
         "GitHub Pages deployment",
         "docs landing page links publication artifacts",
-        all(token in docs_index_text for token in ("./reflector-latest.pdf", "./publication.json", "./figures/hero.png")),
+        all(
+            token in docs_index_text
+            for token in (
+                "./reflector-latest.pdf",
+                "./reflector.pdf",
+                "./publication.json",
+                "./figures/hero.png",
+                "Abstract preview",
+                "Read online",
+            )
+        ),
         "docs/index.html links canonical publication artifacts.",
         "docs/index.html is missing one or more publication artifact links.",
     )
