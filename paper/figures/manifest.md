@@ -21,6 +21,7 @@ This manifest tracks canonical figure outputs and placeholder accessibility meta
 | reflector-figure-12 | `figure12.png` | placeholder copy | Active |
 | reflector-figure-15 | `figure15.png` | placeholder copy | Active |
 | reflector-figure-16 | `figure16.png` | placeholder copy | Active |
+| reflector-figure-17 | `figure17.png` | placeholder copy | Active |
 
 ## Placeholder alt-text metadata
 
@@ -88,4 +89,8 @@ figures:
     file: figure16.png
     title: Repository synchronization placeholder figure
     alt_text: "Placeholder figure showing recursive repository synchronization from human intent and specifications through AI execution, artifacts, reflective audit, and checkpointed repository evolution."
+  - id: reflector-figure-17
+    file: figure17.png
+    title: Specification orchestration placeholder figure
+    alt_text: "Placeholder figure showing human intent stabilized through a specification layer, passed into scoped delegation and AI execution, then reconciled through reflective audit and specification synchronization before recursive continuation."
 ```

@@ -14,13 +14,24 @@ Each subsection below introduces a distinct implementation domain. Together they
 
 \Cref{fig:figure8} anchors the implementation pipeline developed throughout this section and preserves deterministic figure references while the production diagram is being prepared.
 
-\subsection{Specification-Driven Architecture}
+\subsection{Specification-Driven Systems}
 
-Reflector treats specifications as synchronization anchors rather than as documentation afterthoughts. A specification in this sense is a structured artifact that describes what a system component, workflow, or publication process is expected to do, under what constraints it should operate, and what evidence would confirm that those expectations have been met. Specifications precede execution and survive it: they remain the reference point against which generated artifacts are evaluated at every subsequent checkpoint.
+Reflector treats specifications as recursive systems infrastructure rather than as documentation afterthoughts. A specification in this sense is a structured, inspectable artifact that describes what a system component, workflow, or publication process is expected to do, under what constraints it should operate, and what evidence would confirm that those expectations have been met. Specifications therefore function as executable conceptual systems: they do not execute code directly, but they shape recursive execution by defining the semantic surface within which humans and AI systems coordinate.
 
-This role is analogous to the role of invariants in formally verified systems, but with a pragmatic orientation suited to mixed-initiative development \cite{Chandy1985DistributedSnapshots,Wiener1948Cybernetics}. A specification need not be machine-checkable in the formal verification sense; it must be inspectable by both humans and AI systems, sufficiently precise to guide scoped delegation, and stable enough to anchor reflective audit without requiring constant revision.
+Recursive systems require this kind of structured intent because recursive execution amplifies ambiguity. Human goals are decomposed into scoped issues, issues become prompts and task boundaries, generated artifacts become future context, and later cycles inherit compressed summaries rather than the full state that produced them. Without a stable semantic anchor, each handoff introduces opportunities for assumptions to drift, for local interpretations to diverge, and for continuation decisions to rely on stale context rather than current intent \cite{Lamport1978TimeClocks,Simon1957ModelsMan}.
 
-In practice, a specification-driven architecture organizes work across several artifact types:
+Specifications reduce this ambiguity by externalizing intent into durable synchronization artifacts. They preserve goals, constraints, architectural assumptions, and completion conditions in a form that can be inspected by both human reviewers and AI executors. This makes specifications semantic intent containers: they carry forward the meaning that should survive recursive depth even as individual prompts, drafts, commits, and summaries change around them \cite{Hutchins1995CognitionWild,Wiener1948Cybernetics}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figure17.png}
+  \caption{Specification orchestration placeholder: human intent is stabilized by a specification layer, translated into scoped delegation and AI execution, materialized as generated artifacts, evaluated through reflective audit, reconciled through specification synchronization, and then re-authorized for recursive continuation.}
+  \label{fig:figure17}
+\end{figure}
+
+\Cref{fig:figure17} captures the orchestration claim of this subsection: specifications are not passive reference material but the semantic coordination layer that keeps recursive execution aligned as artifacts, interpretations, and repository state evolve.
+
+In practice, a specification-driven system organizes work across several artifact types:
 \begin{itemize}
   \item \textbf{Architecture specifications} document system decomposition boundaries, layer responsibilities, and inter-component contracts, providing a stable reference for identifying boundary violations during audit.
   \item \textbf{Publication specifications} declare the semantic content structure, renderer targets, metadata requirements, and manifest formats that govern how outputs are assembled and distributed.
@@ -28,7 +39,17 @@ In practice, a specification-driven architecture organizes work across several a
   \item \textbf{Synchronization specifications} define checkpoint structures, evidence requirements, and continuation criteria, making the governance layer explicit rather than implicit in human judgment alone.
 \end{itemize}
 
-Together, these specification types form a recursive coordination infrastructure: each execution cycle begins by consulting the relevant specification, produces artifacts that can be checked against it, and terminates at a checkpoint where the specification remains available as the authoritative reference \cite{Beer1972BrainFirm}. This prevents the common failure mode in which recursive work gradually drifts away from its original conceptual commitments as artifacts and summaries accumulate.
+Together, these specification types form recursive coordination infrastructure: each execution cycle begins by consulting the relevant specification, produces artifacts that can be checked against it, and terminates at a checkpoint where the specification remains available as the authoritative reference \cite{Beer1972BrainFirm}. In this role, specifications become synchronization anchors. They make it possible to reconcile local execution with system-level intent even when multiple humans, AI agents, and artifact types participate asynchronously across the same repository.
+
+Specification-driven workflows are correspondingly recursive. A broad objective is first translated into a specification that scopes intent, constraints, and evidence requirements. That specification then authorizes bounded delegation, shapes AI execution, and provides the evaluation surface for reflective audit. Audit findings, in turn, may refine the specification itself: unclear assumptions are made explicit, missing constraints are added, and ambiguous success conditions are tightened before the next cycle begins. Recursive refinement therefore does not treat the specification as frozen. It treats the specification as the evolving control surface through which future work is stabilized.
+
+This refinement process preserves semantic intent across recursive depth. Rather than depending on every participant to reconstruct the entire conceptual history from memory, the workflow deposits structured intent into artifacts that can be diffed, reviewed, and reconciled. Specification changes expose how goals evolved; audit records expose why those changes were made; repository history exposes when those changes became authoritative. Recursive observability emerges from this inspectable chain of intent, execution, and reconciliation rather than from artifact outputs alone \cite{Chandy1985DistributedSnapshots}.
+
+The orchestration consequences are significant. Specifications reduce recursive ambiguity by bounding what AI systems are authorized to do, by giving human reviewers a stable basis for acceptance decisions, and by ensuring that generated artifacts can be evaluated against declared intent instead of only against local plausibility. They do not eliminate ambiguity entirely, but they narrow it into a governable form. This is why recursive systems require structured intent: once execution becomes recursive, semantic slack compounds unless a coordination layer continuously restores alignment.
+
+For Reflector, this makes specifications governance infrastructure as well as planning infrastructure. They expose assumptions that would otherwise remain implicit, define the checkpoints at which continuation must be justified, and support semantic auditability by preserving the rationale behind scoped delegation. A specification-guided system is therefore easier to inspect, easier to rescope, and easier to stabilize under mixed-initiative conditions than a system that relies on conversational memory or ad hoc task descriptions alone.
+
+Viewed this way, specifications are not merely inputs to recursive systems; they are part of the recursive system itself. They anchor synchronization, preserve structured intent, scaffold semantic decomposition, and make recursive coordination observable across humans and AI systems. Reflector's synchronization-first philosophy follows directly: stable recursive execution depends on keeping the specification layer continuously aligned with the artifact layer so that recursive continuation remains conceptually coherent, operationally bounded, and publication-ready.
 
 \subsection{Repository-Centric Recursive Systems}
 
