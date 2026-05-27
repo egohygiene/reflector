@@ -51,6 +51,76 @@ def parse_bib_keys(bib_text: str) -> set[str]:
     return set(re.findall(r"@\w+\{([^,]+),", bib_text))
 
 
+def parse_bib_entries(bib_text: str) -> tuple[list[tuple[str, dict[str, str]]], list[str]]:
+    entries: list[tuple[str, dict[str, str]]] = []
+    parse_errors: list[str] = []
+    current_key: str | None = None
+    current_fields: dict[str, str] = {}
+    in_entry = False
+    current_field_name: str | None = None
+    current_field_parts: list[str] = []
+    current_field_brace_depth = 0
+
+    for line in bib_text.splitlines():
+        start_match = re.match(r"^@\w+\{([^,]+),\s*$", line.strip())
+        if start_match:
+            current_key = start_match.group(1).strip()
+            current_fields = {}
+            in_entry = True
+            continue
+
+        if in_entry and current_field_name is not None:
+            current_field_parts.append(line.strip())
+            current_field_brace_depth += line.count("{") - line.count("}")
+            if current_field_brace_depth == 0:
+                raw_value = " ".join(part for part in current_field_parts if part).strip()
+                value = re.sub(r"\}\s*,?\s*$", "", raw_value).strip()
+                current_fields[current_field_name] = value
+                current_field_name = None
+                current_field_parts = []
+                current_field_brace_depth = 0
+            elif current_field_brace_depth < 0:
+                if current_key:
+                    parse_errors.append(current_key)
+                current_field_name = None
+                current_field_parts = []
+                current_field_brace_depth = 0
+            continue
+
+        if in_entry and line.strip() == "}":
+            if current_key:
+                entries.append((current_key, current_fields))
+            current_key = None
+            current_fields = {}
+            in_entry = False
+            continue
+
+        if not in_entry:
+            continue
+
+        field_match = re.match(r"^\s*([a-zA-Z][\w-]*)\s*=\s*\{(.*)$", line)
+        if not field_match:
+            continue
+        field_name = field_match.group(1).strip().lower()
+        remainder = field_match.group(2).strip()
+        brace_depth = 1 + remainder.count("{") - remainder.count("}")
+        if brace_depth == 0:
+            current_fields[field_name] = re.sub(r"\}\s*,?\s*$", "", remainder).strip()
+            continue
+        if brace_depth < 0:
+            if current_key:
+                parse_errors.append(current_key)
+            continue
+        current_field_name = field_name
+        current_field_parts = [remainder]
+        current_field_brace_depth = brace_depth
+
+    if current_field_name is not None and current_key:
+        parse_errors.append(current_key)
+
+    return entries, sorted(set(parse_errors))
+
+
 def parse_citation_keys(tex_text: str) -> set[str]:
     pattern = re.compile(r"\\(?:auto|text|paren)?cite\*?(?:\[[^\]]*\])?\{([^}]+)\}")
     keys: set[str] = set()
@@ -234,7 +304,37 @@ def gather_checks() -> list[Check]:
 
     citation_keys = parse_citation_keys(tex_text)
     bibliography_keys = parse_bib_keys(bib_text)
+    bibliography_entries, bib_parse_errors = parse_bib_entries(bib_text)
     missing_bib_entries = sorted(citation_keys - bibliography_keys)
+    duplicate_bib_entries = sorted(
+        key
+        for key in bibliography_keys
+        if len(re.findall(rf"@\w+\{{{re.escape(key)},", bib_text)) > 1
+    )
+    entries_missing_core_fields = sorted(
+        key for key, fields in bibliography_entries if "author" not in fields or "title" not in fields
+    )
+    malformed_doi_entries: list[str] = []
+    noncanonical_doi_url_entries: list[str] = []
+    noncanonical_arxiv_entries: list[str] = []
+
+    for key, fields in bibliography_entries:
+        doi = fields.get("doi")
+        url = fields.get("url") or ""
+        if doi:
+            if doi.lower().startswith(("http://", "https://", "doi:")):
+                malformed_doi_entries.append(key)
+            expected_url = f"https://doi.org/{doi}"
+            if url and url != expected_url:
+                noncanonical_doi_url_entries.append(key)
+
+        eprinttype = fields.get("eprinttype", "")
+        eprint = fields.get("eprint", "")
+        if eprinttype or "arxiv.org/abs/" in url:
+            if eprinttype != "arxiv":
+                noncanonical_arxiv_entries.append(key)
+            elif not eprint or (url and url != f"https://arxiv.org/abs/{eprint}"):
+                noncanonical_arxiv_entries.append(key)
 
     add_check(
         checks,
@@ -243,6 +343,54 @@ def gather_checks() -> list[Check]:
         not missing_bib_entries,
         f"All {len(citation_keys)} citation keys resolve in references.bib.",
         "Missing bibliography entries for citation keys: " + ", ".join(missing_bib_entries),
+    )
+    add_check(
+        checks,
+        "Bibliography integrity",
+        "Bibliography keys are unique",
+        not duplicate_bib_entries,
+        f"All {len(bibliography_keys)} bibliography keys are unique.",
+        "Duplicate bibliography keys found: " + ", ".join(duplicate_bib_entries),
+    )
+    add_check(
+        checks,
+        "Bibliography integrity",
+        "Bibliography entries include core metadata",
+        not entries_missing_core_fields,
+        "All bibliography entries contain at least author and title fields.",
+        "Bibliography entries missing core fields: " + ", ".join(entries_missing_core_fields),
+    )
+    add_check(
+        checks,
+        "Bibliography integrity",
+        "Bibliography entry structure is parseable",
+        not bib_parse_errors,
+        "All bibliography entries have parseable field structure.",
+        "Malformed bibliography field structure found in entries: " + ", ".join(bib_parse_errors),
+    )
+    add_check(
+        checks,
+        "Bibliography integrity",
+        "DOI fields use canonical BibLaTeX value format",
+        not malformed_doi_entries,
+        "All DOI fields use canonical DOI values (no URL/doi: prefixes).",
+        "Malformed DOI values (URL/doi: prefix) found in entries: " + ", ".join(malformed_doi_entries),
+    )
+    add_check(
+        checks,
+        "Bibliography integrity",
+        "DOI URLs match DOI field values",
+        not noncanonical_doi_url_entries,
+        "All DOI URLs resolve to the canonical https://doi.org/<doi> form.",
+        "DOI URL mismatch detected in entries: " + ", ".join(noncanonical_doi_url_entries),
+    )
+    add_check(
+        checks,
+        "Bibliography integrity",
+        "arXiv metadata is canonical",
+        not noncanonical_arxiv_entries,
+        "All arXiv entries use canonical eprinttype/eprint/url metadata.",
+        "Non-canonical arXiv metadata found in entries: " + ", ".join(noncanonical_arxiv_entries),
     )
 
     # Figure integrity

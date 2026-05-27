@@ -1,11 +1,11 @@
 # Publication Readiness Audit Report
 
-Generated at: `2026-05-27T04:52:01Z`
+Generated at: `2026-05-27T16:20:17Z`
 
 ## Executive Summary
 
-- Total checks: **21**
-- Pass: **20**
+- Total checks: **27**
+- Pass: **26**
 - Warn: **1**
 - Fail: **0**
 
@@ -29,6 +29,12 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 | Check | Result | Details |
 | --- | --- | --- |
 | All citation keys resolve to bibliography entries | ✅ PASS | All 15 citation keys resolve in references.bib. |
+| Bibliography keys are unique | ✅ PASS | All 15 bibliography keys are unique. |
+| Bibliography entries include core metadata | ✅ PASS | All bibliography entries contain at least author and title fields. |
+| Bibliography entry structure is parseable | ✅ PASS | All bibliography entries have parseable field structure. |
+| DOI fields use canonical BibLaTeX value format | ✅ PASS | All DOI fields use canonical DOI values (no URL/doi: prefixes). |
+| DOI URLs match DOI field values | ✅ PASS | All DOI URLs resolve to the canonical https://doi.org/<doi> form. |
+| arXiv metadata is canonical | ✅ PASS | All arXiv entries use canonical eprinttype/eprint/url metadata. |
 
 ### Deterministic builds
 
@@ -110,4 +116,3 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 - [x] unresolved publication blockers identified
 - [ ] deterministic build confidence improved
 - [x] repository publication architecture validated
-
