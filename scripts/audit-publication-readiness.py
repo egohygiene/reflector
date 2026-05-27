@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -28,6 +29,16 @@ SUPPORTED_IMAGE_EXTENSIONS = {".png", ".pdf", ".jpg", ".jpeg", ".eps"}
 # Empty suffix is allowed for directories declared as include sources (e.g. `sections/`).
 SUPPORTED_SOURCE_EXTENSIONS = {".tex", ".bib", ".sty", ".png", ".pdf", ".jpg", ".jpeg", ".eps", ""}
 ALLOWED_SOURCE_USAGES = {"toplevel", "include", "ignore"}
+HERO_DIMENSIONS = (1920, 1080)
+FIGURE_DIMENSIONS = (1600, 900)
+REQUIRED_PROMPT_HEADINGS = {
+    # Keep headings lowercase; parse_markdown_headings normalizes observed headings to lowercase.
+    "prompt history",
+    "generation context",
+    "synchronization notes",
+    "rendering rationale",
+    "recursive checkpoints",
+}
 
 
 def add_check(checks: list[Check], area: str, name: str, condition: bool, pass_details: str, fail_details: str) -> None:
@@ -160,6 +171,62 @@ def parse_figure_manifest_entries(path: Path) -> set[str]:
     return names
 
 
+def expected_png_dimensions(filename: str) -> tuple[int, int] | None:
+    if filename == "hero.png":
+        return HERO_DIMENSIONS
+    if re.fullmatch(r"figure\d+\.png", filename):
+        return FIGURE_DIMENSIONS
+    return None
+
+
+def read_png_dimensions(path: Path) -> tuple[int, int] | None:
+    try:
+        with path.open("rb") as handle:
+            # PNG file signature: 8 fixed bytes.
+            signature = handle.read(8)
+            if signature != b"\x89PNG\r\n\x1a\n":
+                return None
+            # First chunk header: 4-byte length + 4-byte chunk type.
+            ihdr_length = handle.read(4)
+            ihdr_type = handle.read(4)
+            if len(ihdr_length) != 4 or ihdr_type != b"IHDR":
+                return None
+            if int.from_bytes(ihdr_length, byteorder="big") != 13:
+                return None
+            # IHDR data payload is always 13 bytes in PNG.
+            ihdr_data = handle.read(13)
+            if len(ihdr_data) != 13:
+                return None
+            width = int.from_bytes(ihdr_data[0:4], byteorder="big")
+            height = int.from_bytes(ihdr_data[4:8], byteorder="big")
+            return (width, height)
+    except OSError:
+        return None
+
+
+def parse_markdown_headings(path: Path) -> set[str]:
+    if not path.exists():
+        return set()
+    headings: set[str] = set()
+    try:
+        content = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return set()
+    for line in content.splitlines():
+        match = re.match(r"^##\s+(.+)$", line)
+        if match:
+            headings.add(match.group(1).strip().lower())
+    return headings
+
+
+def build_prompt_path(filename: str) -> Path:
+    return PAPER_DIR / "figures" / "prompts" / f"{Path(filename).stem}.prompt.md"
+
+
+def sorted_unique(values: Iterable[str]) -> list[str]:
+    return sorted(set(values))
+
+
 def extract_figure_blocks(tex_text: str) -> list[str]:
     return re.findall(r"\\begin\{figure\*?\}.*?\\end\{figure\*?\}", tex_text, flags=re.DOTALL)
 
@@ -173,6 +240,7 @@ def gather_checks() -> list[Check]:
         REPO_ROOT / "paper" / "references.bib",
         REPO_ROOT / "paper" / "00README.json",
         REPO_ROOT / "paper" / "figures" / "manifest.md",
+        REPO_ROOT / "paper" / "figures" / "prompts" / "README.md",
         REPO_ROOT / "scripts" / "build-paper.sh",
         REPO_ROOT / "scripts" / "validate-metadata.py",
         REPO_ROOT / ".latexmkrc",
@@ -423,6 +491,67 @@ def gather_checks() -> list[Check]:
         not unsupported_graphics,
         "All figure files use supported render-safe image formats.",
         "Unsupported figure formats: " + ", ".join(unsupported_graphics),
+    )
+
+    missing_prompt_files: list[str] = []
+    for filename in referenced_figure_filenames:
+        prompt_path = build_prompt_path(filename)
+        if not prompt_path.exists():
+            missing_prompt_files.append(str(prompt_path.relative_to(REPO_ROOT)))
+    add_check(
+        checks,
+        "Figure integrity",
+        "Referenced figures have prompt-preservation files",
+        not missing_prompt_files,
+        "All referenced figures have prompt files in paper/figures/prompts/.",
+        "Missing figure prompt files: " + ", ".join(sorted_unique(missing_prompt_files)),
+    )
+
+    incomplete_prompt_files: list[str] = []
+    for filename in referenced_figure_filenames:
+        prompt_path = build_prompt_path(filename)
+        if not prompt_path.exists():
+            continue
+        headings = parse_markdown_headings(prompt_path)
+        if not REQUIRED_PROMPT_HEADINGS.issubset(headings):
+            missing_headings = sorted(REQUIRED_PROMPT_HEADINGS - headings)
+            incomplete_prompt_files.append(
+                f"{prompt_path.relative_to(REPO_ROOT)} (missing: {', '.join(missing_headings)})"
+            )
+
+    add_check(
+        checks,
+        "Figure integrity",
+        "Prompt files include recursive metadata headings",
+        not incomplete_prompt_files,
+        "All figure prompt files contain required recursive-metadata headings.",
+        "Prompt files with missing headings: " + ", ".join(sorted_unique(incomplete_prompt_files)),
+    )
+
+    noncanonical_png_dimensions: list[str] = []
+    for raw_path in graphics_paths:
+        resolved = resolve_figure_path(raw_path)
+        if resolved is None or resolved.suffix.lower() != ".png":
+            continue
+        expected_dimensions = expected_png_dimensions(resolved.name)
+        if expected_dimensions is None:
+            continue
+        actual_dimensions = read_png_dimensions(resolved)
+        if actual_dimensions is None:
+            noncanonical_png_dimensions.append(f"{resolved.name} (unreadable PNG header)")
+            continue
+        if actual_dimensions != expected_dimensions:
+            noncanonical_png_dimensions.append(
+                f"{resolved.name} ({actual_dimensions[0]}x{actual_dimensions[1]} != {expected_dimensions[0]}x{expected_dimensions[1]})"
+            )
+
+    add_check(
+        checks,
+        "Figure integrity",
+        "Referenced PNG dimensions are canonical",
+        not noncanonical_png_dimensions,
+        "All referenced PNG figures match canonical dimensions.",
+        "Referenced PNGs with non-canonical dimensions: " + ", ".join(sorted_unique(noncanonical_png_dimensions)),
     )
 
     figure_blocks = extract_figure_blocks(tex_text)

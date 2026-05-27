@@ -9,6 +9,10 @@ infrastructure that keeps figures, captions, labels, and section placements sync
 | --- | --- |
 | `manifest.md` | Canonical figure manifest — tracks every figure's file, section, label, dimensions, state, and synchronization notes |
 | `captions.md` | Centralized caption registry — canonical caption text for every figure placement |
+| `prompts/*.prompt.md` | Canonical prompt-preservation records for recursive figure generation and synchronization checkpoints |
+| `placeholders/` | Optional staging sources for placeholder design inputs |
+| `final/` | Optional staging sources for candidate final renders before canonical replacement |
+| `archive/` | Optional archive for superseded figure revisions |
 | `figure1.png` … `figure19.png` | Figure assets (currently placeholder copies) |
 | `hero.png` | Hero figure asset (currently a placeholder copy) |
 
@@ -49,6 +53,31 @@ When a figure moves from `placeholder` to `final`, update the `state` field in `
 
 ---
 
+## Figure lifecycle architecture
+
+Canonical figure lifecycle:
+
+```
+Placeholder Figure
+  ↓
+Prompt Iteration
+  ↓
+Candidate Figure
+  ↓
+Synchronization Review
+  ↓
+Final Publication Figure
+```
+
+Synchronization review must checkpoint:
+
+1. Prompt file update in `prompts/<figure>.prompt.md`
+2. Manifest state/metadata updates in `manifest.md`
+3. Caption + label synchronization in `captions.md` and `paper/sections/*.tex`
+4. Publication validation (`python3 scripts/audit-publication-readiness.py`)
+
+---
+
 ## Canonical dimensions
 
 | Figure set | Dimensions |
@@ -79,10 +108,11 @@ The placeholder workflow supports progressive figure replacement without disrupt
 ### Replacing a placeholder with a final figure
 
 1. Render the final figure at the canonical dimensions (see above).
-2. Copy the rendered figure to `paper/figures/figureN.png`, overwriting the placeholder.
-3. Update the `state` field from `placeholder` to `final` in `manifest.md`.
-4. Optionally refine the caption in `captions.md` and apply the same update to the LaTeX section file.
-5. Run `scripts/audit-publication-readiness.py` to verify the figure passes all integrity checks.
+2. Record prompt iteration and rendering rationale in `prompts/figureN.prompt.md`.
+3. Copy the rendered figure to `paper/figures/figureN.png`, overwriting the placeholder.
+4. Update the `state` field from `placeholder` to `final` in `manifest.md`.
+5. Optionally refine the caption in `captions.md` and apply the same update to the LaTeX section file.
+6. Run `scripts/audit-publication-readiness.py` to verify the figure passes all integrity checks.
 
 ### Reserving a figure slot
 
@@ -108,6 +138,18 @@ the LaTeX `\caption{}` calls must always match.
 
 ---
 
+## Prompt preservation workflow
+
+Prompt records are the canonical recursive figure-generation history.
+
+1. Update the figure prompt file in `prompts/<figure>.prompt.md`.
+2. Append prompt changes under **Prompt history**.
+3. Record generation inputs under **Generation context**.
+4. Record synchronization outcomes under **Synchronization notes** and **Recursive checkpoints**.
+5. Keep prompt context aligned with `manifest.md` state and caption/label updates.
+
+---
+
 ## Publication synchronization
 
 All figure assets in this directory must meet the following criteria for publication:
@@ -122,6 +164,8 @@ The `scripts/audit-publication-readiness.py` script enforces:
 
 - All `\includegraphics{}` references resolve to existing files.
 - All figure formats are render-safe.
+- Referenced prompt files exist under `paper/figures/prompts/`.
+- Referenced PNG figures preserve canonical dimensions.
 - All `\begin{figure}` blocks include a `\caption{}`.
 - All `\begin{figure}` blocks include a `\label{fig:…}`.
 - All referenced figures are listed in `manifest.md`.
