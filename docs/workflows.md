@@ -58,3 +58,11 @@ Synchronization review checkpoints:
 1. Use publication metadata/manifests as explicit orchestration contracts.
 2. Keep source declaration and output expectations deterministic.
 3. Maintain reproducibility by avoiding hidden build assumptions.
+
+## Reusable Blueprint Specs
+
+- `specs/workflows/recursive-issue-orchestration.spec.md`
+- `specs/workflows/recursive-workflow-blueprints.spec.md`
+- `specs/workflows/figure-pipeline.spec.md`
+- `specs/synchronization/synchronization-layer.spec.md`
+- `specs/repositories/publication-repository.spec.md`
