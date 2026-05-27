@@ -12,7 +12,7 @@ For this reason, synchronization cannot be treated as a final validation step or
   \label{fig:figure15}
 \end{figure}
 
-\Cref{fig:figure15} visualizes recursive synchronization as a layered loop rather than a linear pipeline. Each layer both consumes and reshapes shared state, so stability depends on explicit synchronization boundaries that continuously restore interpretability.
+\Cref{fig:figure15} visualizes recursive synchronization as a layered loop rather than a linear pipeline connecting human intent, specifications, execution, generated artifacts, reflective audit, and checkpointed continuation. Each layer both consumes and reshapes shared state, so stability depends on explicit synchronization boundaries that continuously restore interpretability.
 
 \subsection{Why Recursive Synchronization Is Necessary}
 
@@ -43,7 +43,7 @@ In this framing, synchronization checkpoints are stabilization layers. Each laye
 
 Recursive systems also desynchronize across time. Specifications age, architectural constraints evolve, repository state changes, and prior summaries become stale. This produces \textit{synchronization drift}: continuation decisions based on historical context that no longer reflects the present system.
 
-Temporal synchronization preserves recursive continuity by periodically revalidating assumptions before continuation. It asks not only whether output quality is acceptable, but whether the underlying task, context, and interpretation remain current. This preserves conceptual continuity even when execution spans multiple asynchronous updates \cite{Lamport1978TimeClocks,Chandy1985DistributedSnapshots}.
+Temporal synchronization preserves recursive continuity by periodically revalidating assumptions before continuation. It asks not only whether output quality is acceptable, but whether the underlying task, context, and interpretation remain current. This preserves \textit{conceptual continuity}---the maintained linkage between current execution decisions and the latest validated intent---even when execution spans multiple asynchronous updates \cite{Lamport1978TimeClocks,Chandy1985DistributedSnapshots}.
 
 \subsection{Synchronization Infrastructure}
 
