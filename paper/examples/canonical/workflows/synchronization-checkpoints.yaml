@@ -12,7 +12,7 @@ checkpoints:
       - appendix/recursive-milestone.md
       - diagrams/recursive-sync-loop.mmd
     verdict: conditional-pass
-    follow_up_issue: "#143"
+    follow-up-issue: "#143"
   - id: cp-audit-01
     type: audit-checkpoint
     evidence:
