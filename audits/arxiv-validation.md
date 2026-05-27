@@ -1,6 +1,6 @@
 # arXiv Packaging Validation Report
 
-Generated at: `2026-05-27T18:37:11Z`
+Generated at: `2026-05-27T22:45:50Z`
 
 ## Executive Summary
 
@@ -35,7 +35,7 @@ Overall result: ✅ **arXiv upload-ready**
 | --- | --- | --- |
 | All figure formats are arXiv-safe | ✅ PASS | All 18 figure files use arXiv-safe image formats. |
 | All figure files are within arXiv size limits | ✅ PASS | All figure files are within the 10 MB per-file size limit. |
-| Total paper bundle within arXiv upload limit | ✅ PASS | Total paper bundle size is 350 KB, within the 50 MB arXiv upload limit. |
+| Total paper bundle within arXiv upload limit | ✅ PASS | Total paper bundle size is 378 KB, within the 50 MB arXiv upload limit. |
 
 ### Manifest
 
