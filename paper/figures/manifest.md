@@ -22,6 +22,7 @@ This manifest tracks canonical figure outputs and placeholder accessibility meta
 | reflector-figure-15 | `figure15.png` | placeholder copy | Active |
 | reflector-figure-16 | `figure16.png` | placeholder copy | Active |
 | reflector-figure-17 | `figure17.png` | placeholder copy | Active |
+| reflector-figure-18 | `figure18.png` | placeholder copy | Active |
 
 ## Placeholder alt-text metadata
 
@@ -93,4 +94,8 @@ figures:
     file: figure17.png
     title: Specification orchestration placeholder figure
     alt_text: "Placeholder figure showing human intent stabilized through a specification layer, passed into scoped delegation and AI execution, then reconciled through reflective audit and specification synchronization before recursive continuation."
+  - id: reflector-figure-18
+    file: figure18.png
+    title: Recursive cognition coordination placeholder figure
+    alt_text: "Placeholder figure showing human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints as distributed cognition infrastructure for recursive coordination."
 ```
