@@ -1,11 +1,11 @@
 # Publication Readiness Audit Report
 
-Generated at: `2026-05-27T19:23:34Z`
+Generated at: `2026-05-27T22:17:55Z`
 
 ## Executive Summary
 
-- Total checks: **27**
-- Pass: **26**
+- Total checks: **30**
+- Pass: **29**
 - Warn: **1**
 - Fail: **0**
 
@@ -49,6 +49,9 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 | --- | --- | --- |
 | All referenced figure files exist | ✅ PASS | All 17 figure references resolve to files. |
 | Figure file formats are render-safe | ✅ PASS | All figure files use supported render-safe image formats. |
+| Referenced figures have prompt-preservation files | ✅ PASS | All referenced figures have prompt files in paper/figures/prompts/. |
+| Prompt files include recursive metadata headings | ✅ PASS | All figure prompt files contain required recursive-metadata headings. |
+| Referenced PNG dimensions are canonical | ✅ PASS | All referenced PNG figures match canonical dimensions. |
 | Figure blocks include captions | ✅ PASS | All 17 figure blocks include captions. |
 | Figure blocks include fig: labels | ✅ PASS | All 17 figure blocks include fig: labels. |
 | Referenced figures are listed in figures/manifest.md | ✅ PASS | All referenced figures are represented in figures/manifest.md. |

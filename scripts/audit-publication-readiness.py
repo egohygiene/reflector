@@ -251,6 +251,12 @@ def gather_checks() -> list[Check]:
         REPO_ROOT / "specs" / "publication" / "publication-workflow.spec.md",
         REPO_ROOT / "publication.json",
         REPO_ROOT / "CITATION.cff",
+        # Canonical metadata layer
+        REPO_ROOT / "metadata" / "publication.yaml",
+        REPO_ROOT / "metadata" / "repository.yaml",
+        REPO_ROOT / "metadata" / "authors.yaml",
+        REPO_ROOT / "metadata" / "citations.yaml",
+        REPO_ROOT / "metadata" / "renderers.yaml",
     ]
     missing = [str(path.relative_to(REPO_ROOT)) for path in required_paths if not path.exists()]
     add_check(
