@@ -5,18 +5,18 @@ The prior sections established the foundational control surfaces of Reflector: r
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth]{figure14.png}
+  \includegraphics[width=\linewidth]{figure12.png}
   \caption{Milestone execution placeholder: large goals are decomposed into scoped milestones that pass through AI-assisted execution, artifact generation, reflective audit, and synchronization checkpoints before reaching a stabilized state and advancing to the next recursive milestone.}
-  \label{fig:figure14}
+  \label{fig:figure12}
 \end{figure}
 
-\Cref{fig:figure14} captures the pacing model used throughout this section: recursive throughput remains useful only when advancement is periodically interrupted by bounded checkpoint-driven stabilization.
+\Cref{fig:figure12} captures the pacing model used throughout this section: recursive throughput remains useful only when advancement is periodically interrupted by bounded checkpoint-driven stabilization.
 
 \subsection{Why Recursive Systems Require Milestone Boundaries}
 
 Unbounded recursive execution tends to accumulate instability even when local outputs appear correct. Scope expands implicitly, assumptions age without revalidation, and artifact sets diverge faster than humans can reconstruct their joint state. Milestones counter this dynamic by introducing explicit stopping points where the system must produce a coherent snapshot before further continuation.
 
-In this sense, milestones are not project-management ornamentation; they are recursive stabilization boundaries. They pace recursive depth, bound interpretive workload, and create shared intervals at which both machine outputs and human judgments can be synchronized. Under bounded rationality, this pacing is essential: oversight quality degrades when evaluation must happen continuously rather than at inspectable checkpoints \cite{Simon1957ModelsMan,Sweller1988CognitiveLoad}.
+In this sense, milestones are not project-management ornamentation; they are recursive stabilization boundaries. They pace recursive depth, bound interpretive workload, and create shared intervals at which both machine outputs and human judgments can be synchronized. This pacing is essential because oversight quality degrades when evaluation must happen continuously rather than at inspectable checkpoints \cite{Sweller1988CognitiveLoad}.
 
 \subsection{Scoped Recursive Execution and Bounded Progression}
 
@@ -28,7 +28,7 @@ This scoped structure enables bounded recursive progression. Instead of attempti
 
 Synchronization in recursive systems is most effective when paced at milestone boundaries rather than deferred to end-of-project review. Milestone intervals provide regular opportunities to validate cross-artifact consistency, reassess assumptions, and confirm that continuation remains justified under current repository state.
 
-Practically, these intervals can align with publication checkpoints, repository stabilization events, build validation gates, or architecture review moments. The specific tooling may vary, but the systems function is constant: milestone boundaries convert continuous recursive generation into periodic synchronization events, reducing latent divergence before it compounds \cite{Lamport1978TimeClocks,Chandy1985DistributedSnapshots}.
+Practically, these intervals can align with publication checkpoints, repository stabilization events, build validation gates, or architecture review moments. The specific tooling may vary, but the systems function is constant: milestone boundaries convert continuous recursive generation into periodic synchronization events, reducing latent divergence before it compounds. The analogy to distributed synchronization is structural rather than literal---the checkpoint is the moment at which a consistent cross-artifact state is reconstructed before further propagation \cite{Lamport1978TimeClocks,Chandy1985DistributedSnapshots}.
 
 \subsection{Scoped Stabilization Cycles and Progressive Convergence}
 
@@ -38,7 +38,7 @@ This yields \textit{scoped convergence}: artifacts do not become globally final 
 
 \subsection{Human Cognitive Benefits of Milestone Execution}
 
-Milestone pacing improves not only technical coherence but also cognitive manageability. Recursive workflows can overwhelm operators when scope, state, and decision burden remain continuously open. Bounded milestones create decompression points where humans can interpret evidence, recover situational awareness, and make continuation decisions without tracking the entire recursive history in real time \cite{Hutchins1995CognitionWild}.
+Milestone pacing improves not only technical coherence but also cognitive manageability. Recursive workflows can overwhelm operators when scope, state, and decision burden remain continuously open. Bounded milestones create decompression points where humans can interpret evidence, recover situational awareness, and make continuation decisions without tracking the entire recursive history in real time. This aligns with distributed-cognition and cognitive-load findings that artifact-mediated coordination lowers individual interpretive burden in complex workflows \cite{Hutchins1995CognitionWild,Sweller1988CognitiveLoad}.
 
 This reduction in synchronization fatigue is operationally significant. When checkpoint cadence is predictable and scope is bounded, humans can sustain higher-quality governance over longer recursive horizons. Milestones therefore function as cognitive infrastructure as much as workflow infrastructure.
 
