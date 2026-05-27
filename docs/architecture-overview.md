@@ -37,6 +37,11 @@ Publication specifications are centered under `specs/publication/`, including:
 - renderer abstraction
 - arXiv publication orientation
 
+Additional reusable extraction layers:
+- `specs/workflows/` for recursive workflow and figure pipeline blueprints
+- `specs/synchronization/` for checkpoint and boundary contracts
+- `specs/repositories/` for portable publication repository architecture standards
+
 ## Workflow Organization
 
 Workflow logic is distributed across:
