@@ -1,6 +1,6 @@
 # Publication Readiness Audit Report
 
-Generated at: `2026-05-27T16:35:53Z`
+Generated at: `2026-05-27T16:39:49Z`
 
 ## Executive Summary
 
