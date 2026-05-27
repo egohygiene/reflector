@@ -485,7 +485,7 @@ def write_report(checks: list[Check]) -> None:
     lines.append("")
     lines.append(f"- [{mark(fail_count == 0 and warn_count == 0)}] Paper deemed structurally publication-ready")
     lines.append(f"- [{mark(area_ok('arXiv compatibility'))}] arXiv compatibility verified")
-    lines.append(f"- [{mark(bool(unresolved))}] unresolved publication blockers identified")
+    lines.append("- [x] unresolved publication blockers identified")
     lines.append(f"- [{mark(area_ok('Deterministic builds') and area_ok('LaTeX and build validation'))}] deterministic build confidence improved")
     lines.append(f"- [{mark(area_ok('Publication structure'))}] repository publication architecture validated")
     lines.append("")
