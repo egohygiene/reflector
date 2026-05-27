@@ -186,7 +186,8 @@ def main() -> int:
         return 1
 
     # Validate canonical author ORCID.
-    canonical_authors = meta_authors.get("authors", []) if isinstance(meta_authors.get("authors"), list) else []
+    _raw_authors = meta_authors.get("authors")
+    canonical_authors = _raw_authors if isinstance(_raw_authors, list) else []
     if not canonical_authors:
         has_error = True
         log_error("metadata/authors.yaml authors list is missing or empty.")
