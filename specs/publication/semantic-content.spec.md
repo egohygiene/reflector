@@ -70,4 +70,3 @@ This specification does not require:
 - immediate publisher-specific rewrites
 - renderer implementation work
 - a new document authoring platform
-

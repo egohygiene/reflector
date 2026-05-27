@@ -3,7 +3,7 @@
     "manifest_version": 1,
 
     "publication": {
-        "title": "Reflector: Reflective Development Systems for Recursive AI-Augmented Software Engineering",
+        "title": "reflector: reflective synchronization systems for recursive AI-assisted software engineering",
         "status": "draft",
         "repository": "https://github.com/egohygiene/reflector",
         "pages_url": "https://egohygiene.github.io/reflector/"
@@ -24,9 +24,14 @@
             "description": "Top-level LaTeX entrypoint. Thin orchestration wrapper: loads metadata, style, and bibliography resource, then inputs all content sections."
         },
         {
+            "path": "config/title.tex",
+            "usage": "include",
+            "description": "Canonical title source. Single source of truth for the paper title with intentional lowercase formatting. Defines \\papertitlemain, \\papertitlesubtitle, and \\papertitlefull macros."
+        },
+        {
             "path": "macros/metadata.tex",
             "usage": "include",
-            "description": "Paper-level metadata commands (title, author, ORCID, version status). Loaded before the publication style."
+            "description": "Paper-level metadata commands (title, author, ORCID, version status). Loaded before the publication style. Inputs config/title.tex for the canonical title."
         },
         {
             "path": "styles/reflector.sty",
@@ -149,6 +154,7 @@
         "output_dir": ".cache/out",
         "aux_dir": ".cache/aux",
         "texinputs": [
+            "./config//",
             "./styles//",
             "./macros//",
             "./sections//",

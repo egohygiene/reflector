@@ -84,4 +84,3 @@ Reflector already separates layers:
 - orchestration scripts/workflows: `scripts/`, `.github/workflows/`
 
 This architecture is a valid baseline for future renderer adapters.
-
