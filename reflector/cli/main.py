@@ -277,7 +277,7 @@ def huggingface(
     table.add_column("Field", style="cyan")
     table.add_column("Value")
     table.add_row("Enabled", "yes" if config.enabled else "no")
-    table.add_row("Space URL", config.space_url or "—")
+    table.add_row("Space URL", str(config.space_url) if config.space_url else "N/A")
 
     if check_sdk:
         table.add_row(
