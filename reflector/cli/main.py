@@ -8,6 +8,8 @@ Entry point for the `reflector` command. Provides subcommands for:
 - audit      Run the reflective audit pipeline
 - milestone  Inspect or advance milestone state
 - status     Show current reflector status
+- sync       Short alias for synchronize
+- huggingface  Inspect Hugging Face integration scaffold status
 """
 
 from __future__ import annotations
@@ -18,6 +20,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from reflector import __version__
+from reflector.integrations.huggingface import HuggingFaceIntegrationConfig
 from reflector.orchestration.milestone import MilestoneOrchestrator
 from reflector.synchronization.checkpoint import SynchronizationCheckpoint
 from reflector.audits.pipeline import AuditPipeline
@@ -107,13 +110,25 @@ def synchronize(
     """
     console.rule("[bold cyan]Synchronization Checkpoint")
 
-    checkpoint = SynchronizationCheckpoint()
+    _run_synchronization(boundary_id=boundary_id, list_boundaries=list_boundaries)
 
-    if list_boundaries:
-        checkpoint.list_boundaries(console)
-        return
 
-    checkpoint.evaluate(boundary_id=boundary_id, console=console)
+@app.command(name="sync")
+def sync(
+    boundary_id: str | None = typer.Argument(
+        None,
+        help="Synchronization boundary identifier to check or advance.",
+    ),
+    list_boundaries: bool = typer.Option(
+        False,
+        "--list",
+        "-l",
+        help="List all registered synchronization boundaries.",
+    ),
+) -> None:
+    """Alias for `reflector synchronize`."""
+    console.rule("[bold cyan]Synchronization Checkpoint")
+    _run_synchronization(boundary_id=boundary_id, list_boundaries=list_boundaries)
 
 
 @app.command()
@@ -231,3 +246,51 @@ def status() -> None:
             border_style="dim",
         )
     )
+
+
+@app.command()
+def huggingface(
+    metadata_path: str = typer.Option(
+        "metadata/repository.yaml",
+        "--metadata",
+        "-m",
+        help="Path to canonical repository metadata YAML.",
+    ),
+    check_sdk: bool = typer.Option(
+        False,
+        "--check-sdk",
+        help="Check whether `huggingface_hub` is installed in this environment.",
+    ),
+) -> None:
+    """Inspect Hugging Face integration scaffold status."""
+    import pathlib
+
+    console.rule("[bold white]Hugging Face Integration")
+    try:
+        config = HuggingFaceIntegrationConfig.from_repository_metadata(
+            pathlib.Path(metadata_path)
+        )
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="--metadata") from exc
+
+    table = Table(title="Hugging Face Integration", show_header=True, header_style="bold")
+    table.add_column("Field", style="cyan")
+    table.add_column("Value")
+    table.add_row("Enabled", "yes" if config.enabled else "no")
+    table.add_row("Space URL", config.space_url or "—")
+
+    if check_sdk:
+        table.add_row(
+            "SDK installed",
+            "yes" if config.sdk_available() else "no (install reflector with huggingface extra)",
+        )
+
+    console.print(table)
+
+
+def _run_synchronization(boundary_id: str | None, list_boundaries: bool) -> None:
+    checkpoint = SynchronizationCheckpoint()
+    if list_boundaries:
+        checkpoint.list_boundaries(console)
+        return
+    checkpoint.evaluate(boundary_id=boundary_id, console=console)
