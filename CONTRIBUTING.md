@@ -100,9 +100,9 @@ See [`docs/act.md`](./docs/act.md) for canonical `.actrc` defaults, workflow bou
 Install and run hooks locally:
 
 ```bash
-python -m pip install pre-commit
-pre-commit install
-pre-commit run --all-files
+task setup
+uv run pre-commit install
+uv run pre-commit run --all-files
 ```
 
 The hook set keeps checks lightweight and focused on repository hygiene,
