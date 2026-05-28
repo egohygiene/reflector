@@ -25,7 +25,9 @@ Reflector is a research and workflow system, not a trained model. The most natur
 - the paper PDF
 - the GitHub Pages landing page
 - the repository
-- future demos or interactive workflow visualizations
+- future demos or interactive workflow visualizations, such as architecture maps, audit walkthroughs, or synchronization lifecycle previews
+
+That keeps the first Space focused on discovery and explorable research context rather than pretending Reflector already ships a standalone model endpoint.
 
 ### 3. Use a dataset card only when artifacts exist
 
