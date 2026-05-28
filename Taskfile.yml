@@ -34,7 +34,7 @@ tasks:
   install:
     desc: Install reflector and local development dependencies
     cmds:
-      - '{{.PYTHON}} -m pip install -e ".[huggingface]" pytest pre-commit'
+      - '{{.PYTHON}} -m pip install -e ".[dev,huggingface]"'
 
   version:
     desc: Print reflector CLI version
@@ -83,7 +83,7 @@ tasks:
         {{.PYTHON}} -m pytest {{.PYTEST_ARGS}}
         status=$?
         if [ "$status" -eq 5 ]; then
-          echo "No tests discovered yet."
+          echo "No tests discovered yet (pytest exit code 5: no tests collected)."
           exit 0
         fi
         exit "$status"
@@ -100,7 +100,7 @@ tasks:
     cmds:
       - task: _pytest
         vars:
-          PYTEST_ARGS: "-q"
+          PYTEST_ARGS: "-q --maxfail=1"
 
   test-unit:
     desc: Run unit tests
@@ -167,4 +167,10 @@ tasks:
   clean:
     desc: Remove local cache artifacts
     cmds:
-      - rm -rf paper/.cache .pytest_cache .mypy_cache .ruff_cache
+      - |
+        set -eu
+        for cache_dir in paper/.cache .pytest_cache .mypy_cache .ruff_cache; do
+          if [ -d "$cache_dir" ]; then
+            rm -rf "$cache_dir"
+          fi
+        done
