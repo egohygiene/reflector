@@ -168,7 +168,10 @@ REQUIRED_WORKFLOWS = {
     "commitlint.yml",
 }
 
-CANONICAL_TITLE_FRAGMENT = "reflective synchronization systems for recursive ai-assisted software engineering"
+CANONICAL_TITLE_TEXT = "reflective synchronization systems for recursive ai-assisted software engineering"
+
+# Pattern that identifies canonically numbered figure PNG files (figure1.png … figureN.png).
+FIGURE_NAME_PATTERN = re.compile(r"^figure\d+\.png$")
 
 
 # ---------------------------------------------------------------------------
@@ -956,7 +959,7 @@ def audit_build_reproducibility(state: AuditState) -> None:
                 continue
             if png_file.name == "hero.png":
                 expected = HERO_DIMENSIONS
-            elif re.fullmatch(r"figure\d+\.png", png_file.name):
+            elif FIGURE_NAME_PATTERN.fullmatch(png_file.name):
                 expected = FIGURE_DIMENSIONS
             else:
                 continue
@@ -1138,8 +1141,8 @@ def audit_cognitive_coherence(state: AuditState) -> None:
     title_tex_path = PAPER_DIR / "config" / "title.tex"
     title_tex_text = read_text(title_tex_path) or ""
     pub_yaml_text = read_text(METADATA_DIR / "publication.yaml") or ""
-    title_in_tex = CANONICAL_TITLE_FRAGMENT in title_tex_text.lower()
-    title_in_yaml = CANONICAL_TITLE_FRAGMENT in pub_yaml_text.lower()
+    title_in_tex = CANONICAL_TITLE_TEXT in title_tex_text.lower()
+    title_in_yaml = CANONICAL_TITLE_TEXT in pub_yaml_text.lower()
     state.add(
         dim,
         "Terminology consistency",
@@ -1413,7 +1416,7 @@ def main() -> int:
     report = generate_report(state)
 
     timestamp = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    # Format timestamp for filename: replace colons with dashes
+    # Replace colons with dashes for filesystem compatibility (colons are invalid in filenames on Windows).
     safe_ts = timestamp.replace(":", "-")
     output_path = AUDITS_DIR / f"audit-{safe_ts}.md"
     AUDITS_DIR.mkdir(parents=True, exist_ok=True)
