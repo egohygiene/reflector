@@ -26,7 +26,7 @@ and automation workflows used to build and publish the draft.
 
 ## Local development workflow (Taskfile)
 
-Install [`task`](https://taskfile.dev/installation/) and then bootstrap locally:
+Install [`task`](https://taskfile.dev/installation/) and [`uv`](https://docs.astral.sh/uv/) and then bootstrap locally:
 
 ```bash
 task setup
@@ -40,6 +40,8 @@ task version
 task test
 task examples
 ```
+
+Python dependencies are managed locally with `uv` (`task setup` runs `uv sync --all-extras`).
 
 ## Publication links
 
@@ -65,20 +67,20 @@ To publish a local PDF into `docs/`:
 
 ## Reflector CLI
 
-Install the package:
+Set up the local environment:
 
 ```bash
-task install
+task setup
 ```
 
 Core commands:
 
-- `reflector run`
-- `reflector synchronize` (or `reflector sync`)
-- `reflector audit`
-- `reflector milestone`
-- `reflector status`
-- `reflector huggingface --check-sdk`
+- `uv run reflector run`
+- `uv run reflector synchronize` (or `uv run reflector sync`)
+- `uv run reflector audit`
+- `uv run reflector milestone`
+- `uv run reflector status`
+- `uv run reflector huggingface --check-sdk`
 
 ## Release and version metadata
 

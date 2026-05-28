@@ -29,22 +29,22 @@ tasks:
         echo "  task version"
         echo "  task test"
         echo "  task examples"
-        echo "  reflector --help"
+        echo "  uv run reflector --help"
 
   install:
-    desc: Install reflector and local development dependencies
+    desc: Sync reflector and local development dependencies with uv
     cmds:
-      - '{{.PYTHON}} -m pip install -e ".[dev,huggingface]"'
+      - uv sync --all-extras
 
   version:
     desc: Print reflector CLI version
     cmds:
-      - reflector --version
+      - uv run reflector --version
 
   run:
     desc: Run reflector workflow in dry-run mode
     cmds:
-      - reflector run --dry-run
+      - uv run reflector run --dry-run
 
   doctor:
     desc: Diagnose local environment and CLI availability
@@ -53,15 +53,10 @@ tasks:
         set -eu
         echo "Reflector doctor"
         echo "---------------"
-        {{.PYTHON}} --version
-        {{.PYTHON}} -m pip --version
-        {{.PYTHON}} -c "import reflector; print('✅ reflector package import OK')"
-        if command -v reflector >/dev/null 2>&1; then
-          echo "✅ reflector CLI found at $(command -v reflector)"
-        else
-          echo "❌ reflector CLI not found on PATH"
-          exit 1
-        fi
+        uv --version
+        uv run python --version
+        uv run reflector --version
+        uv run python -c "import reflector; print('✅ reflector package import OK')"
         if command -v latexmk >/dev/null 2>&1; then
           echo "✅ latexmk available"
         else
@@ -80,7 +75,7 @@ tasks:
     cmds:
       - |
         set +e
-        {{.PYTHON}} -m pytest {{.PYTEST_ARGS}}
+        uv run pytest {{.PYTEST_ARGS}}
         status=$?
         if [ "$status" -eq 5 ]; then
           echo "No tests discovered yet (pytest exit code 5: no tests collected)."
@@ -159,10 +154,10 @@ tasks:
     desc: Run lightweight CLI examples for local experimentation
     aliases: [demo, sandbox]
     cmds:
-      - reflector --help
-      - reflector milestone --list
-      - reflector status
-      - reflector run --dry-run
+      - uv run reflector --help
+      - uv run reflector milestone --list
+      - uv run reflector status
+      - uv run reflector run --dry-run
 
   clean:
     desc: Remove local cache artifacts
