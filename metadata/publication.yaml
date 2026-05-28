@@ -86,3 +86,41 @@ preferred_citation:
   # volume: "[VOLUME]"
   # issue: "[ISSUE]"
   # pages: "[PAGES]"
+
+# ---------------------------------------------------------------------------
+# Academic indexing compatibility
+#
+# Declares readiness and metadata availability for major academic
+# discovery ecosystems.  These fields support future automatic
+# indexing and portfolio integration without coupling to any
+# single platform.
+# ---------------------------------------------------------------------------
+
+academic_indexing:
+  google_scholar:
+    ready: true
+    notes: >-
+      CITATION.cff, abstract, and keywords support Google Scholar indexing
+      via GitHub repository metadata discovery.
+  semantic_scholar:
+    ready: false
+    notes: >-
+      Pending DOI or arXiv submission for Semantic Scholar ingestion.
+  openalex:
+    ready: false
+    notes: >-
+      Pending DOI registration for OpenAlex record creation.
+  crossref:
+    ready: false
+    notes: >-
+      Pending journal/conference acceptance and DOI assignment via Crossref.
+  zenodo:
+    ready: false
+    notes: >-
+      .zenodo.json scaffold complete; pending GitHub release to trigger
+      Zenodo archival deposit and concept DOI assignment.
+  orcid:
+    ready: true
+    notes: >-
+      ORCID iD present in CITATION.cff, .zenodo.json, and metadata layer.
+      Auto-update via Zenodo or manual ORCID Works API pending DOI assignment.
