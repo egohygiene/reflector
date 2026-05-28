@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 # build-paper.sh — Build LaTeX paper(s) to PDF.
 
 set -euo pipefail

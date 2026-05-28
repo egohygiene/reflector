@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """Audit entry and report schemas.
 
 Defines the typed data structures for individual audit log entries and

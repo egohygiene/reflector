@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 # validate-texlive-compatibility.py — Validate TeXLive compatibility for the paper.
 
 from __future__ import annotations

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """Bounded recursive workflow runner.
 
 Implements the MVP workflow described in the issue:
