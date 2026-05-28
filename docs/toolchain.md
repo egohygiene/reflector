@@ -9,7 +9,7 @@ This document describes the local development toolchain required to build the Re
 | `latexmk` | Orchestrates multi-pass LaTeX compilation | 4.75+ |
 | `pdflatex` | Compiles `.tex` source to PDF | TeXLive 2025 |
 | `biber` | Processes bibliography via biblatex/biber backend | 2.19+ |
-| `uv` | Manages local Python environments and dependencies | 0.4+ |
+| `uv` | Manages local Python environments and dependencies | 0.11+ |
 
 These executables must be available in `PATH` to build and develop locally.
 
