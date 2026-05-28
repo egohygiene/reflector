@@ -87,7 +87,7 @@ keywords:
 # License and version
 # ---------------------------------------------------------------------------
 
-license: MIT
+license: Apache-2.0
 
 version: 0.0.1
 
