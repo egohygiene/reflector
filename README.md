@@ -21,6 +21,7 @@ and automation workflows used to build and publish the draft.
 - AI onboarding: [`docs/ai-onboarding.md`](./docs/ai-onboarding.md)
 - Workflow overview: [`docs/workflows.md`](./docs/workflows.md)
 - Publication architecture: [`docs/publication-architecture.md`](./docs/publication-architecture.md)
+- Toolchain requirements: [`docs/toolchain.md`](./docs/toolchain.md)
 
 ## Publication links
 
@@ -31,6 +32,8 @@ and automation workflows used to build and publish the draft.
 - Progress dashboard: [`PROGRESS.md`](./PROGRESS.md)
 
 ## Build instructions
+
+Requires `latexmk`, `pdflatex`, and `biber`. See [`docs/toolchain.md`](./docs/toolchain.md) for installation steps.
 
 ```bash
 ./scripts/build-paper.sh paper
