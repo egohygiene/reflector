@@ -34,6 +34,10 @@ dependencies = [
 huggingface = [
   "huggingface_hub>=0.33.0",
 ]
+dev = [
+  "pytest>=9.0.0",
+  "pre-commit>=4.0.0",
+]
 
 [project.scripts]
 reflector = "reflector.cli.main:app"
