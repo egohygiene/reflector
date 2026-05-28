@@ -611,7 +611,7 @@ def gather_checks() -> list[Check]:
                 "Verify publication synchronization",
                 "Deploy GitHub Pages",
                 "docs/publication.json",
-                "docs/reflector-latest.pdf",
+                "docs/reflector.pdf",
             )
         ),
         "Pages workflow includes build, synchronization, verification, and deploy steps.",
@@ -625,7 +625,6 @@ def gather_checks() -> list[Check]:
         all(
             token in docs_index_text
             for token in (
-                "./reflector-latest.pdf",
                 "./reflector.pdf",
                 "./publication.json",
                 "./figures/hero.png",

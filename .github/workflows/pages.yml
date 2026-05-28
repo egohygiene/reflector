@@ -68,11 +68,9 @@ jobs:
           set -euo pipefail
 
           PAPER_SLUG="reflector"
-          CACHE_BUSTER="${GITHUB_SHA::12}"
           PDF_SOURCE="paper/.cache/out/paper.pdf"
           HERO_SOURCE="paper/figures/hero.png"
           DOCS_PDF="docs/${PAPER_SLUG}.pdf"
-          DOCS_LATEST_PDF="docs/${PAPER_SLUG}-latest.pdf"
           DOCS_HERO_DIR="docs/figures"
           DOCS_HERO="${DOCS_HERO_DIR}/hero.png"
           DOCS_MANIFEST="docs/publication.json"
@@ -89,22 +87,18 @@ jobs:
 
           mkdir --parents "${DOCS_HERO_DIR}"
           cp "${PDF_SOURCE}" "${DOCS_PDF}"
-          cp "${PDF_SOURCE}" "${DOCS_LATEST_PDF}"
           cp "${HERO_SOURCE}" "${DOCS_HERO}"
-          sed -i "s/__CACHE_BUSTER__/${CACHE_BUSTER}/g" docs/index.html
 
           jq -cn \
             --arg paper "${PAPER_SLUG}" \
             --arg sha "${GITHUB_SHA}" \
-            --arg short_sha "${CACHE_BUSTER}" \
+            --arg short_sha "${GITHUB_SHA::12}" \
             --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --arg pdf "${PAPER_SLUG}.pdf" \
-            --arg latest_pdf "${PAPER_SLUG}-latest.pdf" \
-            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, pdf: $pdf, latest_pdf: $latest_pdf}' \
+            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, pdf: $pdf}' \
             > "${DOCS_MANIFEST}"
 
           echo "Published PDF: ${DOCS_PDF}"
-          echo "Published latest PDF: ${DOCS_LATEST_PDF}"
           echo "Published hero image: ${DOCS_HERO}"
           echo "Publication manifest: ${DOCS_MANIFEST}"
 
@@ -121,13 +115,11 @@ jobs:
           for required_path in \
             "${PDF_SOURCE}" \
             "${DOCS_PDF}" \
-            "docs/reflector-latest.pdf" \
             "docs/figures/hero.png" \
             "docs/index.html" \
             "docs/publication.json" \
             "_site/index.html" \
             "_site/reflector.pdf" \
-            "_site/reflector-latest.pdf" \
             "_site/figures/hero.png" \
             "_site/publication.json"
           do
@@ -153,11 +145,10 @@ jobs:
           echo "Published routes:"
           echo "- /reflector/"
           echo "- /reflector/reflector.pdf"
-          echo "- /reflector/reflector-latest.pdf"
           echo "- /reflector/figures/hero.png"
 
           grep -q 'src="./figures/hero.png"' docs/index.html
-          grep -q 'href="./reflector-latest.pdf?v=' docs/index.html
+          grep -q 'href="./reflector.pdf"' docs/index.html
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v6
