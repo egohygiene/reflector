@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """Reflective audit pipeline.
 
 Implements the four-stage audit pipeline described in reflective_auditing.tex:

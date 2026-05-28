@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """audit-holistic.py — Final holistic publication and recursive synchronization audit.
 
 Evaluates the Reflector repository holistically as:

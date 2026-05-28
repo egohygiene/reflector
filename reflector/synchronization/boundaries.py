@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """Synchronization boundary definitions.
 
 Defines the types and structures for synchronization boundaries — the

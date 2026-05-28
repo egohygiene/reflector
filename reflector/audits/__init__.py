@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """Reflector audits package.
 
 Implements the reflective audit pipeline described in reflective_auditing.tex.

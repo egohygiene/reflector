@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
 """Governance contract schemas.
 
 Defines the typed governance contracts that constrain agent execution scope,
