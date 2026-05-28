@@ -20,6 +20,7 @@ and automation workflows used to build and publish the draft.
 - Repository architecture: [`docs/architecture-overview.md`](./docs/architecture-overview.md)
 - AI onboarding: [`docs/ai-onboarding.md`](./docs/ai-onboarding.md)
 - Workflow overview: [`docs/workflows.md`](./docs/workflows.md)
+- Local GitHub Actions testing with `act`: [`docs/act.md`](./docs/act.md)
 - Publication architecture: [`docs/publication-architecture.md`](./docs/publication-architecture.md)
 - Toolchain requirements: [`docs/toolchain.md`](./docs/toolchain.md)
 

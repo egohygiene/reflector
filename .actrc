@@ -1,0 +1,7 @@
+--graph
+--action-cache-path ./.cache/act/actions
+--cache-server-path ./.cache/act/actcache
+--directory .
+--json
+--platform ubuntu-latest=node:16-buster-slim
+--no-cache-server

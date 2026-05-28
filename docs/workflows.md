@@ -59,6 +59,13 @@ Synchronization review checkpoints:
 2. Keep source declaration and output expectations deterministic.
 3. Maintain reproducibility by avoiding hidden build assumptions.
 
+## 8) Local GitHub Actions Workflow
+
+1. Use `act` with the repository `.actrc` defaults for deterministic local execution.
+2. Run `act --list` to inspect available local jobs.
+3. Prefer testing synchronization and build workflows locally before pushing.
+4. Use hosted GitHub Actions for deployment/release workflows requiring cloud permissions.
+
 ## Reusable Blueprint Specs
 
 - `specs/workflows/recursive-issue-orchestration.spec.md`
