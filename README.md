@@ -23,6 +23,23 @@ and automation workflows used to build and publish the draft.
 - Publication architecture: [`docs/publication-architecture.md`](./docs/publication-architecture.md)
 - Toolchain requirements: [`docs/toolchain.md`](./docs/toolchain.md)
 
+## Local development workflow (Taskfile)
+
+Install [`task`](https://taskfile.dev/installation/) and then bootstrap locally:
+
+```bash
+task setup
+```
+
+Core local workflow:
+
+```bash
+task doctor
+task version
+task test
+task examples
+```
+
 ## Publication links
 
 - GitHub Pages: https://egohygiene.github.io/reflector/
@@ -36,7 +53,7 @@ and automation workflows used to build and publish the draft.
 Requires `latexmk`, `pdflatex`, and `biber`. See [`docs/toolchain.md`](./docs/toolchain.md) for installation steps.
 
 ```bash
-./scripts/build-paper.sh paper
+task build
 ```
 
 To publish a local PDF into `docs/`:
@@ -50,7 +67,7 @@ To publish a local PDF into `docs/`:
 Install the package:
 
 ```bash
-python -m pip install -e ".[huggingface]"
+task install
 ```
 
 Core commands:

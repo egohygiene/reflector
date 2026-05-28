@@ -51,14 +51,33 @@ Future publisher targets (IEEE, ACM, etc.) can be supported by adding a new
 ## Building Papers
 
 ```bash
-# Build a specific paper
-./scripts/build-paper.sh paper
+# Bootstrap local setup
+task setup
+
+# Build the paper
+task build
 
 # Build all papers
 ./scripts/build-paper.sh --all
 
 # Watch and auto-rebuild during development
 ./scripts/watch-paper.sh paper
+```
+
+## Local Testing and CLI Verification
+
+```bash
+# Run lint and local validation hooks
+task lint
+
+# Run test workflow
+task test
+
+# Verify local CLI behavior
+task doctor
+task version
+task run
+task examples
 ```
 
 ## Style Guidelines

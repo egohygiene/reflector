@@ -1,0 +1,170 @@
+version: "3"
+
+vars:
+  PYTHON: '{{default "python3" .PYTHON}}'
+
+tasks:
+  default:
+    desc: Show available development tasks
+    cmds:
+      - task: help
+
+  help:
+    desc: List available tasks
+    cmds:
+      - task --list
+
+  setup:
+    desc: Bootstrap local development environment and verify CLI
+    deps:
+      - install
+    cmds:
+      - task: doctor
+      - task: version
+      - |
+        echo ""
+        echo "✅ Reflector setup complete."
+        echo ""
+        echo "Try:"
+        echo "  task version"
+        echo "  task test"
+        echo "  task examples"
+        echo "  reflector --help"
+
+  install:
+    desc: Install reflector and local development dependencies
+    cmds:
+      - '{{.PYTHON}} -m pip install -e ".[huggingface]" pytest pre-commit'
+
+  version:
+    desc: Print reflector CLI version
+    cmds:
+      - reflector --version
+
+  run:
+    desc: Run reflector workflow in dry-run mode
+    cmds:
+      - reflector run --dry-run
+
+  doctor:
+    desc: Diagnose local environment and CLI availability
+    cmds:
+      - |
+        set -eu
+        echo "Reflector doctor"
+        echo "---------------"
+        {{.PYTHON}} --version
+        {{.PYTHON}} -m pip --version
+        {{.PYTHON}} -c "import reflector; print('✅ reflector package import OK')"
+        if command -v reflector >/dev/null 2>&1; then
+          echo "✅ reflector CLI found at $(command -v reflector)"
+        else
+          echo "❌ reflector CLI not found on PATH"
+          exit 1
+        fi
+        if command -v latexmk >/dev/null 2>&1; then
+          echo "✅ latexmk available"
+        else
+          echo "⚠️  latexmk not found (required for paper builds)"
+        fi
+        if command -v biber >/dev/null 2>&1; then
+          echo "✅ biber available"
+        else
+          echo "⚠️  biber not found (required for bibliography builds)"
+        fi
+
+  _pytest:
+    internal: true
+    vars:
+      PYTEST_ARGS: '{{default "" .PYTEST_ARGS}}'
+    cmds:
+      - |
+        set +e
+        {{.PYTHON}} -m pytest {{.PYTEST_ARGS}}
+        status=$?
+        if [ "$status" -eq 5 ]; then
+          echo "No tests discovered yet."
+          exit 0
+        fi
+        exit "$status"
+
+  test:
+    desc: Run local test workflow
+    cmds:
+      - task: test-fast
+      - task: test-unit
+      - task: test-integration
+
+  test-fast:
+    desc: Run fast local tests
+    cmds:
+      - task: _pytest
+        vars:
+          PYTEST_ARGS: "-q"
+
+  test-unit:
+    desc: Run unit tests
+    cmds:
+      - task: _pytest
+        vars:
+          PYTEST_ARGS: "-q"
+
+  test-integration:
+    desc: Run integration tests
+    cmds:
+      - task: _pytest
+        vars:
+          PYTEST_ARGS: "-q -m integration"
+
+  test-ci:
+    desc: Run CI-like local checks
+    cmds:
+      - task: lint
+      - task: test
+
+  lint:
+    desc: Run repository lint and validation hooks
+    cmds:
+      - |
+        if command -v pre-commit >/dev/null 2>&1; then
+          pre-commit run --all-files
+        else
+          echo "pre-commit not found. Run 'task install' first."
+          exit 1
+        fi
+
+  format:
+    desc: Run LaTeX formatter hook (when available)
+    cmds:
+      - |
+        if command -v pre-commit >/dev/null 2>&1; then
+          pre-commit run latexindent-format --all-files
+        else
+          echo "pre-commit not found. Run 'task install' first."
+          exit 1
+        fi
+
+  build:
+    desc: Build the paper locally
+    cmds:
+      - ./scripts/build-paper.sh paper
+
+  audit:
+    desc: Run local repository audit commands
+    cmds:
+      - '{{.PYTHON}} scripts/validate-metadata.py'
+      - '{{.PYTHON}} scripts/audit-publication-readiness.py'
+
+  examples:
+    desc: Run lightweight CLI examples for local experimentation
+    aliases: [demo, sandbox]
+    cmds:
+      - reflector --help
+      - reflector milestone --list
+      - reflector status
+      - reflector run --dry-run
+
+  clean:
+    desc: Remove local cache artifacts
+    cmds:
+      - rm -rf paper/.cache .pytest_cache .mypy_cache .ruff_cache
