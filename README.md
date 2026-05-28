@@ -45,6 +45,23 @@ To publish a local PDF into `docs/`:
 ./scripts/build-paper.sh paper --publish
 ```
 
+## Reflector CLI
+
+Install the package:
+
+```bash
+python -m pip install -e ".[huggingface]"
+```
+
+Core commands:
+
+- `reflector run`
+- `reflector synchronize` (or `reflector sync`)
+- `reflector audit`
+- `reflector milestone`
+- `reflector status`
+- `reflector huggingface --check-sdk`
+
 ## Release and version metadata
 
 - Current version: [`VERSION`](./VERSION) (`0.0.1`)
