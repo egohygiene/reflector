@@ -63,7 +63,7 @@ figures:
     file: figure2.png
     section: recursive_drift
     label: "fig:figure2"
-    caption: "Placeholder conceptual recursive drift flow used to anchor the section's intent-to-divergence narrative."
+    caption: "Recursive drift accumulation: locally small divergences between intent, artifacts, and execution context compound into system-level misalignment and rising synchronization pressure across recursive execution cycles."
     state: placeholder
     dimensions: "1600x900"
     title: Recursive drift flow
@@ -75,7 +75,7 @@ figures:
     file: figure3.png
     section: reflective_auditing
     label: "fig:figure3"
-    caption: "Conceptual placeholder for the reflective auditing loop: human intent is delegated into AI execution, materialized as artifacts, audited at synchronization checkpoints, evaluated for drift, and either corrected or permitted to continue recursively."
+    caption: "Reflective auditing loop: human intent is delegated into AI execution, materialized as artifacts, audited at synchronization checkpoints, evaluated for drift, and either corrected or permitted to continue recursively."
     state: placeholder
     dimensions: "1600x900"
     title: Reflective auditing loop
@@ -100,8 +100,8 @@ figures:
     section: "reflector_framework; visual_summary"
     label: "fig:figure5; fig:visual-summary-lifecycle"
     caption: |
-      reflector_framework: "Reflector architecture placeholder: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation."
-      visual_summary: "Visual lifecycle compression placeholder: intent, delegation, execution, artifacts, audit, and synchronization arranged as a recursive continuation loop under governance constraints."
+      reflector_framework: "Reflector architecture: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation."
+      visual_summary: "Visual lifecycle compression: intent, delegation, execution, artifacts, audit, and synchronization arranged as a recursive continuation loop under governance constraints."
     state: placeholder
     dimensions: "1600x900"
     title: Reflector architecture / Visual lifecycle compression
@@ -113,7 +113,7 @@ figures:
     file: figure6.png
     section: mixed_initiative_recursive_systems
     label: "fig:figure6"
-    caption: "Mixed-initiative recursive collaboration loop placeholder: human intent and AI execution are bidirectionally coupled through a specification layer, artifact generation, reflective audit, and synchronization checkpoints, forming a recursive collaboration cycle bounded by human governance."
+    caption: "Mixed-initiative recursive collaboration loop: human intent and AI execution are bidirectionally coupled through a specification layer, artifact generation, reflective audit, and synchronization checkpoints, forming a recursive collaboration cycle bounded by human governance."
     state: placeholder
     dimensions: "1600x900"
     title: Mixed-initiative recursive collaboration loop
@@ -125,7 +125,7 @@ figures:
     file: figure7.png
     section: operational_demonstration
     label: "fig:figure7"
-    caption: "Operational workflow placeholder: scoped issue orchestration aligns intent to specification context, executes through AI-assisted artifact generation, then passes through reflective audit and synchronization review before repository stabilization and recursive continuation."
+    caption: "Operational workflow: scoped issue orchestration aligns intent to specification context, executes through AI-assisted artifact generation, then passes through reflective audit and synchronization review before repository stabilization and recursive continuation."
     state: placeholder
     dimensions: "1600x900"
     title: Operational workflow
@@ -137,7 +137,7 @@ figures:
     file: figure8.png
     section: implementation_examples
     label: "fig:figure8"
-    caption: "Implementation architecture placeholder: specification artifacts anchor scoped issue execution, AI-assisted generation produces repository-committed outputs, build validation and reflective audit checkpoints reconcile artifacts against architectural intent, and publication pipelines assemble final outputs from synchronized repository state."
+    caption: "Implementation architecture: specification artifacts anchor scoped issue execution, AI-assisted generation produces repository-committed outputs, build validation and reflective audit checkpoints reconcile artifacts against architectural intent, and publication pipelines assemble final outputs from synchronized repository state."
     state: placeholder
     dimensions: "1600x900"
     title: Implementation architecture
@@ -149,7 +149,7 @@ figures:
     file: figure9.png
     section: case_studies
     label: "fig:figure9"
-    caption: "Recursive orchestration workflow placeholder: a human goal is refined into a specification, decomposed into a scoped issue, executed with AI assistance, producing a generated artifact that passes through a reflective audit and synchronization checkpoint before repository stabilization, followed by recursive iteration toward the next objective."
+    caption: "Recursive orchestration workflow: a human goal is refined into a specification, decomposed into a scoped issue, executed with AI assistance, producing a generated artifact that passes through a reflective audit and synchronization checkpoint before repository stabilization, followed by recursive iteration toward the next objective."
     state: placeholder
     dimensions: "1600x900"
     title: Recursive orchestration workflow
@@ -174,8 +174,8 @@ figures:
     section: "future_directions; visual_summary"
     label: "fig:figure11; fig:visual-summary-systems-map"
     caption: |
-      future_directions: "Future recursive systems ecosystem placeholder: reflective cognition, synchronization infrastructure, recursive publication, mixed-initiative AI workflows, visual compression, and human governance integrated as a coordinated collaboration stack."
-      visual_summary: "Visual systems map placeholder: recursive drift pressure, reflective audits, synchronization checkpoints, governance layers, mixed-initiative collaboration, and publication artifacts composed into a single stabilization infrastructure view."
+      future_directions: "Future recursive systems ecosystem: reflective cognition, synchronization infrastructure, recursive publication, mixed-initiative AI workflows, visual compression, and human governance integrated as a coordinated collaboration stack."
+      visual_summary: "Visual systems map: recursive drift pressure, reflective audits, synchronization checkpoints, governance layers, mixed-initiative collaboration, and publication artifacts composed into a single stabilization infrastructure view."
     state: placeholder
     dimensions: "1600x900"
     title: Future systems ecosystem / Visual systems map
@@ -187,7 +187,7 @@ figures:
     file: figure12.png
     section: milestone_execution
     label: "fig:figure12"
-    caption: "Milestone execution placeholder: large goals are decomposed into scoped milestones that pass through AI-assisted execution, artifact generation, reflective audit, and synchronization checkpoints before reaching a stabilized state and advancing to the next recursive milestone."
+    caption: "Milestone execution: large goals are decomposed into scoped milestones that pass through AI-assisted execution, artifact generation, reflective audit, and synchronization checkpoints before reaching a stabilized state and advancing to the next recursive milestone."
     state: placeholder
     dimensions: "1600x900"
     title: Milestone execution flow
@@ -211,7 +211,7 @@ figures:
     file: figure16.png
     section: implementation_examples
     label: "fig:figure16"
-    caption: "Repository synchronization placeholder: human intent is stabilized through specifications, materialized into repository state through AI execution, transformed into generated artifacts, evaluated through reflective audit, and reconciled at synchronization checkpoints that drive recursive repository evolution."
+    caption: "Repository synchronization: human intent is stabilized through specifications, materialized into repository state through AI execution, transformed into generated artifacts, evaluated through reflective audit, and reconciled at synchronization checkpoints that drive recursive repository evolution."
     state: placeholder
     dimensions: "1600x900"
     title: Repository synchronization flow
@@ -223,7 +223,7 @@ figures:
     file: figure17.png
     section: implementation_examples
     label: "fig:figure17"
-    caption: "Specification orchestration placeholder: human intent is stabilized by a specification layer, translated into scoped delegation and AI execution, materialized as generated artifacts, evaluated through reflective audit, reconciled through specification synchronization, and then re-authorized for recursive continuation."
+    caption: "Specification orchestration: human intent is stabilized by a specification layer, translated into scoped delegation and AI execution, materialized as generated artifacts, evaluated through reflective audit, reconciled through specification synchronization, and then re-authorized for recursive continuation."
     state: placeholder
     dimensions: "1600x900"
     title: Specification orchestration flow
@@ -235,7 +235,7 @@ figures:
     file: figure18.png
     section: cognitive_load_recursive_coordination
     label: "fig:figure18"
-    caption: "Recursive cognition coordination placeholder: human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints form a distributed cognition stack that supports recursive coordination and inspectable continuation decisions."
+    caption: "Recursive cognition coordination: human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints form a distributed cognition stack that supports recursive coordination and inspectable continuation decisions."
     state: placeholder
     dimensions: "1600x900"
     title: Recursive cognition coordination stack
@@ -247,7 +247,7 @@ figures:
     file: figure19.png
     section: synchronization
     label: "fig:figure19"
-    caption: "Recursive governance and alignment maintenance placeholder: human intent is translated into governance constraints and specifications, passed through bounded AI execution and generated artifacts, then reconciled through reflective audit and alignment checkpoints before recursive continuation."
+    caption: "Recursive governance and alignment maintenance: human intent is translated into governance constraints and specifications, passed through bounded AI execution and generated artifacts, then reconciled through reflective audit and alignment checkpoints before recursive continuation."
     state: placeholder
     dimensions: "1600x900"
     title: Recursive governance and alignment maintenance

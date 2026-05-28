@@ -34,7 +34,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Placeholder conceptual recursive drift flow used to anchor the section's intent-to-divergence narrative.
+> Recursive drift accumulation: locally small divergences between intent, artifacts, and execution context compound into system-level misalignment and rising synchronization pressure across recursive execution cycles.
 
 ---
 
@@ -48,7 +48,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Conceptual placeholder for the reflective auditing loop: human intent is delegated into AI execution, materialized as artifacts, audited at synchronization checkpoints, evaluated for drift, and either corrected or permitted to continue recursively.
+> Reflective auditing loop: human intent is delegated into AI execution, materialized as artifacts, audited at synchronization checkpoints, evaluated for drift, and either corrected or permitted to continue recursively.
 
 ---
 
@@ -62,7 +62,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Reflector architecture placeholder: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation.
+> Reflector architecture: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation.
 
 ---
 
@@ -76,7 +76,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Visual lifecycle compression placeholder: intent, delegation, execution, artifacts, audit, and synchronization arranged as a recursive continuation loop under governance constraints.
+> Visual lifecycle compression: intent, delegation, execution, artifacts, audit, and synchronization arranged as a recursive continuation loop under governance constraints.
 
 ---
 
@@ -90,7 +90,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Mixed-initiative recursive collaboration loop placeholder: human intent and AI execution are bidirectionally coupled through a specification layer, artifact generation, reflective audit, and synchronization checkpoints, forming a recursive collaboration cycle bounded by human governance.
+> Mixed-initiative recursive collaboration loop: human intent and AI execution are bidirectionally coupled through a specification layer, artifact generation, reflective audit, and synchronization checkpoints, forming a recursive collaboration cycle bounded by human governance.
 
 ---
 
@@ -104,7 +104,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Operational workflow placeholder: scoped issue orchestration aligns intent to specification context, executes through AI-assisted artifact generation, then passes through reflective audit and synchronization review before repository stabilization and recursive continuation.
+> Operational workflow: scoped issue orchestration aligns intent to specification context, executes through AI-assisted artifact generation, then passes through reflective audit and synchronization review before repository stabilization and recursive continuation.
 
 ---
 
@@ -118,7 +118,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Implementation architecture placeholder: specification artifacts anchor scoped issue execution, AI-assisted generation produces repository-committed outputs, build validation and reflective audit checkpoints reconcile artifacts against architectural intent, and publication pipelines assemble final outputs from synchronized repository state.
+> Implementation architecture: specification artifacts anchor scoped issue execution, AI-assisted generation produces repository-committed outputs, build validation and reflective audit checkpoints reconcile artifacts against architectural intent, and publication pipelines assemble final outputs from synchronized repository state.
 
 ---
 
@@ -132,7 +132,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Recursive orchestration workflow placeholder: a human goal is refined into a specification, decomposed into a scoped issue, executed with AI assistance, producing a generated artifact that passes through a reflective audit and synchronization checkpoint before repository stabilization, followed by recursive iteration toward the next objective.
+> Recursive orchestration workflow: a human goal is refined into a specification, decomposed into a scoped issue, executed with AI assistance, producing a generated artifact that passes through a reflective audit and synchronization checkpoint before repository stabilization, followed by recursive iteration toward the next objective.
 
 ---
 
@@ -160,7 +160,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Future recursive systems ecosystem placeholder: reflective cognition, synchronization infrastructure, recursive publication, mixed-initiative AI workflows, visual compression, and human governance integrated as a coordinated collaboration stack.
+> Future recursive systems ecosystem: reflective cognition, synchronization infrastructure, recursive publication, mixed-initiative AI workflows, visual compression, and human governance integrated as a coordinated collaboration stack.
 
 ---
 
@@ -174,7 +174,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Visual systems map placeholder: recursive drift pressure, reflective audits, synchronization checkpoints, governance layers, mixed-initiative collaboration, and publication artifacts composed into a single stabilization infrastructure view.
+> Visual systems map: recursive drift pressure, reflective audits, synchronization checkpoints, governance layers, mixed-initiative collaboration, and publication artifacts composed into a single stabilization infrastructure view.
 
 ---
 
@@ -188,7 +188,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Milestone execution placeholder: large goals are decomposed into scoped milestones that pass through AI-assisted execution, artifact generation, reflective audit, and synchronization checkpoints before reaching a stabilized state and advancing to the next recursive milestone.
+> Milestone execution: large goals are decomposed into scoped milestones that pass through AI-assisted execution, artifact generation, reflective audit, and synchronization checkpoints before reaching a stabilized state and advancing to the next recursive milestone.
 
 ---
 
@@ -202,7 +202,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Repository synchronization placeholder: human intent is stabilized through specifications, materialized into repository state through AI execution, transformed into generated artifacts, evaluated through reflective audit, and reconciled at synchronization checkpoints that drive recursive repository evolution.
+> Repository synchronization: human intent is stabilized through specifications, materialized into repository state through AI execution, transformed into generated artifacts, evaluated through reflective audit, and reconciled at synchronization checkpoints that drive recursive repository evolution.
 
 ---
 
@@ -216,7 +216,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Specification orchestration placeholder: human intent is stabilized by a specification layer, translated into scoped delegation and AI execution, materialized as generated artifacts, evaluated through reflective audit, reconciled through specification synchronization, and then re-authorized for recursive continuation.
+> Specification orchestration: human intent is stabilized by a specification layer, translated into scoped delegation and AI execution, materialized as generated artifacts, evaluated through reflective audit, reconciled through specification synchronization, and then re-authorized for recursive continuation.
 
 ---
 
@@ -230,7 +230,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Recursive cognition coordination placeholder: human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints form a distributed cognition stack that supports recursive coordination and inspectable continuation decisions.
+> Recursive cognition coordination: human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints form a distributed cognition stack that supports recursive coordination and inspectable continuation decisions.
 
 ---
 
@@ -244,7 +244,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Recursive governance and alignment maintenance placeholder: human intent is translated into governance constraints and specifications, passed through bounded AI execution and generated artifacts, then reconciled through reflective audit and alignment checkpoints before recursive continuation.
+> Recursive governance and alignment maintenance: human intent is translated into governance constraints and specifications, passed through bounded AI execution and generated artifacts, then reconciled through reflective audit and alignment checkpoints before recursive continuation.
 
 ---
 
