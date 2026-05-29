@@ -1,6 +1,6 @@
 # Code of Conduct
 
-Reflector is a research-oriented open-source project. Contributors are expected to keep discussion respectful, technically grounded, and constructive.
+reflector is a research-oriented open-source project. Contributors are expected to keep discussion respectful, technically grounded, and constructive.
 
 ## Expected behavior
 

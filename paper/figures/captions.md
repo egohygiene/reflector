@@ -1,6 +1,6 @@
 # Figure Caption Registry
 
-Centralized registry of all figure captions, labels, and section placements for the Reflector paper.
+Centralized registry of all figure captions, labels, and section placements for the reflector paper.
 Caption text here is the canonical source. Any update to a caption must be applied to the corresponding
 `\caption{}` call in the LaTeX section file and kept in sync with this registry.
 
@@ -52,7 +52,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 
 ---
 
-### figure5.png — Reflector Framework
+### figure5.png — reflector Framework
 
 | Field | Value |
 | --- | --- |
@@ -62,7 +62,7 @@ See [`manifest.md`](manifest.md) for full figure metadata and [`README.md`](READ
 | **State** | placeholder |
 
 **Caption:**
-> Reflector architecture: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation.
+> reflector architecture: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation.
 
 ---
 

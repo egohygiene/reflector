@@ -52,6 +52,6 @@ docs/          # public-facing publication/documentation surface
 
 ---
 
-# Reflector Alignment
+# reflector Alignment
 
-Reflector is treated as a reference synchronization artifact from which these reusable repository standards are extracted.
+reflector is treated as a reference synchronization artifact from which these reusable repository standards are extracted.

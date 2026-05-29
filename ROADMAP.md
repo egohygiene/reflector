@@ -9,11 +9,11 @@ This document tracks the high-level development roadmap for this research reposi
 - [x] LaTeX build pipeline
 - [x] GitHub Actions automation
 - [x] GitHub Pages publishing
-- [x] Reflector paper scaffold
+- [x] reflector paper scaffold
 - [x] Diagram and figure infrastructure
 - [x] Shared paper template system
 
-## Phase 2 — Reflector Paper: Draft
+## Phase 2 — reflector Paper: Draft
 
 - [ ] Complete Introduction section
 - [ ] Complete Recursive Development Systems section
@@ -25,7 +25,7 @@ This document tracks the high-level development roadmap for this research reposi
 - [ ] Complete Conclusion section
 - [ ] Initial bibliography compilation
 
-## Phase 3 — Reflector Paper: Revision and Diagrams
+## Phase 3 — reflector Paper: Revision and Diagrams
 
 - [ ] Finalize all section drafts
 - [ ] Create architecture diagrams (Excalidraw → PDF/PNG exports)
@@ -33,7 +33,7 @@ This document tracks the high-level development roadmap for this research reposi
 - [ ] Peer review and revisions
 - [ ] Abstract finalization
 
-## Phase 4 — Reflector Paper: Publication
+## Phase 4 — reflector Paper: Publication
 
 - [ ] arXiv submission preparation
 - [ ] Final PDF generation and review

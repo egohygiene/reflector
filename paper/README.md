@@ -1,4 +1,4 @@
-# Reflector
+# reflector
 
 **reflective synchronization systems for recursive AI-assisted software engineering**
 
@@ -13,7 +13,7 @@ systems in which autonomous agents operate within iterative feedback loops.
 Without explicit governance boundaries, these systems are prone to recursive
 optimization drift, complexity collapse, and misalignment with human-defined objectives.
 
-This paper introduces **Reflector**, a framework for reflective development systems
+This paper introduces **reflector**, a framework for reflective development systems
 that imposes structured governance contracts on recursive AI-assisted workflows.
 
 ## Section Structure
@@ -25,7 +25,7 @@ that imposes structured governance contracts on recursive AI-assisted workflows.
 | Recursive Drift | `sections/recursive_drift.tex` | 🚧 Draft |
 | Reflective Auditing | `sections/reflective_auditing.tex` | 🚧 Draft |
 | Recursive Governance and Alignment Maintenance | `sections/synchronization.tex` | ✅ Finalized |
-| Reflector Framework | `sections/reflector_framework.tex` | 🚧 Draft |
+| reflector Framework | `sections/reflector_framework.tex` | 🚧 Draft |
 | Mixed-Initiative Recursive Systems | `sections/mixed_initiative_recursive_systems.tex` | 🚧 Draft |
 | Operational Demonstration | `sections/operational_demonstration.tex` | 🚧 Draft |
 | Implementation Examples | `sections/implementation_examples.tex` | 🚧 Draft |

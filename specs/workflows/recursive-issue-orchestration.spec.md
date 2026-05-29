@@ -54,7 +54,7 @@ Define a reusable issue-to-artifact recursion contract for publication-oriented 
 
 # Repository Alignment
 
-This pattern aligns with Reflector's current execution surfaces:
+This pattern aligns with reflector's current execution surfaces:
 - orchestration tooling: `reflector/`, `scripts/`
 - synchronization/audit artifacts: `audits/`
 - governance boundaries: issue/PR review plus milestone checkpoints

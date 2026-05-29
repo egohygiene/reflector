@@ -1,4 +1,4 @@
-# Roadmap — Reflector Paper
+# Roadmap — reflector Paper
 
 ## Current Phase: Scaffold 🚧
 

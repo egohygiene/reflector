@@ -1,6 +1,6 @@
 # paper/figures
 
-This directory contains all figure assets for the Reflector paper, along with the figure management
+This directory contains all figure assets for the reflector paper, along with the figure management
 infrastructure that keeps figures, captions, labels, and section placements synchronized.
 
 ## Files in this directory

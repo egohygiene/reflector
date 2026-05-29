@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
 #
-# postCreate.sh — Dev Container post-create initialisation for Reflector.
+# postCreate.sh — Dev Container post-create initialisation for reflector.
 #
 # Runs once after the container is first created. Installs project
 # dependencies, sets up pre-commit hooks, and prints a welcome summary.
@@ -92,7 +92,7 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo "╔══════════════════════════════════════════════════════════╗"
-echo "║         Reflector Dev Container — Ready                  ║"
+echo "║         reflector Dev Container — Ready                  ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo ""
 echo "  Quick start:"

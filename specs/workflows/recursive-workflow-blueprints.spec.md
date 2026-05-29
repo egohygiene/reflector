@@ -14,7 +14,7 @@ tags:
 
 # Purpose
 
-Capture reusable workflow blueprints extracted from Reflector's stabilized publication system.
+Capture reusable workflow blueprints extracted from reflector's stabilized publication system.
 
 ---
 

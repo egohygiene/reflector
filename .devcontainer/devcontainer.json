@@ -1,5 +1,5 @@
 {
-  "name": "Reflector",
+  "name": "reflector",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

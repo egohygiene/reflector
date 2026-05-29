@@ -9,6 +9,6 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- Initial repository structure for the Reflector paper and publication pipeline.
+- Initial repository structure for the reflector paper and publication pipeline.
 - LaTeX build and GitHub Actions automation scaffolding.
 - Release metadata plumbing (`VERSION`, `CITATION.cff`, release manifests).

@@ -1,10 +1,10 @@
 # 00-README — Canonical Repository Orientation
 
-This document is the canonical onboarding and synchronization layer for the Reflector repository.
+This document is the canonical onboarding and synchronization layer for the reflector repository.
 
 ## Repository Overview
 
-Reflector is both a research manuscript repository and a synchronization system for deterministic publication workflows.
+reflector is both a research manuscript repository and a synchronization system for deterministic publication workflows.
 
 Core roles:
 - semantic paper authoring
@@ -53,7 +53,7 @@ Main publication outputs:
 
 ## Synchronization Philosophy
 
-Reflector prioritizes:
+reflector prioritizes:
 - deterministic inputs and outputs
 - explicit contracts over implicit behavior
 - inspectable synchronization boundaries
@@ -72,7 +72,7 @@ This keeps:
 
 ## Recursive Workflow Orientation
 
-Reflector is designed for repeated authoring and synchronization cycles:
+reflector is designed for repeated authoring and synchronization cycles:
 1. update semantic content or metadata
 2. reconcile with specs/manifests
 3. run synchronization and audits

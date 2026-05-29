@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
-"""Reflector CLI — bounded recursive synchronization and governance prototype.
+"""reflector CLI — bounded recursive synchronization and governance prototype.
 
 Entry point for the `reflector` command. Provides subcommands for:
 - run        Execute a reflector workflow
@@ -29,7 +29,7 @@ from reflector.workflows.runner import WorkflowRunner
 app = typer.Typer(
     name="reflector",
     help=(
-        "Reflector: a bounded recursive synchronization and governance prototype.\n\n"
+        "reflector: a bounded recursive synchronization and governance prototype.\n\n"
         "Embodies recursive issue orchestration, milestone synchronization, "
         "reflective auditing, and human synchronization boundaries."
     ),
@@ -57,7 +57,7 @@ def main(
         is_eager=True,
     ),
 ) -> None:
-    """Reflector — bounded recursive synchronization prototype."""
+    """reflector — bounded recursive synchronization prototype."""
 
 
 @app.command()
@@ -83,7 +83,7 @@ def run(
     4. Generate reflective audit
     5. Pause at synchronization boundary
     """
-    console.rule("[bold blue]Reflector Run")
+    console.rule("[bold blue]reflector Run")
 
     runner = WorkflowRunner(dry_run=dry_run)
     runner.execute(milestone_id=milestone_id)
@@ -223,12 +223,12 @@ def status() -> None:
     - Audit trail summary
     - Milestone progress
     """
-    console.rule("[bold green]Reflector Status")
+    console.rule("[bold green]reflector Status")
 
     runner = WorkflowRunner()
     state = runner.get_status()
 
-    table = Table(title="Reflector Status", show_header=True, header_style="bold")
+    table = Table(title="reflector Status", show_header=True, header_style="bold")
     table.add_column("Component", style="cyan")
     table.add_column("Status")
     table.add_column("Detail")
@@ -240,7 +240,7 @@ def status() -> None:
 
     console.print(
         Panel(
-            "[dim]Reflector is a bounded synchronization prototype.\n"
+            "[dim]reflector is a bounded synchronization prototype.\n"
             "All recursive execution halts at milestone boundaries for human review.[/dim]",
             title="About",
             border_style="dim",

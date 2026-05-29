@@ -28,7 +28,7 @@ jobs:
             # ----------------------------------------------------------------
             # TeXLive 2025 toolchain
             # ----------------------------------------------------------------
-            # Install the packages required to build the Reflector manuscript
+            # Install the packages required to build the reflector manuscript
             # locally with latexmk + pdflatex + biber, matching the TeXLive
             # version declared in 00README.json and used by CI.
             - name: Install TeXLive toolchain

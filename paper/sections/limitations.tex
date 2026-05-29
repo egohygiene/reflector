@@ -1,7 +1,7 @@
 \section{Limitations and Failure Modes}
 \label{sec:limitations}
 
-Reflector is a proposed synchronization architecture for recursive AI-assisted development, not a universal solution for correctness, alignment, or control. It is intended as stabilization infrastructure: a way to reduce drift pressure and improve traceability under recursion, while accepting that recursive systems remain probabilistic, path-dependent, and operationally constrained.
+\reflector{} is a proposed synchronization architecture for recursive AI-assisted development, not a universal solution for correctness, alignment, or control. It is intended as stabilization infrastructure: a way to reduce drift pressure and improve traceability under recursion, while accepting that recursive systems remain probabilistic, path-dependent, and operationally constrained.
 
 \subsection{Recursive Systems Remain Imperfect}
 
@@ -17,7 +17,7 @@ Model outputs remain vulnerable to hallucination, context-window compression los
 
 \subsection{Synchronization Overhead as a Tradeoff}
 
-Reflective auditing, checkpointing, and governance contracts impose real operational cost. Additional synchronization layers improve observability and reduce uncontrolled divergence, but they also add friction, increase cycle time, and may reduce short-term delivery velocity. Reflector therefore makes an explicit tradeoff: spending coordination effort to buy bounded coherence rather than maximizing raw throughput.
+Reflective auditing, checkpointing, and governance contracts impose real operational cost. Additional synchronization layers improve observability and reduce uncontrolled divergence, but they also add friction, increase cycle time, and may reduce short-term delivery velocity. \reflector{} therefore makes an explicit tradeoff: spending coordination effort to buy bounded coherence rather than maximizing raw throughput.
 
 \subsection{Scaling and Observability Challenges}
 
@@ -25,15 +25,15 @@ At larger scales, recursive systems become harder to observe end-to-end. Artifac
 
 \subsection{Specification Fragility and Drift}
 
-Specifications are themselves living artifacts that can drift, become stale, or encode ambiguous semantics. Synchronization anchors require continuous maintenance and periodic reinterpretation as contexts evolve. Reflector can reduce ambiguity by enforcing explicit checkpoints and reconciliation steps, but it cannot remove interpretation as a fundamental part of socio-technical development.
+Specifications are themselves living artifacts that can drift, become stale, or encode ambiguous semantics. Synchronization anchors require continuous maintenance and periodic reinterpretation as contexts evolve. \reflector{} can reduce ambiguity by enforcing explicit checkpoints and reconciliation steps, but it cannot remove interpretation as a fundamental part of socio-technical development.
 
 \subsection{Risks of Over-Automation}
 
 Automation can outpace understanding. Teams may over-trust generated outputs, treat synchronization rituals as checklists, or accept superficially plausible artifacts without adequate reflective challenge. If trust calibration weakens, human-in-the-loop governance degrades from active oversight to procedural compliance, undermining the very integrity the architecture is designed to protect.
 
-\subsection{Reflector as Ongoing Research}
+\subsection{\reflector{} as Ongoing Research}
 
-Reflector should be treated as an exploratory systems framework whose workflows, controls, and evaluation methods remain under development. It improves coordination structure, but unresolved questions remain around recursive stability guarantees, governance ergonomics, and empirical performance across heterogeneous domains.
+\reflector{} should be treated as an exploratory systems framework whose workflows, controls, and evaluation methods remain under development. It improves coordination structure, but unresolved questions remain around recursive stability guarantees, governance ergonomics, and empirical performance across heterogeneous domains.
 
 This section references \Cref{fig:figure10} to preserve stable figure placement and internal PDF navigation.
 

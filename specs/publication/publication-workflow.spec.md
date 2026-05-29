@@ -70,7 +70,7 @@ The workflow MUST avoid opaque behavior that depends on local machine guesswork.
 
 # Repository Alignment
 
-Reflector currently provides foundational workflow components:
+reflector currently provides foundational workflow components:
 - build orchestration script: `scripts/build-paper.sh`
 - LaTeX build configuration: `.latexmkrc`
 - publication automation workflows: `.github/workflows/build-paper.yml`, `.github/workflows/pages.yml`

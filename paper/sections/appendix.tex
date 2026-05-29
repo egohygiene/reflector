@@ -15,13 +15,13 @@
 \section{Example Recursive Workflow Lifecycle}
 \label{sec:appendix-workflow}
 
-The following walkthrough traces a single end-to-end recursive workflow cycle as it would be executed under the Reflector architecture described in \Cref{sec:reflector-framework}. The purpose is to make the lifecycle concrete: each stage is named, its inputs and outputs are described, and its relationship to synchronization and governance is made explicit. This example is deliberately lightweight so that the structural pattern remains visible without being obscured by domain-specific detail.
+The following walkthrough traces a single end-to-end recursive workflow cycle as it would be executed under the \reflector{} architecture described in \Cref{sec:reflector-framework}. The purpose is to make the lifecycle concrete: each stage is named, its inputs and outputs are described, and its relationship to synchronization and governance is made explicit. This example is deliberately lightweight so that the structural pattern remains visible without being obscured by domain-specific detail.
 
 Canonical companion artifacts for these appendix examples are provided under \texttt{paper/examples/canonical/}, including synchronization and publication specifications, recursive workflow manifests, reflective audit examples, and lightweight synchronization diagrams.
 
 \subsection{Canonical Lifecycle Stages}
 
-A complete Reflector workflow cycle proceeds through eight ordered stages:
+A complete \reflector{} workflow cycle proceeds through eight ordered stages:
 
 \begin{center}
 Human Goal
@@ -73,11 +73,11 @@ Well-managed recursive orchestration exhibits several properties \cite{Wiener194
 \section{Example Specification Structures}
 \label{sec:appendix-specs}
 
-Specifications function as synchronization anchors throughout the Reflector workflow. The following examples illustrate what representative specification artifacts look like in a Reflector-aligned repository. These are structural sketches rather than prescriptive schemas; the exact format should match the repository's existing conventions and documentation tooling \cite{Parnas1972Modularization}.
+Specifications function as synchronization anchors throughout the \reflector{} workflow. The following examples illustrate what representative specification artifacts look like in a \reflector{}-aligned repository. These are structural sketches rather than prescriptive schemas; the exact format should match the repository's existing conventions and documentation tooling \cite{Parnas1972Modularization}.
 
 \subsection{Specification Taxonomy}
 
-A Reflector-aligned repository typically organizes specifications by functional domain:
+A \reflector{}-aligned repository typically organizes specifications by functional domain:
 
 \begin{lstlisting}[language=bash, caption={Example specification directory structure.}, label={lst:spec-dir}]
 specs/
@@ -186,11 +186,11 @@ The common thread across all specification types is that they establish a stable
 \section{Example Repository Architecture}
 \label{sec:appendix-repository}
 
-This appendix section illustrates what a Reflector-aligned repository looks like structurally. The layout reflects the semantic/render separation, recursive artifact organization, and publication manifest conventions described in \Cref{sec:implementation-examples}.
+This appendix section illustrates what a \reflector{}-aligned repository looks like structurally. The layout reflects the semantic/render separation, recursive artifact organization, and publication manifest conventions described in \Cref{sec:implementation-examples}.
 
 \subsection{Reference Repository Layout}
 
-\begin{lstlisting}[language=bash, caption={Reference repository architecture for a Reflector-aligned project.}, label={lst:repo-arch}]
+\begin{lstlisting}[language=bash, caption={Reference repository architecture for a \reflector{}-aligned project.}, label={lst:repo-arch}]
 paper/
   paper.tex            # Thin orchestration wrapper
   references.bib       # BibTeX bibliography
@@ -253,11 +253,11 @@ These conventions do not require new tooling; they require only that teams treat
 \section{Publication Workflow Example}
 \label{sec:appendix-publication}
 
-This appendix section traces a complete publication workflow as it would operate under the Reflector architecture, from initial semantic content through final renderer-specific artifact. The workflow reinforces the publication architecture principles discussed in \Cref{sec:implementation-examples} with a concrete, stage-by-stage example.
+This appendix section traces a complete publication workflow as it would operate under the \reflector{} architecture, from initial semantic content through final renderer-specific artifact. The workflow reinforces the publication architecture principles discussed in \Cref{sec:implementation-examples} with a concrete, stage-by-stage example.
 
 \subsection{Publication Pipeline Stages}
 
-The canonical Reflector publication pipeline proceeds as follows:
+The canonical \reflector{} publication pipeline proceeds as follows:
 
 \begin{center}
 Semantic Content
@@ -299,7 +299,7 @@ Each stage is a bounded transformation that can be audited, versioned, and re-ex
 
 \subsection{Multi-Target Publication}
 
-A Reflector-aligned publication system can target multiple renderers from the same semantic content without modification. The following example illustrates a repository that simultaneously maintains artifacts for three targets:
+A \reflector{}-aligned publication system can target multiple renderers from the same semantic content without modification. The following example illustrates a repository that simultaneously maintains artifacts for three targets:
 
 \begin{lstlisting}[language=bash, caption={Multi-target publication artifact layout.}, label={lst:multi-target}]
 publication/
@@ -321,18 +321,18 @@ Each manifest declares its own renderer target, figure requirements, and metadat
 
 \subsection{Publication as Synchronization Infrastructure}
 
-The publication workflow above is not merely an output delivery mechanism; it is synchronization infrastructure. The manifest declares what the publication artifact is supposed to contain; the build validates whether the current content state produces that artifact correctly; the checkpoint authorizes distribution only when the full pipeline passes. This mirrors the recursive workflow structure throughout the paper: intent is declared, execution is bounded, artifacts are audited, and continuation is governed. Publication orchestration therefore exemplifies Reflector's broader claim that synchronization is a systems requirement, not an administrative afterthought.
+The publication workflow above is not merely an output delivery mechanism; it is synchronization infrastructure. The manifest declares what the publication artifact is supposed to contain; the build validates whether the current content state produces that artifact correctly; the checkpoint authorizes distribution only when the full pipeline passes. This mirrors the recursive workflow structure throughout the paper: intent is declared, execution is bounded, artifacts are audited, and continuation is governed. Publication orchestration therefore exemplifies \reflector{}'s broader claim that synchronization is a systems requirement, not an administrative afterthought.
 
 % ============================================================
 
 \section{Reflective Audit Examples}
 \label{sec:appendix-audit}
 
-Reflective audit is the observability function of the Reflector architecture, described in detail in \Cref{sec:reflective-auditing}. The following examples illustrate how reflective audit operates in four concrete engineering contexts: pull request review, specification reconciliation, figure synchronization, and publication validation. Each example identifies what is being audited, what evidence is consulted, and what an audit finding looks like in practice.
+Reflective audit is the observability function of the \reflector{} architecture, described in detail in \Cref{sec:reflective-auditing}. The following examples illustrate how reflective audit operates in four concrete engineering contexts: pull request review, specification reconciliation, figure synchronization, and publication validation. Each example identifies what is being audited, what evidence is consulted, and what an audit finding looks like in practice.
 
 \subsection{Pull Request Audit}
 
-A pull request is a synchronization boundary in which a proposed artifact change is exposed for review before integration \cite{Jimenez2024SWEBench}. A Reflector-aligned pull request audit asks four questions:
+A pull request is a synchronization boundary in which a proposed artifact change is exposed for review before integration \cite{Jimenez2024SWEBench}. A \reflector{}-aligned pull request audit asks four questions:
 
 \begin{enumerate}
   \item \textbf{Scope conformance.} Does the diff address only the artifact surface declared in the authorizing issue? Changes outside the declared scope are flagged as boundary violations, even if individually correct.

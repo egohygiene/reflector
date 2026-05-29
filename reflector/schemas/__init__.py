@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
-"""Reflector schemas — Pydantic models for governance and synchronization.
+"""reflector schemas — Pydantic models for governance and synchronization.
 
 Corresponds to reflector_framework.tex. Provides typed, validated data
 structures for governance contracts, milestones, and audit entries.

@@ -16,6 +16,23 @@ In recursive software workflows, drift emerges from multiple interacting categor
   \item \textbf{Temporal desynchronization:} Agents and humans operate over stale assumptions when dependencies or policies change between cycles; asynchronous updates create ordering hazards analogous to distributed systems coordination \cite{Lamport1978TimeClocks,Vogels2009EventuallyConsistent}.
 \end{itemize}
 
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Representative recursive drift sources, their effects, and practical mitigation anchors.}
+  \label{tab:drift-sources}
+  \begin{tabularx}{\linewidth}{l X X}
+    \toprule
+    \textbf{Source} & \textbf{Primary effect} & \textbf{Mitigation anchor} \\
+    \midrule
+    Context compression & Omitted assumptions propagate into later plans and reviews. & Synchronization checkpoints that reconstruct scope from canonical artifacts. \\
+    Architectural inconsistency & Interfaces and naming drift across delegated implementation units. & Architecture-focused audit passes with explicit compatibility review. \\
+    Execution misalignment & Delivered outputs satisfy local interpretations but miss system intent. & Task contracts with concrete acceptance criteria and review gates. \\
+    Temporal desynchronization & Work continues on stale constraints after policy or dependency change. & Milestone-level state refresh before further recursive continuation. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
 \subsection{Compounding Recursive Amplification}
 
 Recursive systems amplify small deviations because each cycle conditions the next. For instance, a minor naming mismatch can become interface drift. A missing rationale can become policy non-compliance, and a stale summary can become a faulty execution plan. Once artifacts are reused as context for future generation, local errors are recursively reinterpreted as constraints.
