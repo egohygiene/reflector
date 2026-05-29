@@ -170,6 +170,16 @@ tasks:
           fi
         done
 
+  act-test:
+    desc: Run GitHub Actions synchronization workflow locally with act
+    cmds:
+      - act pull_request -W .github/workflows/synchronization.yml
+
+  act-list:
+    desc: List available GitHub Actions jobs for local act execution
+    cmds:
+      - act --list
+
   reuse:
     desc: Recursively apply SPDX headers to supported files.
     cmds:
