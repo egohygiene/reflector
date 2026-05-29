@@ -106,7 +106,7 @@
         {
             "path": "figures/hero.png",
             "usage": "include",
-            "description": "Hero figure: Reflector system architecture overview."
+            "description": "Hero figure: reflector system architecture overview."
         },
         {
             "path": "figures/figure1.png",

@@ -1,6 +1,6 @@
 # Security Policy
 
-Reflector is an actively developed research repository. Security reports are still welcome, especially for issues involving automation, publication workflows, dependency handling, or generated artifacts.
+reflector is an actively developed research repository. Security reports are still welcome, especially for issues involving automation, publication workflows, dependency handling, or generated artifacts.
 
 ## Supported scope
 

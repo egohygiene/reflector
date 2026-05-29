@@ -1,13 +1,13 @@
 # Licensing
 
 This document describes the REUSE/SPDX licensing infrastructure used by the
-Reflector repository.
+reflector repository.
 
 ---
 
 ## License
 
-Reflector is licensed under the **Apache License, Version 2.0**.
+reflector is licensed under the **Apache License, Version 2.0**.
 
 - **SPDX identifier**: `Apache-2.0`
 - **License text**: [`LICENSES/Apache-2.0.txt`](../LICENSES/Apache-2.0.txt)

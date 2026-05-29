@@ -1,4 +1,4 @@
-# Research Notes — Reflector
+# Research Notes — reflector
 
 ## Core Thesis
 
@@ -32,7 +32,7 @@ to prevent uncontrolled optimization drift and recursive complexity collapse.
 
 - How do you formally specify "alignment" in a way that is both human-meaningful and machine-checkable?
 - What is the optimal granularity of milestone boundaries?
-- How does Reflector scale to large multi-agent systems?
+- How does reflector scale to large multi-agent systems?
 - Can governance contracts be learned/inferred from historical development patterns?
 
 ## Related Work to Survey

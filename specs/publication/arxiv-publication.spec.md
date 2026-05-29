@@ -14,7 +14,7 @@ tags:
 
 # Purpose
 
-Capture reusable architectural concepts from the modern arXiv `00README` publication model as a Reflector-compatible adapter specification.
+Capture reusable architectural concepts from the modern arXiv `00README` publication model as a reflector-compatible adapter specification.
 
 ---
 
@@ -57,9 +57,9 @@ The adapter SHOULD preserve:
 
 ---
 
-# Relationship to Reflector
+# Relationship to reflector
 
-This specification aligns with existing Reflector publication structure:
+This specification aligns with existing reflector publication structure:
 - `paper/paper.tex` as orchestration entrypoint
 - `.latexmkrc` + scripts as deterministic build infrastructure
 - GitHub Actions workflows for repeatable CI publication behavior

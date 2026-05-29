@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
-"""Reflector orchestration package.
+"""reflector orchestration package.
 
 Implements the milestone orchestration layer described in milestone_execution.tex.
 Manages milestone lifecycle, governance checkpoint evaluation, and progression

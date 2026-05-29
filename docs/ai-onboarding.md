@@ -1,10 +1,10 @@
 # AI Onboarding and Synchronization Guide
 
-This guide provides deterministic orientation for AI systems working in Reflector.
+This guide provides deterministic orientation for AI systems working in reflector.
 
 ## Repository Philosophy
 
-Reflector is not just a manuscript directory; it is a specification-driven synchronization system for publication infrastructure.
+reflector is not just a manuscript directory; it is a specification-driven synchronization system for publication infrastructure.
 
 AI agents should optimize for:
 - deterministic edits
@@ -21,7 +21,7 @@ AI agents should optimize for:
 
 ## Recursive Workflow Structure
 
-Reflector workflows are intentionally recursive:
+reflector workflows are intentionally recursive:
 
 ```text
 orient

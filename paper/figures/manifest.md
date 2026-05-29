@@ -12,7 +12,7 @@ See [`captions.md`](captions.md) for the centralized caption registry and [`READ
 | reflector-figure-2 | `figure2.png` | Recursive Drift | `fig:figure2` | 1600×900 | placeholder | Active |
 | reflector-figure-3 | `figure3.png` | Reflective Auditing | `fig:figure3` | 1600×900 | placeholder | Active |
 | reflector-figure-4 | `figure4.png` | — (reserved) | — | 1600×900 | placeholder | Reserved |
-| reflector-figure-5 | `figure5.png` | Reflector Framework; Visual Summary | `fig:figure5`; `fig:visual-summary-lifecycle` | 1600×900 | placeholder | Active |
+| reflector-figure-5 | `figure5.png` | reflector Framework; Visual Summary | `fig:figure5`; `fig:visual-summary-lifecycle` | 1600×900 | placeholder | Active |
 | reflector-figure-6 | `figure6.png` | Mixed-Initiative Recursive Systems | `fig:figure6` | 1600×900 | placeholder | Active |
 | reflector-figure-7 | `figure7.png` | Operational Demonstration | `fig:figure7` | 1600×900 | placeholder | Active |
 | reflector-figure-8 | `figure8.png` | Implementation Examples | `fig:figure8` | 1600×900 | placeholder | Active |
@@ -40,9 +40,9 @@ figures:
     caption: null
     state: placeholder
     dimensions: "1920x1080"
-    title: Reflector system overview
-    description: "Hero infographic placeholder for the Reflector framework system overview."
-    alt_text: "Hero infographic showing the Reflector framework and its recursive synchronization, governance, and auditing loops."
+    title: reflector system overview
+    description: "Hero infographic placeholder for the reflector framework system overview."
+    alt_text: "Hero infographic showing the reflector framework and its recursive synchronization, governance, and auditing loops."
     long_description: "A vertical architecture map that connects recursive synchronization, reflective orchestration, cognition-aware recursive systems, semantic stabilization, and governance checkpoints as linked system layers."
     source_diagram: "paper/diagrams/system-overview.excalidraw"
     sync_notes: "Replace with final export from paper/diagrams/system-overview.excalidraw. Must be 1920x1080 PNG."
@@ -100,12 +100,12 @@ figures:
     section: "reflector_framework; visual_summary"
     label: "fig:figure5; fig:visual-summary-lifecycle"
     caption: |
-      reflector_framework: "Reflector architecture: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation."
+      reflector_framework: "reflector architecture: human intent and specification anchors are translated into scoped delegation, AI execution, and artifact generation; reflective audits and synchronization checkpoints reconcile outputs with architectural and governance constraints before bounded recursive continuation."
       visual_summary: "Visual lifecycle compression: intent, delegation, execution, artifacts, audit, and synchronization arranged as a recursive continuation loop under governance constraints."
     state: placeholder
     dimensions: "1600x900"
-    title: Reflector architecture / Visual lifecycle compression
-    description: "Reused across the Reflector Framework section (as architecture overview) and the Visual Summary section (as lifecycle compression). Captions differ per placement."
+    title: reflector architecture / Visual lifecycle compression
+    description: "Reused across the reflector Framework section (as architecture overview) and the Visual Summary section (as lifecycle compression). Captions differ per placement."
     alt_text: "Placeholder figure for framework and visual lifecycle layout stabilization."
     sync_notes: "Used in two sections with different captions. When replacing, ensure the final figure is appropriate for both contexts or split into two separate figures."
 

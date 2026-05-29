@@ -88,7 +88,7 @@ Manifest processing MUST avoid implicit source discovery that changes output unp
 
 # Repository Alignment
 
-Current Reflector layout maps naturally to this model:
+Current reflector layout maps naturally to this model:
 - canonical entrypoint: `paper/paper.tex`
 - semantic content: `paper/sections/`
 - metadata layer: `paper/macros/metadata.tex`

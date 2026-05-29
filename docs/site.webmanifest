@@ -1,6 +1,6 @@
 {
-  "name": "Reflector",
-  "short_name": "Reflector",
+  "name": "reflector",
+  "short_name": "reflector",
   "description": "Reflective synchronization systems for recursive AI-assisted software engineering.",
   "start_url": "/reflector/",
   "display": "standalone",

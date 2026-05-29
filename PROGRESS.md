@@ -13,7 +13,7 @@ Legend: ✅ complete · 🟡 in progress · ⚪ not started
 | Recursive Drift and Contextual Entropy | ✅ | ✅ | ✅ | 🟡 |
 | Reflective Auditing | ✅ | ✅ | ✅ | 🟡 |
 | Recursive Governance and Alignment Maintenance | ✅ | ✅ | ✅ | 🟡 |
-| The Reflector Framework | ✅ | ✅ | ✅ | 🟡 |
+| The reflector Framework | ✅ | ✅ | ✅ | 🟡 |
 | Mixed-Initiative Recursive Systems | ✅ | ✅ | ✅ | 🟡 |
 | Cognitive Load and Recursive Coordination | ✅ | ✅ | ✅ | 🟡 |
 | Operational Demonstration | ✅ | ✅ | ✅ | 🟡 |
@@ -37,7 +37,7 @@ Note: sections are publication-ready in prose and structure; final status pendin
 | `figure1.png` — Recursive synchronization loop | ✅ | 🟡 (placeholder) | ✅ | ✅ |
 | `figure2.png` — Recursive drift accumulation | ✅ | 🟡 (placeholder) | ✅ | ✅ |
 | `figure3.png` — Reflective auditing loop | ✅ | 🟡 (placeholder) | ✅ | ✅ |
-| `figure5.png` — Reflector architecture / lifecycle | ✅ | 🟡 (placeholder) | ✅ | ✅ |
+| `figure5.png` — reflector architecture / lifecycle | ✅ | 🟡 (placeholder) | ✅ | ✅ |
 | `figure6.png` — Mixed-initiative collaboration loop | ✅ | 🟡 (placeholder) | ✅ | ✅ |
 | `figure7.png` — Operational workflow | ✅ | 🟡 (placeholder) | ✅ | ✅ |
 | `figure8.png` — Implementation architecture | ✅ | 🟡 (placeholder) | ✅ | ✅ |

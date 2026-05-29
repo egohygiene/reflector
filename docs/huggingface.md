@@ -1,10 +1,10 @@
 # Hugging Face publication readiness
 
-This document records the recommended Hugging Face cross-publishing strategy for Reflector.
+This document records the recommended Hugging Face cross-publishing strategy for reflector.
 
 ## Current repository state
 
-Reflector already has the core ingredients needed for later Hugging Face publication:
+reflector already has the core ingredients needed for later Hugging Face publication:
 
 - canonical repository metadata in [`metadata/repository.yaml`](../metadata/repository.yaml)
 - citation and publication metadata in [`CITATION.cff`](../CITATION.cff) and [`publication.json`](../publication.json)
@@ -20,22 +20,22 @@ Keep manuscript source, specifications, metadata, and synchronization scripts in
 
 ### 2. Publish a Space before publishing a model card
 
-Reflector is a research and workflow system, not a trained model. The most natural first Hugging Face surface is therefore a **Space** that links to:
+reflector is a research and workflow system, not a trained model. The most natural first Hugging Face surface is therefore a **Space** that links to:
 
 - the paper PDF
 - the GitHub Pages landing page
 - the repository
 - future demos or interactive workflow visualizations, such as architecture maps, audit walkthroughs, or synchronization lifecycle previews
 
-That keeps the first Space focused on discovery and explorable research context rather than pretending Reflector already ships a standalone model endpoint.
+That keeps the first Space focused on discovery and explorable research context rather than pretending reflector already ships a standalone model endpoint.
 
 ### 3. Use a dataset card only when artifacts exist
 
-A dataset card should only be created if Reflector later publishes structured traces, benchmark cases, synchronization logs, or reusable evaluation corpora.
+A dataset card should only be created if reflector later publishes structured traces, benchmark cases, synchronization logs, or reusable evaluation corpora.
 
 ### 4. Use a model card only for actual model artifacts
 
-Do not publish a model card unless the repository begins distributing weights, adapters, or inference endpoints. Until then, the Hugging Face presence should describe the research system, not imply that Reflector is itself a model release.
+Do not publish a model card unless the repository begins distributing weights, adapters, or inference endpoints. Until then, the Hugging Face presence should describe the research system, not imply that reflector is itself a model release.
 
 ## Synchronization strategy
 
@@ -65,4 +65,4 @@ When Hugging Face publication begins, keep these boundaries explicit:
 
 ## Practical recommendation
 
-Use Hugging Face as a distribution and discovery layer for Reflector, not as the primary authoring environment. That keeps the repository's publication architecture, synchronization boundaries, and auditability intact while still making the project easy to surface inside the Hugging Face ecosystem later.
+Use Hugging Face as a distribution and discovery layer for reflector, not as the primary authoring environment. That keeps the repository's publication architecture, synchronization boundaries, and auditability intact while still making the project easy to surface inside the Hugging Face ecosystem later.

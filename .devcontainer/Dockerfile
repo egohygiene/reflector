@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
 #
-# Reflector Dev Container — production-grade recursive development environment.
+# reflector Dev Container — production-grade recursive development environment.
 #
 # Provides:
 #   - Python 3.12 + uv for project dependency management

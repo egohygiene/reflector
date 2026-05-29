@@ -142,7 +142,7 @@ Highly granular governance workflows can become cognitively expensive during:
 * exploratory systems thinking
 * early conceptual development
 
-Reflector should preserve flexibility while maintaining bounded governance.
+reflector should preserve flexibility while maintaining bounded governance.
 
 ### Independent Test
 
@@ -297,7 +297,7 @@ The gradual degradation of architectural coherence caused by uncontrolled recurs
 * **SC-002**: AI-assisted workflows remain reviewable and synchronization-aware across milestone boundaries.
 * **SC-003**: Reflective audits successfully identify recursive drift conditions before architecture degradation becomes severe.
 * **SC-004**: Developers can reuse reflector across repositories without significant workflow restructuring.
-* **SC-005**: Reflector enables accelerated execution workflows while preserving governance semantics.
+* **SC-005**: reflector enables accelerated execution workflows while preserving governance semantics.
 * **SC-006**: AI agents operating with reflector generate bounded and reviewable execution artifacts.
 * **SC-007**: Milestone synchronization checkpoints successfully preserve architecture coherence during recursive execution cycles.
 
