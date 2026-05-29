@@ -1,7 +1,7 @@
 # publication.spec.md
 
 ## Purpose
-Define a deterministic publication contract for Reflector artifacts.
+Define a deterministic publication contract for reflector artifacts.
 
 ## Inputs
 - semantic content (`paper/sections/*.tex`)

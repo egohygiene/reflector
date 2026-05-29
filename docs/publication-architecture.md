@@ -1,10 +1,10 @@
 # Publication Architecture Overview
 
-This document describes Reflector's publication architecture and reproducibility model.
+This document describes reflector's publication architecture and reproducibility model.
 
 ## arXiv Workflow
 
-Reflector maintains arXiv-oriented publication behavior through deterministic LaTeX build and packaging conventions defined in scripts, workflows, and publication specs.
+reflector maintains arXiv-oriented publication behavior through deterministic LaTeX build and packaging conventions defined in scripts, workflows, and publication specs.
 
 Key concerns:
 - stable manuscript entrypoint (`paper/paper.tex`)
@@ -22,7 +22,7 @@ Manifest philosophy:
 
 ## Semantic/Render Separation
 
-Reflector separates semantic manuscript content from render infrastructure:
+reflector separates semantic manuscript content from render infrastructure:
 - semantic text and structure in content files
 - metadata in dedicated macro/config layers
 - style/render concerns in publisher-facing style assets

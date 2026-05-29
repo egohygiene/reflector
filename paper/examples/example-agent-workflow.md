@@ -1,6 +1,6 @@
 # Example: Agent Workflow
 
-This document illustrates an example of a Reflector-compliant agent workflow.
+This document illustrates an example of a reflector-compliant agent workflow.
 
 ## Scenario
 

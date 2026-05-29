@@ -1,4 +1,4 @@
-# Abstract — Reflector
+# Abstract — reflector
 
 > Recursive AI-augmented software engineering introduces a new class of development
 > systems in which autonomous agents operate within iterative feedback loops.
@@ -13,9 +13,9 @@ evaluating, and refining software artifacts at machine speed. Without explicit g
 boundaries, these systems are prone to **recursive optimization drift**, complexity
 collapse, and misalignment with human-defined objectives.
 
-This paper introduces **Reflector**, a framework for *reflective development systems*
+This paper introduces **reflector**, a framework for *reflective development systems*
 that imposes structured governance contracts on recursive AI-assisted workflows.
-Reflector defines four core mechanisms:
+reflector defines four core mechanisms:
 
 1. **Scoped autonomous agents** with bounded execution contexts
 2. **Human-in-the-loop alignment checkpoints** triggered by milestone events
@@ -24,7 +24,7 @@ Reflector defines four core mechanisms:
 
 We describe the theoretical foundations of reflective development, characterize common
 failure modes arising from unbounded recursion, and present an architectural reference
-model for implementing Reflector-compliant systems.
+model for implementing reflector-compliant systems.
 
 ## Keywords
 

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
 
-# REUSE.toml — REUSE 3.0 compliance configuration for the Reflector repository.
+# REUSE.toml — REUSE 3.0 compliance configuration for the reflector repository.
 #
 # This file provides machine-readable copyright and license metadata for all
 # files in the repository that do not carry inline SPDX headers.

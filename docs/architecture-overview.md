@@ -1,6 +1,6 @@
 # Repository Architecture Overview
 
-This document maps Reflector's repository structure and synchronization architecture.
+This document maps reflector's repository structure and synchronization architecture.
 
 ## Structure Map
 
@@ -15,7 +15,7 @@ This document maps Reflector's repository structure and synchronization architec
 
 ## Publication Architecture
 
-Reflector uses layered publication architecture:
+reflector uses layered publication architecture:
 - semantic content (`paper/sections/`)
 - metadata layer (`paper/macros/metadata.tex`, `paper/config/title.tex`)
 - render/style layer (`paper/styles/reflector.sty`)

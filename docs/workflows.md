@@ -1,6 +1,6 @@
 # Workflow Overview
 
-This document summarizes the primary workflows in Reflector.
+This document summarizes the primary workflows in reflector.
 
 ## 1) Section Writing Workflow
 

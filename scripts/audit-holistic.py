@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """audit-holistic.py — Final holistic publication and recursive synchronization audit.
 
-Evaluates the Reflector repository holistically as:
+Evaluates the reflector repository holistically as:
 - a publication artifact
 - a recursive synchronization system
 - a specification-driven workflow environment
@@ -595,7 +595,7 @@ def audit_repository_architecture(state: AuditState) -> None:
     state.add(
         dim,
         "Modularity",
-        "Reflector Python package has required module files",
+        "reflector Python package has required module files",
         len(missing_modules) == 0,
         f"All {len(REQUIRED_REFLECTOR_MODULES)} required reflector/ module files are present.",
         f"Missing module files: {', '.join(missing_modules)}.",
@@ -1175,7 +1175,7 @@ DIMENSION_GOALS = {
         ("Publication manifest consistency", "publication.json is valid and complete"),
     ],
     "3. Repository Architecture": [
-        ("Modularity", "Reflector Python package is structurally complete"),
+        ("Modularity", "reflector Python package is structurally complete"),
         ("Maintainability", "pyproject.toml, CONTRIBUTING.md, README.md are present"),
         ("Semantic/render separation", "Styles, macros, and config directories are present"),
         ("Synchronization infrastructure quality", "All validation scripts are present"),
@@ -1344,7 +1344,7 @@ def generate_report(state: AuditState) -> str:
     lines += [
         "## Synthesis",
         "",
-        "The Reflector repository has reached a strong architectural and publication foundation.",
+        "The reflector repository has reached a strong architectural and publication foundation.",
         "The six-dimension audit reveals:",
         "",
     ]

@@ -77,7 +77,7 @@ Renderer changes SHOULD require configuration updates, not manuscript rewrites.
 
 # Repository Alignment
 
-Reflector already separates layers:
+reflector already separates layers:
 - semantic content: `paper/sections/`
 - metadata: `paper/macros/metadata.tex`
 - style package: `paper/styles/reflector.sty`

@@ -1,6 +1,6 @@
 # Example: Audit Pipeline
 
-This document illustrates an example of a Reflector recursive audit pipeline.
+This document illustrates an example of a reflector recursive audit pipeline.
 
 ## Overview
 

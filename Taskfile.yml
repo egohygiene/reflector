@@ -23,7 +23,7 @@ tasks:
       - task: version
       - |
         echo ""
-        echo "✅ Reflector setup complete."
+        echo "✅ reflector setup complete."
         echo ""
         echo "Try:"
         echo "  task version"
@@ -51,7 +51,7 @@ tasks:
     cmds:
       - |
         set -eu
-        echo "Reflector doctor"
+        echo "reflector doctor"
         echo "---------------"
         uv --version
         uv run python --version

@@ -1,6 +1,6 @@
-# Reflector on Hugging Face
+# reflector on Hugging Face
 
-This file is a future-facing scaffold for adapting Reflector to a Hugging Face Space, collection, or card.
+This file is a future-facing scaffold for adapting reflector to a Hugging Face Space, collection, or card.
 
 ## Canonical project links
 
@@ -11,7 +11,7 @@ This file is a future-facing scaffold for adapting Reflector to a Hugging Face S
 
 ## Project summary
 
-Reflector is a research repository for reflective synchronization systems in recursive AI-assisted software engineering. It focuses on recursive drift, reflective auditing, synchronization checkpoints, and mixed-initiative governance.
+reflector is a research repository for reflective synchronization systems in recursive AI-assisted software engineering. It focuses on recursive drift, reflective auditing, synchronization checkpoints, and mixed-initiative governance.
 
 ## Intended Hugging Face use
 

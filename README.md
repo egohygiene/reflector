@@ -1,4 +1,4 @@
-# Reflector
+# reflector
 
 > Reflective synchronization systems for recursive AI-assisted software engineering.
 
@@ -14,11 +14,11 @@
 [![arXiv Ready](https://img.shields.io/badge/arXiv-Ready-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white)](./specs/publication/arxiv-publication.spec.md)
 [![Hugging Face Ready](https://img.shields.io/badge/Hugging%20Face-Ready-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](./docs/huggingface.md)
 
-![Reflector publication preview](./paper/figures/hero.png)
+![reflector publication preview](./paper/figures/hero.png)
 
-## What is Reflector?
+## What is reflector?
 
-Reflector is an open-source research repository and recursive engineering platform for studying how AI-assisted software systems can stay aligned, auditable, and governable as they iterate. The repository combines:
+reflector is an open-source research repository and recursive engineering platform for studying how AI-assisted software systems can stay aligned, auditable, and governable as they iterate. The repository combines:
 
 - a research manuscript in `paper/`
 - a synchronization-oriented CLI in `reflector/`
@@ -26,15 +26,15 @@ Reflector is an open-source research repository and recursive engineering platfo
 - specification contracts in `specs/`
 - a GitHub Pages publication surface in `docs/`
 
-If you want the short version: Reflector treats recursive development as a systems problem, not just a prompting problem.
+If you want the short version: reflector treats recursive development as a systems problem, not just a prompting problem.
 
 ## Why it exists
 
-Recursive AI workflows can move faster than humans can inspect them. Reflector exists to make those workflows easier to reason about by introducing bounded execution, explicit checkpoints, inspectable metadata, and publication-grade traceability.
+Recursive AI workflows can move faster than humans can inspect them. reflector exists to make those workflows easier to reason about by introducing bounded execution, explicit checkpoints, inspectable metadata, and publication-grade traceability.
 
 ## Core concepts
 
-| Concept | Meaning in Reflector |
+| Concept | Meaning in reflector |
 | --- | --- |
 | Recursive Drift | Failure modes that emerge when recursive optimization loops move away from human intent. |
 | Reflective Auditing | Continuous validation of state, artifacts, and workflow contracts against declared invariants. |
@@ -42,7 +42,7 @@ Recursive AI workflows can move faster than humans can inspect them. Reflector e
 | Human Governance | The repository treats human oversight as a first-class systems constraint, not an afterthought. |
 | Mixed-Initiative Systems | Humans, automation, and AI agents collaborate through bounded, reviewable execution layers. |
 
-## How Reflector works
+## How reflector works
 
 ```text
 semantic content and metadata
@@ -67,7 +67,7 @@ The repository architecture is intentionally layered:
 
 ### Recommended local workflow
 
-Reflector's canonical developer workflow uses [`task`](https://taskfile.dev/) with [`uv`](https://docs.astral.sh/uv/):
+reflector's canonical developer workflow uses [`task`](https://taskfile.dev/) with [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
 task setup
@@ -123,7 +123,7 @@ To publish a locally built PDF into `docs/`:
 
 ## Hugging Face readiness
 
-Reflector is not publishing to Hugging Face yet, but it is now structured to make that step straightforward later:
+reflector is not publishing to Hugging Face yet, but it is now structured to make that step straightforward later:
 
 - canonical repository metadata already includes a Hugging Face integration surface in [`metadata/repository.yaml`](./metadata/repository.yaml)
 - the CLI exposes `reflector huggingface` for scaffold inspection
@@ -140,4 +140,4 @@ Reflector is not publishing to Hugging Face yet, but it is now structured to mak
 
 ## Long-term vision
 
-Reflector aims to become a durable reference architecture for recursive engineering systems: publication-aware, specification-driven, synchronization-first, and legible to both humans and automation. The near-term roadmap is to complete the manuscript, harden the audit and release paths, and prepare clean distribution surfaces for arXiv, GitHub Pages, and future Hugging Face publication.
+reflector aims to become a durable reference architecture for recursive engineering systems: publication-aware, specification-driven, synchronization-first, and legible to both humans and automation. The near-term roadmap is to complete the manuscript, harden the audit and release paths, and prepare clean distribution surfaces for arXiv, GitHub Pages, and future Hugging Face publication.

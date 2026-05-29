@@ -1,6 +1,6 @@
 # Toolchain Requirements
 
-This document describes the local development toolchain required to build the Reflector manuscript deterministically.
+This document describes the local development toolchain required to build the reflector manuscript deterministically.
 
 ## Required Executables
 

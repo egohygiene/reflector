@@ -1,4 +1,4 @@
-# Reflector Paper Outline
+# reflector Paper Outline
 
 - Abstract
 - Introduction
