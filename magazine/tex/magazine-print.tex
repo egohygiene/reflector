@@ -1,15 +1,14 @@
 % SPDX-FileCopyrightText: 2026 Alan Szmyt
 % SPDX-License-Identifier: Apache-2.0
 \documentclass{article}
-\usepackage[paperwidth=11in,paperheight=8.5in,margin=0.25in]{geometry}
+\usepackage[paperwidth=8in,paperheight=12in,margin=0in]{geometry}
 \usepackage{graphicx}
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
 
 \newcommand{\printpage}[1]{%
-  \noindent\makebox[\textwidth][c]{%
-    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{#1}%
-  }%
+  \noindent\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{#1}%
 }
 
 \begin{document}

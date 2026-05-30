@@ -12,8 +12,8 @@ magazine/
 ├── prompts/                 # canonical prompt provenance (page01...page14)
 ├── pages/                   # canonical full-page PNG assets (page01...page14)
 ├── tex/
-│   ├── magazine.tex         # digital/screen PDF entrypoint (16:9, full-page)
-│   ├── magazine-print.tex   # print PDF entrypoint (letter landscape + safe margin)
+│   ├── magazine.tex         # digital/screen PDF entrypoint (2:3 portrait, full-page)
+│   ├── magazine-print.tex   # print PDF entrypoint (2:3 portrait, full-page)
 │   └── .latexmkrc           # isolated magazine latexmk configuration
 ├── .cache/                  # local auxiliary/output build intermediates
 └── dist/
@@ -46,8 +46,8 @@ Equivalent script usage:
 
 ### Print layout strategy
 
-The print variant uses US Letter landscape pages (`11in x 8.5in`) with `0.25in` margins
-and centered image placement. This is a safe-margin strategy (not full bleed).
+The print variant uses the same edge-to-edge `8in x 12in` full-page image layout as
+the digital variant so each source PNG is rendered as a full document page.
 
 ## Adding a new page
 
