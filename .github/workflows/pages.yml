@@ -10,11 +10,13 @@ on:
     paths:
       - "docs/**"
       - "paper/**"
+      - "magazine/**"
       - "scripts/build-paper.sh"
       - "scripts/print-latex-diagnostics.sh"
       - ".latexmkrc"
       - ".github/workflows/pages.yml"
       - ".github/workflows/build-paper.yml"
+      - ".github/workflows/build-magazine.yml"
   workflow_dispatch:
 
 permissions:
@@ -63,20 +65,77 @@ jobs:
         if: failure()
         run: ./scripts/print-latex-diagnostics.sh paper
 
+      - name: Build reflector magazine PDF (digital)
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: tex/magazine.tex
+          working_directory: magazine
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -recorder
+            -file-line-error
+            -f
+            -gg
+            -cd
+            -r
+            tex/.latexmkrc
+
+      - name: Build reflector magazine PDF (print)
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: tex/magazine-print.tex
+          working_directory: magazine
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -recorder
+            -file-line-error
+            -f
+            -gg
+            -cd
+            -r
+            tex/.latexmkrc
+
+      - name: Copy magazine PDFs to dist
+        run: |
+          set -euo pipefail
+          mkdir -p magazine/dist
+          cp magazine/.cache/out/magazine.pdf magazine/dist/reflector-magazine.pdf
+          cp magazine/.cache/out/magazine-print.pdf magazine/dist/reflector-magazine-print.pdf
+          echo "Built: magazine/dist/reflector-magazine.pdf"
+          echo "Built: magazine/dist/reflector-magazine-print.pdf"
+
       - name: Synchronize publication assets into docs
         run: |
           set -euo pipefail
 
           PAPER_SLUG="reflector"
           PDF_SOURCE="paper/.cache/out/paper.pdf"
+          MAGAZINE_PDF_SOURCE="magazine/dist/reflector-magazine.pdf"
+          MAGAZINE_PRINT_PDF_SOURCE="magazine/dist/reflector-magazine-print.pdf"
           HERO_SOURCE="paper/figures/hero.png"
           DOCS_PDF="docs/${PAPER_SLUG}.pdf"
+          DOCS_MAGAZINE_PDF="docs/reflector-magazine.pdf"
+          DOCS_MAGAZINE_PRINT_PDF="docs/reflector-magazine-print.pdf"
           DOCS_HERO_DIR="docs/figures"
           DOCS_HERO="${DOCS_HERO_DIR}/hero.png"
           DOCS_MANIFEST="docs/publication.json"
 
           if [[ ! -f "${PDF_SOURCE}" ]]; then
             echo "Error: Expected PDF not found at '${PDF_SOURCE}'" >&2
+            exit 1
+          fi
+
+          if [[ ! -f "${MAGAZINE_PDF_SOURCE}" ]]; then
+            echo "Error: Expected magazine PDF not found at '${MAGAZINE_PDF_SOURCE}'" >&2
+            exit 1
+          fi
+
+          if [[ ! -f "${MAGAZINE_PRINT_PDF_SOURCE}" ]]; then
+            echo "Error: Expected magazine print PDF not found at '${MAGAZINE_PRINT_PDF_SOURCE}'" >&2
             exit 1
           fi
 
@@ -87,6 +146,8 @@ jobs:
 
           mkdir --parents "${DOCS_HERO_DIR}"
           cp "${PDF_SOURCE}" "${DOCS_PDF}"
+          cp "${MAGAZINE_PDF_SOURCE}" "${DOCS_MAGAZINE_PDF}"
+          cp "${MAGAZINE_PRINT_PDF_SOURCE}" "${DOCS_MAGAZINE_PRINT_PDF}"
           cp "${HERO_SOURCE}" "${DOCS_HERO}"
 
           jq -cn \
@@ -95,10 +156,14 @@ jobs:
             --arg short_sha "${GITHUB_SHA::12}" \
             --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --arg pdf "${PAPER_SLUG}.pdf" \
-            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, pdf: $pdf}' \
+            --arg magazine_pdf "reflector-magazine.pdf" \
+            --arg magazine_print_pdf "reflector-magazine-print.pdf" \
+            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, pdf: $pdf, magazine_pdf: $magazine_pdf, magazine_print_pdf: $magazine_print_pdf}' \
             > "${DOCS_MANIFEST}"
 
           echo "Published PDF: ${DOCS_PDF}"
+          echo "Published magazine PDF: ${DOCS_MAGAZINE_PDF}"
+          echo "Published magazine print PDF: ${DOCS_MAGAZINE_PRINT_PDF}"
           echo "Published hero image: ${DOCS_HERO}"
           echo "Publication manifest: ${DOCS_MANIFEST}"
 
@@ -115,11 +180,15 @@ jobs:
           for required_path in \
             "${PDF_SOURCE}" \
             "${DOCS_PDF}" \
+            "docs/reflector-magazine.pdf" \
+            "docs/reflector-magazine-print.pdf" \
             "docs/figures/hero.png" \
             "docs/index.html" \
             "docs/publication.json" \
             "_site/index.html" \
             "_site/reflector.pdf" \
+            "_site/reflector-magazine.pdf" \
+            "_site/reflector-magazine-print.pdf" \
             "_site/figures/hero.png" \
             "_site/publication.json"
           do
@@ -145,10 +214,14 @@ jobs:
           echo "Published routes:"
           echo "- /reflector/"
           echo "- /reflector/reflector.pdf"
+          echo "- /reflector/reflector-magazine.pdf"
+          echo "- /reflector/reflector-magazine-print.pdf"
           echo "- /reflector/figures/hero.png"
 
           grep -q 'src="./figures/hero.png"' docs/index.html
           grep -q 'href="./reflector.pdf"' docs/index.html
+          grep -q 'href="./reflector-magazine.pdf"' docs/index.html
+          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v6
@@ -163,7 +236,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: reflector-pages-build-artifacts
-          path: paper/.cache/
+          path: |
+            paper/.cache/
+            magazine/.cache/
           include-hidden-files: true
           if-no-files-found: warn
           retention-days: 7
@@ -179,3 +254,5 @@ jobs:
           echo "Route checks:"
           echo "- ${{ steps.deployment.outputs.page_url }}"
           echo "- ${{ steps.deployment.outputs.page_url }}reflector.pdf"
+          echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine.pdf"
+          echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine-print.pdf"

@@ -69,6 +69,10 @@ jobs:
           ARXIV_BUNDLE="release/${PAPER_NAME}-arxiv-${TAG}.zip"
           MANIFEST_PATH="${RELEASE_DIR}/manifest.json"
           RELEASE_NOTES_PATH="${RELEASE_DIR}/release-notes.md"
+          MAGAZINE_PDF_SOURCE="magazine/dist/reflector-magazine.pdf"
+          MAGAZINE_PRINT_PDF_SOURCE="magazine/dist/reflector-magazine-print.pdf"
+          MAGAZINE_PDF_ASSET="${RELEASE_DIR}/reflector-magazine.pdf"
+          MAGAZINE_PRINT_PDF_ASSET="${RELEASE_DIR}/reflector-magazine-print.pdf"
 
           echo "paper_dir=${PAPER_DIR}" >> "$GITHUB_OUTPUT"
           echo "paper_name=${PAPER_NAME}" >> "$GITHUB_OUTPUT"
@@ -83,6 +87,10 @@ jobs:
           echo "release_name=${PAPER_NAME} ${TAG}" >> "$GITHUB_OUTPUT"
           echo "pdf_path=${PDF_PATH}" >> "$GITHUB_OUTPUT"
           echo "pdf_asset=${PDF_ASSET}" >> "$GITHUB_OUTPUT"
+          echo "magazine_pdf_source=${MAGAZINE_PDF_SOURCE}" >> "$GITHUB_OUTPUT"
+          echo "magazine_print_pdf_source=${MAGAZINE_PRINT_PDF_SOURCE}" >> "$GITHUB_OUTPUT"
+          echo "magazine_pdf_asset=${MAGAZINE_PDF_ASSET}" >> "$GITHUB_OUTPUT"
+          echo "magazine_print_pdf_asset=${MAGAZINE_PRINT_PDF_ASSET}" >> "$GITHUB_OUTPUT"
 
       - name: Validate changelog includes release version
         run: |
@@ -141,6 +149,49 @@ jobs:
         if: failure()
         run: ./scripts/print-latex-diagnostics.sh "${{ steps.vars.outputs.paper_dir }}"
 
+      - name: Build reflector magazine PDF (digital)
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: tex/magazine.tex
+          working_directory: magazine
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -recorder
+            -file-line-error
+            -f
+            -gg
+            -cd
+            -r
+            tex/.latexmkrc
+
+      - name: Build reflector magazine PDF (print)
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: tex/magazine-print.tex
+          working_directory: magazine
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -recorder
+            -file-line-error
+            -f
+            -gg
+            -cd
+            -r
+            tex/.latexmkrc
+
+      - name: Copy magazine PDFs to dist
+        run: |
+          set -euo pipefail
+          mkdir -p magazine/dist
+          cp magazine/.cache/out/magazine.pdf magazine/dist/reflector-magazine.pdf
+          cp magazine/.cache/out/magazine-print.pdf magazine/dist/reflector-magazine-print.pdf
+          echo "Built: magazine/dist/reflector-magazine.pdf"
+          echo "Built: magazine/dist/reflector-magazine-print.pdf"
+
       - name: Assemble release artifacts
         run: |
           set -euo pipefail
@@ -151,10 +202,16 @@ jobs:
           ARXIV_DIR="${RELEASE_DIR}/arxiv"
           PDF_PATH="${{ steps.vars.outputs.pdf_path }}"
           PDF_ASSET="${{ steps.vars.outputs.pdf_asset }}"
+          MAGAZINE_PDF_SOURCE="${{ steps.vars.outputs.magazine_pdf_source }}"
+          MAGAZINE_PRINT_PDF_SOURCE="${{ steps.vars.outputs.magazine_print_pdf_source }}"
+          MAGAZINE_PDF_ASSET="${{ steps.vars.outputs.magazine_pdf_asset }}"
+          MAGAZINE_PRINT_PDF_ASSET="${{ steps.vars.outputs.magazine_print_pdf_asset }}"
 
           mkdir --parents "${SOURCE_DIR}" "${ARXIV_DIR}"
 
           cp "${PDF_PATH}" "${PDF_ASSET}"
+          cp "${MAGAZINE_PDF_SOURCE}" "${MAGAZINE_PDF_ASSET}"
+          cp "${MAGAZINE_PRINT_PDF_SOURCE}" "${MAGAZINE_PRINT_PDF_ASSET}"
 
           for file in "paper.tex" "references.bib"; do
             if [[ -f "${PAPER_DIR}/${file}" ]]; then
@@ -223,10 +280,14 @@ jobs:
           RELEASE_BUNDLE="${{ steps.vars.outputs.release_bundle }}"
           ARXIV_BUNDLE="${{ steps.vars.outputs.arxiv_bundle }}"
           MANIFEST_PATH="${{ steps.vars.outputs.manifest_path }}"
+          MAGAZINE_PDF_ASSET="${{ steps.vars.outputs.magazine_pdf_asset }}"
+          MAGAZINE_PRINT_PDF_ASSET="${{ steps.vars.outputs.magazine_print_pdf_asset }}"
 
           PDF_SHA256="$(sha256sum "${PDF_ASSET}" | awk '{print $1}')"
           RELEASE_SHA256="$(sha256sum "${RELEASE_BUNDLE}" | awk '{print $1}')"
           ARXIV_SHA256="$(sha256sum "${ARXIV_BUNDLE}" | awk '{print $1}')"
+          MAGAZINE_PDF_SHA256="$(sha256sum "${MAGAZINE_PDF_ASSET}" | awk '{print $1}')"
+          MAGAZINE_PRINT_PDF_SHA256="$(sha256sum "${MAGAZINE_PRINT_PDF_ASSET}" | awk '{print $1}')"
 
           GENERATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
@@ -240,6 +301,10 @@ jobs:
           RELEASE_SHA256="${RELEASE_SHA256}" \
           ARXIV_BUNDLE="${ARXIV_BUNDLE}" \
           ARXIV_SHA256="${ARXIV_SHA256}" \
+          MAGAZINE_PDF_ASSET="${MAGAZINE_PDF_ASSET}" \
+          MAGAZINE_PDF_SHA256="${MAGAZINE_PDF_SHA256}" \
+          MAGAZINE_PRINT_PDF_ASSET="${MAGAZINE_PRINT_PDF_ASSET}" \
+          MAGAZINE_PRINT_PDF_SHA256="${MAGAZINE_PRINT_PDF_SHA256}" \
           MANIFEST_PATH="${MANIFEST_PATH}" \
           python - <<'PY'
           import json
@@ -255,6 +320,14 @@ jobs:
                   "pdf": {
                       "path": os.environ["PDF_ASSET"],
                       "sha256": os.environ["PDF_SHA256"],
+                  },
+                  "magazine_pdf": {
+                      "path": os.environ["MAGAZINE_PDF_ASSET"],
+                      "sha256": os.environ["MAGAZINE_PDF_SHA256"],
+                  },
+                  "magazine_print_pdf": {
+                      "path": os.environ["MAGAZINE_PRINT_PDF_ASSET"],
+                      "sha256": os.environ["MAGAZINE_PRINT_PDF_SHA256"],
                   },
                   "release_bundle": {
                       "path": os.environ["RELEASE_BUNDLE"],
@@ -278,6 +351,8 @@ jobs:
           set -euo pipefail
 
           test -f "${{ steps.vars.outputs.pdf_asset }}"
+          test -f "${{ steps.vars.outputs.magazine_pdf_asset }}"
+          test -f "${{ steps.vars.outputs.magazine_print_pdf_asset }}"
           test -f "${{ steps.vars.outputs.release_bundle }}"
           test -f "${{ steps.vars.outputs.arxiv_bundle }}"
           test -f "${{ steps.vars.outputs.manifest_path }}"
@@ -306,7 +381,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.vars.outputs.paper_name }}-${{ steps.vars.outputs.tag }}-build-artifacts
-          path: ${{ steps.vars.outputs.paper_dir }}/.cache/
+          path: |
+            ${{ steps.vars.outputs.paper_dir }}/.cache/
+            magazine/.cache/
           include-hidden-files: true
           if-no-files-found: warn
           retention-days: 7
@@ -320,6 +397,8 @@ jobs:
           body_path: ${{ steps.vars.outputs.release_notes_path }}
           files: |
             ${{ steps.vars.outputs.pdf_asset }}
+            ${{ steps.vars.outputs.magazine_pdf_asset }}
+            ${{ steps.vars.outputs.magazine_print_pdf_asset }}
             ${{ steps.vars.outputs.release_bundle }}
             ${{ steps.vars.outputs.arxiv_bundle }}
             ${{ steps.vars.outputs.manifest_path }}

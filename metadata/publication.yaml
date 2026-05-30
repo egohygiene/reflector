@@ -124,3 +124,21 @@ academic_indexing:
     notes: >-
       ORCID iD present in CITATION.cff, .zenodo.json, and metadata layer.
       Auto-update via Zenodo or manual ORCID Works API pending DOI assignment.
+
+# ---------------------------------------------------------------------------
+# Companion publications
+# ---------------------------------------------------------------------------
+
+companion_publications:
+  magazine:
+    title: "reflector: Visual Companion Magazine"
+    description: >-
+      A visually compressed companion artifact designed to communicate
+      Reflector concepts through editorial layouts, infographics, and
+      visual storytelling.
+    artifacts:
+      pdf: "reflector-magazine.pdf"
+      print_pdf: "reflector-magazine-print.pdf"
+    source_directory: "magazine/"
+    pages_url: "https://egohygiene.github.io/reflector/reflector-magazine.pdf"
+    print_pages_url: "https://egohygiene.github.io/reflector/reflector-magazine-print.pdf"

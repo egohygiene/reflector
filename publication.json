@@ -9,6 +9,18 @@
   "release_channel": "github-releases",
   "version_source": "VERSION",
   "citation_source": "CITATION.cff",
+  "artifacts": {
+    "paper": {
+      "pdf": "reflector.pdf",
+      "pages_url": "https://egohygiene.github.io/reflector/reflector.pdf"
+    },
+    "magazine": {
+      "pdf": "reflector-magazine.pdf",
+      "print_pdf": "reflector-magazine-print.pdf",
+      "pages_url": "https://egohygiene.github.io/reflector/reflector-magazine.pdf",
+      "print_pages_url": "https://egohygiene.github.io/reflector/reflector-magazine-print.pdf"
+    }
+  },
   "future": {
     "zenodo_archive": {
       "enabled": false,
