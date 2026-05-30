@@ -11,20 +11,20 @@ See [`captions.md`](captions.md) for the centralized caption registry and [`READ
 | reflector-figure-1 | `figure1.png` | Introduction | `fig:figure1` | 1600×900 | placeholder | Active |
 | reflector-figure-2 | `figure2.png` | Recursive Drift | `fig:figure2` | 1600×900 | placeholder | Active |
 | reflector-figure-3 | `figure3.png` | Reflective Auditing | `fig:figure3` | 1600×900 | placeholder | Active |
-| reflector-figure-4 | `figure4.png` | — (reserved) | — | 1600×900 | placeholder | Reserved |
-| reflector-figure-5 | `figure5.png` | reflector Framework; Visual Summary | `fig:figure5`; `fig:visual-summary-lifecycle` | 1600×900 | placeholder | Active |
+| reflector-figure-4 | `figure4.png` | Synchronization | `fig:figure4` | 1600×900 | placeholder | Active |
+| reflector-figure-5 | `figure5.png` | reflector Framework | `fig:figure5` | 1600×900 | placeholder | Active |
 | reflector-figure-6 | `figure6.png` | Mixed-Initiative Recursive Systems | `fig:figure6` | 1600×900 | placeholder | Active |
-| reflector-figure-7 | `figure7.png` | Operational Demonstration | `fig:figure7` | 1600×900 | placeholder | Active |
-| reflector-figure-8 | `figure8.png` | Implementation Examples | `fig:figure8` | 1600×900 | placeholder | Active |
-| reflector-figure-9 | `figure9.png` | Case Studies | `fig:figure9` | 1600×900 | placeholder | Active |
-| reflector-figure-10 | `figure10.png` | Limitations | `fig:figure10` | 1600×900 | placeholder | Active |
-| reflector-figure-11 | `figure11.png` | Future Directions; Visual Summary | `fig:figure11`; `fig:visual-summary-systems-map` | 1600×900 | placeholder | Active |
-| reflector-figure-12 | `figure12.png` | Milestone Execution | `fig:figure12` | 1600×900 | placeholder | Active |
-| reflector-figure-15 | `figure15.png` | — (reserved) | — | 1600×900 | placeholder | Reserved |
-| reflector-figure-16 | `figure16.png` | Implementation Examples | `fig:figure16` | 1600×900 | placeholder | Active |
-| reflector-figure-17 | `figure17.png` | Implementation Examples | `fig:figure17` | 1600×900 | placeholder | Active |
-| reflector-figure-18 | `figure18.png` | Cognitive Load and Recursive Coordination | `fig:figure18` | 1600×900 | placeholder | Active |
-| reflector-figure-19 | `figure19.png` | Synchronization and Governance | `fig:figure19` | 1600×900 | placeholder | Active |
+| reflector-figure-7 | `figure7.png` | Cognitive Load and Recursive Coordination | `fig:figure18` | 1600×900 | placeholder | Active |
+| reflector-figure-8 | `figure8.png` | Operational Demonstration | `fig:figure7` | 1600×900 | placeholder | Active |
+| reflector-figure-9 | `figure9.png` | Milestone Execution | `fig:figure12` | 1600×900 | placeholder | Active |
+| reflector-figure-10 | `figure10.png` | Implementation Examples | `fig:figure8` | 1600×900 | placeholder | Active |
+| reflector-figure-11 | `figure11.png` | Implementation Examples | `fig:figure17` | 1600×900 | placeholder | Active |
+| reflector-figure-12 | `figure12.png` | Implementation Examples | `fig:figure16` | 1600×900 | placeholder | Active |
+| reflector-figure-13 | `figure13.png` | Case Studies | `fig:figure9` | 1600×900 | placeholder | Active |
+| reflector-figure-14 | `figure14.png` | Limitations | `fig:figure10` | 1600×900 | placeholder | Active |
+| reflector-figure-15 | `figure15.png` | Future Directions | `fig:figure11` | 1600×900 | placeholder | Active |
+| reflector-figure-16 | `figure16.png` | Visual Summary | `fig:visual-summary-lifecycle` | 1600×900 | placeholder | Active |
+| reflector-figure-17 | `figure17.png` | Visual Summary | `fig:visual-summary-systems-map` | 1600×900 | placeholder | Active |
 
 **State** values: `placeholder` — layout-stabilization copy; `final` — publication-ready rendered figure.
 **Status** values: `Active` — referenced in paper; `Reserved` — allocated but not yet placed in a section.
@@ -231,27 +231,4 @@ figures:
     alt_text: "Placeholder figure showing human intent stabilized through a specification layer, passed into scoped delegation and AI execution, then reconciled through reflective audit and specification synchronization before recursive continuation."
     sync_notes: "Replace with final specification orchestration diagram. Preserve label fig:figure17."
 
-  - id: reflector-figure-18
-    file: figure18.png
-    section: cognitive_load_recursive_coordination
-    label: "fig:figure18"
-    caption: "Recursive cognition coordination: human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints form a distributed cognition stack that supports recursive coordination and inspectable continuation decisions."
-    state: placeholder
-    dimensions: "1600x900"
-    title: Recursive cognition coordination stack
-    description: "Diagram of the distributed cognition stack for recursive coordination across human cognition, specifications, repositories, artifacts, audits, and checkpoints."
-    alt_text: "Placeholder figure showing human cognition, specifications, repositories, generated artifacts, reflective audits, and synchronization checkpoints as distributed cognition infrastructure for recursive coordination."
-    sync_notes: "Replace with final cognition coordination stack diagram. Preserve label fig:figure18."
-
-  - id: reflector-figure-19
-    file: figure19.png
-    section: synchronization
-    label: "fig:figure19"
-    caption: "Recursive governance and alignment maintenance: human intent is translated into governance constraints and specifications, passed through bounded AI execution and generated artifacts, then reconciled through reflective audit and alignment checkpoints before recursive continuation."
-    state: placeholder
-    dimensions: "1600x900"
-    title: Recursive governance and alignment maintenance
-    description: "Diagram of governance-anchored recursive alignment showing how human intent is translated into constraints, executed, and reconciled through reflective audit before recursive continuation."
-    alt_text: "Placeholder figure showing human intent translated into governance constraints and specifications, passed through AI execution and generated artifacts, then reconciled through reflective audit and alignment checkpoints before recursive continuation."
-    sync_notes: "Replace with final governance and alignment diagram. Preserve label fig:figure19."
 ```
