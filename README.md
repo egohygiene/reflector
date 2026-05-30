@@ -98,6 +98,16 @@ To publish a locally built PDF into `docs/`:
 ./scripts/build-paper.sh paper --publish
 ```
 
+### Build the visual magazine artifact
+
+```bash
+task magazine:doctor
+task magazine:build
+task magazine:build:print
+```
+
+See [`magazine/README.md`](./magazine/README.md) for the full workflow and output paths.
+
 ## Repository map
 
 | Need | Start here |
@@ -108,6 +118,7 @@ To publish a locally built PDF into `docs/`:
 | Workflow overview | [`docs/workflows.md`](./docs/workflows.md) |
 | Toolchain requirements | [`docs/toolchain.md`](./docs/toolchain.md) |
 | Paper overview | [`paper/README.md`](./paper/README.md) |
+| Magazine overview | [`magazine/README.md`](./magazine/README.md) |
 | Publication specs | [`specs/publication/`](./specs/publication/) |
 | Research notes | [`docs/research/`](./docs/research/) |
 | Roadmap | [`ROADMAP.md`](./ROADMAP.md) |

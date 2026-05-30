@@ -144,6 +144,26 @@ tasks:
     cmds:
       - ./scripts/build-paper.sh paper
 
+  magazine:build:
+    desc: Build the magazine digital PDF
+    cmds:
+      - ./scripts/build-magazine.sh build
+
+  magazine:build:print:
+    desc: Build the magazine print PDF
+    cmds:
+      - ./scripts/build-magazine.sh build-print
+
+  magazine:clean:
+    desc: Clean magazine build artifacts
+    cmds:
+      - ./scripts/build-magazine.sh clean
+
+  magazine:doctor:
+    desc: Validate magazine assets and tooling
+    cmds:
+      - ./scripts/build-magazine.sh doctor
+
   lint:paper:
     desc: Run ChkTeX linting on the paper source
     cmds:
