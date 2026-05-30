@@ -13,7 +13,7 @@ infrastructure that keeps figures, captions, labels, and section placements sync
 | `placeholders/` | Optional staging sources for placeholder design inputs |
 | `final/` | Optional staging sources for candidate final renders before canonical replacement |
 | `archive/` | Optional archive for superseded figure revisions |
-| `figure1.png` … `figure19.png` | Figure assets (currently placeholder copies) |
+| `figure1.png` … `figure17.png` | Figure assets (currently placeholder copies) |
 | `hero.png` | Hero figure asset (currently a placeholder copy) |
 
 ---
@@ -82,7 +82,7 @@ Synchronization review must checkpoint:
 
 | Figure set | Dimensions |
 | --- | --- |
-| `figure1.png` – `figure19.png` | 1600 × 900 px |
+| `figure1.png` – `figure17.png` | 1600 × 900 px |
 | `hero.png` | 1920 × 1080 px |
 
 Replacement figures must use these exact dimensions to preserve layout stability.
