@@ -7,16 +7,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "docs/**"
-      - "paper/**"
-      - "magazine/**"
-      - "scripts/build-paper.sh"
-      - "scripts/print-latex-diagnostics.sh"
-      - ".latexmkrc"
-      - ".github/workflows/pages.yml"
-      - ".github/workflows/build-paper.yml"
-      - ".github/workflows/build-magazine.yml"
   workflow_dispatch:
 
 permissions:
