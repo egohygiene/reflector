@@ -154,12 +154,12 @@ Package babel Info: Importing font and identification data for english
 Type X to quit or <RETURN> to proceed,
 or enter new name. (Default extension: sty)
 
-Enter file name: 
+Enter file name:
 ./styles/reflector.sty:17: Emergency stop.
-<read *> 
-         
+<read *>
+
 l.17 \RequirePackage
-                    {microtype}^^M 
+                    {microtype}^^M
 Here is how much of TeX's memory you used:
  1537 strings out of 476182
  24812 string characters out of 5795595
@@ -316,12 +316,12 @@ Package babel Info: Importing font and identification data for english
 Type X to quit or <RETURN> to proceed,
 or enter new name. (Default extension: sty)
 
-Enter file name: 
+Enter file name:
 ./styles/reflector.sty:17: Emergency stop.
-<read *> 
-         
+<read *>
+
 l.17 \RequirePackage
-                    {microtype}^^M 
+                    {microtype}^^M
 Here is how much of TeX's memory you used:
  1537 strings out of 476182
  24812 string characters out of 5795595
@@ -365,4 +365,3 @@ LaTeX build failed. Printing focused diagnostics...
 - [x] unresolved publication blockers identified
 - [ ] deterministic build confidence improved
 - [x] repository publication architecture validated
-
