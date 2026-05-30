@@ -170,6 +170,23 @@ SPDX-FileCopyrightText = "2026 Alan Szmyt"
 SPDX-License-Identifier = "Apache-2.0"
 
 # ---------------------------------------------------------------------------
+# Generated lockfiles and icon assets
+# ---------------------------------------------------------------------------
+
+[[annotations]]
+path = [
+    "**/*.lock",
+    "**/package-lock.json",
+    "**/pnpm-lock.yaml",
+    "**/npm-shrinkwrap.json",
+    "**/yarn.lock",
+    "**/Cargo.lock",
+    "**/*.ico",
+]
+SPDX-FileCopyrightText = "2026 Alan Szmyt"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ---------------------------------------------------------------------------
 # Generated audit and log files
 # ---------------------------------------------------------------------------
 

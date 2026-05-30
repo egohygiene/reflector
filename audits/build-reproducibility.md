@@ -105,3 +105,4 @@ The build infrastructure declares deterministic controls across:
 - CI/CD toolchain pinning
 
 Non-failing warnings remain (see Unresolved Issues). Addressing these would increase determinism confidence to High.
+

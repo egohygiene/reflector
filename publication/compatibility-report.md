@@ -124,3 +124,4 @@ Packages declared in `paper/styles/reflector.sty` against TeXLive 2025:
 **Compatibility confidence: Medium**
 
 The reflector paper style (`reflector.sty`) uses well-established LaTeX packages that have been part of TeXLive for many years and are compatible with TeXLive 2025. The pdflatex + biber + biblatex combination is the recommended arXiv compilation stack.
+

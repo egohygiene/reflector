@@ -84,3 +84,4 @@ Overall result: ✅ **arXiv upload-ready**
 - [x] Upload bundle is clean (no symlinks, no artifacts, no system files)
 - [x] All figures are in arXiv-compatible formats and within size limits
 - [x] Bibliography compilation path is arXiv-compatible
+
