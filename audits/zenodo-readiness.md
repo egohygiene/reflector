@@ -71,7 +71,7 @@ Base URL: `https://egohygiene.github.io/reflector/`
 - Version is `0.1.0` ✅
 - Title aligns with release metadata ✅
 - License metadata present (`Apache-2.0`) ✅
-- Creator metadata present with ORCID (`0009-0007-1508-1466`) ✅
+- Creator metadata present with ORCID (`0009-0008-5291-9795`) ✅
 - Repository relation metadata present (`https://github.com/egohygiene/reflector`) ✅
 
 ## Remaining Manual Zenodo Steps
