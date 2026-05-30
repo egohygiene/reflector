@@ -221,6 +221,7 @@ jobs:
           grep -q 'src="./figures/hero.png"' docs/index.html
           grep -q 'href="./reflector.pdf"' docs/index.html
           grep -q 'href="./reflector-magazine.pdf"' docs/index.html
+          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v6
