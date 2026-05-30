@@ -119,4 +119,3 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 - [x] unresolved publication blockers identified
 - [ ] deterministic build confidence improved
 - [x] repository publication architecture validated
-
