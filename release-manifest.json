@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "project": "reflector",
-  "current_version": "0.0.1",
+  "current_version": "0.1.0",
   "tag_pattern": "vMAJOR.MINOR.PATCH",
   "changelog": "CHANGELOG.md",
   "version_file": "VERSION",
