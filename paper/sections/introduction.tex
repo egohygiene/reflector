@@ -20,6 +20,35 @@ We define \textit{recursive drift} as the progressive divergence between intende
 
 \Cref{fig:figure1} summarizes the motivating control loop used throughout this paper: human goals are transformed into scoped delegation units, executed by AI agents, materialized as artifacts, audited reflectively, and then synchronized at governance checkpoints before continuation. The central claim is that sustainable recursive development requires explicit synchronization and reflective control surfaces, not only better generation.
 
+\subsection{A Concrete Repository Walkthrough}
+
+Consider a bounded manuscript revision cycle. A human author records a section objective and acceptance criteria in a publication specification, opens a scoped issue, and delegates a draft or revision to an AI assistant. The resulting prose, figure references, and metadata edits are committed as inspectable artifacts; a reflective audit then checks scope, terminology, figure consistency, and build status before a reviewer decides whether to continue, correct, rescope, or pause. This paper's own repository-backed workflow follows that pattern closely enough to provide illustrative grounding: the manuscript currently coordinates 17 referenced figure assets, four named synchronization boundaries, and three visible audit-and-revision loops in the present publication cycle (\texttt{publication-readiness}, \texttt{chktex-audit}, and \texttt{research-peer-review}).
+
+That walkthrough also shows the kinds of drift that motivate \reflector{}. In the current manuscript cycle, detected drift included figure filename-to-label confusion, terminology that had become uneven across adjacent sections, and evidence language that became stronger than the repository-backed record justified. The corresponding synchronization corrections were concrete rather than theoretical: updating the figure registry, normalizing core terms, and recalibrating claims to match inspectable workflow evidence.
+
+\subsection{Working Definitions and Claims Boundaries}
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Operational definitions used throughout the manuscript.}
+  \label{tab:working-definitions}
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    \textbf{Term} & \textbf{Operational definition} \\
+    \midrule
+    Recursive drift & Progressive divergence between current human intent, delegated scope, and the artifact state inherited by later recursive cycles. \\
+    Alignment & The degree to which current artifacts, specifications, and human intent remain mutually reconcilable at a checkpoint. \\
+    Checkpoint sufficiency & The minimum evidence required at a synchronization boundary to justify a continue, correct, rescope, or pause decision. \\
+    Trust calibration & Matching reviewer confidence to visible evidence, provenance, and known uncertainty rather than to artifact fluency alone. \\
+    Synchronization pressure & The growing coordination burden required to reconcile artifacts, context, and decisions as recursive depth increases. \\
+    Continuation authority & The human governance role that is authorized to decide whether another recursive cycle may proceed. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+These definitions also bound the paper's claims. \reflector{} is best read as a conceptual architecture, a systems position paper, and a repository-backed workflow framework. The manuscript offers demonstrated evidence in the form of inspectable repository artifacts and process-level evidence from the paper's own workflow; it uses implementation-oriented examples and case studies as illustrative grounding; it advances conceptual hypotheses about long-horizon coherence and governance; and it identifies future empirical work---controlled comparative studies, workload measurements, and deployment evaluations---as necessary before stronger causal claims would be justified.
+
 \subsection{Gaps in Current AI Engineering Toolchains}
 
 Most current systems prioritize generation, orchestration, and automation throughput. Comparatively less emphasis is placed on reflective auditing, artifact synchronization, and mixed-initiative governance mechanisms that preserve human authority while leveraging machine speed \cite{Amershi2014InteractiveML,Shneiderman2020HCAI}. As a result, organizations often achieve local acceleration while accumulating global ambiguity about why artifacts changed, whether they remain policy-compliant, and how confidence should propagate across recursive steps.

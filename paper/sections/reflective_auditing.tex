@@ -1,13 +1,11 @@
 \section{Reflective Auditing}
 \label{sec:reflective-auditing}
 
-If recursive drift describes how alignment degrades across repeated delegation cycles, reflective auditing describes how alignment is actively restored. Recursive AI-assisted systems cannot rely on execution alone because every successful local step also changes the global state that later steps inherit. Artifacts accumulate, assumptions are rewritten into prompts and plans, and decision rationale becomes distributed across code, issues, reviews, and generated summaries. Without periodic reflection, the system continues to operate on increasingly stale interpretations of human intent. In cybernetic terms, throughput without feedback produces acceleration without control \cite{Wiener1948Cybernetics,Beer1972BrainFirm}.
+As \Cref{sec:recursive-drift} argued, recursive workflows accumulate latent divergence because each locally successful step changes the context inherited by the next one. Reflective auditing is the mechanism that periodically reconnects current artifacts to current intent before additional autonomy is authorized \cite{Wiener1948Cybernetics,Beer1972BrainFirm}.
 
 \subsection{Why Recursive Systems Require Reflection}
 
-Execution is necessary for progress, but in recursive settings it is not sufficient for stability. Each recursive cycle compresses context, introduces interpretation loss, and creates new dependencies that may not be visible from any single local step. Autonomous continuation therefore compounds uncertainty: the system can keep producing plausible outputs while gradually diverging from architectural constraints, acceptance criteria, or the human rationale that originally scoped the work.
-
-This problem is intensified by asymmetric speed. AI systems can generate plans, code, and workflow updates faster than human operators can continuously reconstruct their implications. Under bounded rationality, humans cannot maintain full-fidelity awareness of every recursive branch at all times \cite{Simon1957ModelsMan,Sweller1988CognitiveLoad}. Reflection is therefore not an optional review layer added after execution; it is the mechanism that periodically re-synchronizes intent, state, and artifacts before further delegation.
+Execution is necessary for progress, but in recursive settings it is not sufficient for stability. Under bounded rationality, humans cannot continuously reconstruct every branch of a fast-moving artifact graph \cite{Simon1957ModelsMan,Sweller1988CognitiveLoad}. Reflection is therefore not an optional after-the-fact review layer; it is the recurring checkpoint that makes continued delegation governable.
 
 \subsection{Definition of Reflective Auditing}
 

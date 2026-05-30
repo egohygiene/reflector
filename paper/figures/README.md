@@ -32,7 +32,7 @@ figureN.png
 The hero figure uses the fixed name `hero.png`.
 
 Reserved figure numbers may exist in the directory without a corresponding section placement.
-Their IDs are listed with `Status: Reserved` in `manifest.md` and under *Reserved figure slots* in `captions.md`.
+When that happens, track the slot with `Status: Reserved` in `manifest.md` and add reviewer-facing caption metadata in `captions.md` once the figure is assigned to a manuscript section.
 
 **Do not rename figure files once they are referenced from the paper.**
 The file names are stable identifiers. All `\includegraphics{}` calls, `manifest.md` entries,
@@ -121,7 +121,7 @@ To reserve a slot without placing the figure in a section yet:
 1. Add a placeholder PNG with the canonical dimensions.
 2. Add the figure to `manifest.md` with `state: placeholder` and `Status: Reserved`.
 3. Set `section`, `label`, and `caption` to `null` in the manifest YAML.
-4. Add the file to the *Reserved figure slots* table in `captions.md`.
+4. Add a caption entry to `captions.md` once the slot is assigned to a manuscript section.
 5. Do **not** reference the file from any LaTeX section until the slot is assigned.
 
 ---

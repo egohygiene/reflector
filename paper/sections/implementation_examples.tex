@@ -1,7 +1,7 @@
 \section{Implementation Examples}
 \label{sec:implementation-examples}
 
-The operational model established in \Cref{sec:operational-demonstration} defines how recursive orchestration maintains coherence at the workflow level. The present section descends one level further---from workflow structure to implementation pattern---by demonstrating how \reflector{} concepts map onto concrete repository structures, specification systems, publication workflows, synchronization artifacts, and build infrastructure. The goal is not to prescribe a single production system, but to show that the architectural claims made throughout this paper are grounded in implementable, modular, and extensible engineering practices.
+The operational model established in \Cref{sec:operational-demonstration} defines how recursive orchestration maintains coherence at the workflow level. The present section descends one level further---from workflow structure to implementation pattern---by showing how \reflector{} concepts map onto concrete repository structures, specification systems, publication workflows, synchronization artifacts, and build infrastructure. The goal is not to prescribe a single production system or to imply controlled validation, but to provide implementation-oriented examples and illustrative grounding for the architectural claims developed throughout this paper.
 
 Each subsection below introduces a distinct implementation domain. Together they trace a path from the earliest specification artifacts through the final publication outputs, illustrating how synchronization reasoning and recursive governance can be embedded at each stage of a real engineering workflow \cite{Brooks1987NoSilverBullet,Parnas1972Modularization}.
 
@@ -92,6 +92,34 @@ Artifact evolution is correspondingly recursive. Outputs become future inputs, a
 
 Viewed this way, recursive publication and documentation systems are synchronization-aware by design. Semantic content, renderer configuration, and publication manifests evolve as coupled artifacts, not isolated files. \reflector{}'s infrastructure philosophy follows directly: repositories, specifications, artifacts, workflows, and manifests collectively form recursive synchronization infrastructure, and stability emerges from keeping those artifacts continuously aligned rather than merely stored \cite{Wiener1948Cybernetics,Beer1972BrainFirm}.
 
+\subsection{Reviewer-Friendly Figure Mapping}
+
+For this manuscript, repository asset filenames serve as stable production identifiers, while \LaTeX{} labels serve as narrative reference identifiers. Early figures use a one-to-one numbering scheme, but later figures preserve repository filenames that no longer match the order of their in-text labels. \Cref{tab:figure-mapping} makes that mapping explicit so reviewers can move unambiguously between manuscript references, filenames, and the synchronized figure registry.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Figure filename-to-label mapping for development-stage assets whose repository filenames differ from their in-text labels.}
+  \label{tab:figure-mapping}
+  \begin{tabularx}{\linewidth}{l l X}
+    \toprule
+    \textbf{Asset file} & \textbf{LaTeX label} & \textbf{Section role} \\
+    \midrule
+    \texttt{figure7.png} & \texttt{fig:figure18} & Cognitive load and recursive coordination \\
+    \texttt{figure8.png} & \texttt{fig:figure7} & Operational workflow \\
+    \texttt{figure9.png} & \texttt{fig:figure12} & Milestone execution \\
+    \texttt{figure10.png} & \texttt{fig:figure8} & Implementation architecture \\
+    \texttt{figure11.png} & \texttt{fig:figure17} & Specification orchestration \\
+    \texttt{figure12.png} & \texttt{fig:figure16} & Repository synchronization \\
+    \texttt{figure13.png} & \texttt{fig:figure9} & Case-study orchestration workflow \\
+    \texttt{figure14.png} & \texttt{fig:figure10} & Limitations and convergence tradeoffs \\
+    \texttt{figure15.png} & \texttt{fig:figure11} & Future recursive systems ecosystem \\
+    \texttt{figure16.png} & \texttt{fig:visual-summary-lifecycle} & Visual lifecycle compression \\
+    \texttt{figure17.png} & \texttt{fig:visual-summary-systems-map} & Visual systems map \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
 \subsection{Recursive Build and Validation Systems}
 
 Publication and software artifacts require reproducible, automated build systems that validate outputs at every synchronization checkpoint. In recursive engineering workflows, a build system is not merely a compilation step; it is a recursive validation surface that confirms whether the current artifact set satisfies the consistency and quality requirements declared in the relevant specifications.
@@ -125,6 +153,17 @@ The critical design principle is that humans remain the synchronization authorit
 
 Practically, this means that the tooling layer should lower the cost of human review and oversight rather than attempting to eliminate it. Diff-oriented artifact presentation, specification-aligned change summaries, and auditable generation traces all reduce the cognitive overhead of checkpoint review, making effective human oversight compatible with the execution velocity that AI assistance enables \cite{Simon1957ModelsMan}.
 
+\subsection{Adoption Checklist}
+
+Teams adopting \reflector{} can begin with a short operational checklist:
+\begin{itemize}
+  \item \textbf{Cadence:} run checkpoints at issue handoff, pull request review, milestone closure, and publication or release boundaries.
+  \item \textbf{Roles:} identify a human continuation authority, an AI execution surface, and a reviewer or auditor responsible for reconciliation.
+  \item \textbf{Artifacts:} keep specifications, generated outputs, audit traces, figure or manifest registries, and checkpoint summaries in the same repository context.
+  \item \textbf{Checkpoint criteria:} verify scope match, cross-artifact consistency, visible provenance, and an explicit audit verdict before authorizing continuation.
+  \item \textbf{Decision outcomes:} require every checkpoint to end in one of four states---continue, correct, rescope, or pause.
+\end{itemize}
+
 \subsection{Transition Toward Future Systems}
 
 The implementation patterns surveyed in this section---specification-driven architecture, repository-centric recursive memory, layered publication workflows, cross-artifact synchronization, recursive build validation, and human-AI collaborative tooling---together constitute a practically grounded realization of the \reflector{} architecture. Each pattern can be adopted incrementally and independently, allowing teams to introduce recursive synchronization infrastructure at the pace that their current workflows support.
@@ -133,4 +172,4 @@ Taken together, however, these patterns point toward a more general class of \te
 
 Emerging directions for this class of systems include recursive developer experience platforms that adapt their own scaffolding based on synchronization history, publication operating systems that manage the full lifecycle from specification to archival distribution as a governed workflow, and synchronization-aware AI tooling that maintains explicit checkpoint state across long-horizon collaborative sessions. These directions share a common requirement: the infrastructure must remain inspectable, the synchronization events must remain explicit, and human governance authority must remain coupled to the moments that determine recursive trajectory.
 
-The case studies examined in the following section (\Cref{sec:case-studies}) illustrate how these implementation patterns operate in concrete contexts, tracing specific recursive workflows from initial specification through artifact synchronization to publication-ready outputs. Those cases provide the empirical grounding for evaluating both the practical utility and the current limitations of the \reflector{} approach.
+The case studies examined in the following section (\Cref{sec:case-studies}) illustrate how these implementation patterns operate in concrete contexts, tracing specific recursive workflows from initial specification through artifact synchronization to publication-ready outputs. Those cases provide additional illustrative grounding and process-level evidence for evaluating the practical utility---and the current limits---of the \reflector{} approach without implying controlled empirical validation.
