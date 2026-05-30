@@ -1,15 +1,15 @@
 # Publication Readiness Audit Report
 
-Generated at: `2026-05-28T00:28:54Z`
+Generated at: `2026-05-30T17:16:16Z`
 
 ## Executive Summary
 
 - Total checks: **30**
 - Pass: **29**
-- Warn: **1**
-- Fail: **0**
+- Warn: **0**
+- Fail: **1**
 
-Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
+Overall result: ❌ **Not publication-ready**
 
 ## Goal Checklist
 
@@ -67,7 +67,130 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 
 | Check | Result | Details |
 | --- | --- | --- |
-| Paper compiles cleanly | ⚠️ WARN | latexmk is not installed in this environment; local compile check is blocked. |
+| Paper compiles cleanly | ❌ FAIL | ./scripts/build-paper.sh paper failed: Building: /home/runner/work/reflector/reflector/paper/paper.tex
+Output:   /home/runner/work/reflector/reflector/paper/.cache/out/
+Rc files read:
+  /etc/LatexMk
+  /home/runner/work/reflector/reflector/.latexmkrc
+Latexmk: Run number 1 of rule 'pdflatex'
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
+ \write18 enabled.
+entering extended mode
+Latexmk: Getting log file '.cache/aux/paper.log'
+Collected error summary (may duplicate other messages):
+  pdflatex: Command for 'pdflatex' gave return code 1
+      Refer to '.cache/aux/paper.log' and/or above output for details
+
+::group::LaTeX diagnostics summary
+Paper directory: /home/runner/work/reflector/reflector/paper
+Aux directory:   /home/runner/work/reflector/reflector/paper/.cache/aux
+Output directory: /home/runner/work/reflector/reflector/paper/.cache/out
+LaTeX log:       /home/runner/work/reflector/reflector/paper/.cache/aux/paper.log
+Biber log:       /home/runner/work/reflector/reflector/paper/.cache/aux/paper.blg
+Partial PDF:     /home/runner/work/reflector/reflector/paper/.cache/out/paper.pdf
+Partial PDF not found.
+::endgroup::
+::group::LATEX LOG TAIL
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.30)  30 MAY 2026 17:16
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**paper.tex
+(./paper.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2023/05/17 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count187
+\c@section=\count188
+\c@subsection=\count189
+\c@subsubsection=\count190
+\c@paragraph=\count191
+\c@subparagraph=\count192
+\c@figure=\count193
+\c@table=\count194
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen140
+) (./macros/metadata.tex (./config/title.tex)) (./styles/reflector.sty
+Package: reflector 2025/01/01 reflector Publication Style
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks17
+\inpenc@posthook=\toks18
+) (/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+) (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2024/01/07 v24.1 The Babel package
+\babel@savecnt=\count195
+\U@D=\dimen141
+\l@unhyphenated=\language5
+(/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count196
+(/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'british' set to \l@english
+(babel)             (\language0). Reported on input line 82.
+Package babel Info: Hyphen rules for 'UKenglish' set to \l@english
+(babel)             (\language0). Reported on input line 83.
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@english
+(babel)             (\language0). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@english
+(babel)             (\language0). Reported on input line 108.
+)) (/usr/share/texlive/texmf-dist/tex/generic/babel/locale/en/babel-english.tex
+Package babel Info: Importing font and identification data for english
+(babel)             from babel-en.ini. Reported on input line 11.
+)
+
+! LaTeX Error: File `lmodern.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+./styles/reflector.sty:17: Emergency stop.
+<read *> 
+         
+l.17 \RequirePackage
+                    {microtype}^^M 
+Here is how much of TeX's memory you used:
+ 1537 strings out of 476182
+ 24812 string characters out of 5795595
+ 1922975 words of memory out of 5000000
+ 23595 multiletter control sequences out of 15000+600000
+ 559138 words of font info for 38 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 55i,0n,66p,143b,103s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+./styles/reflector.sty:17:  ==> Fatal error occurred, no output PDF file produc
+ed!
+::endgroup::
+::group::LIKELY LATEX FAILURES
+59:! LaTeX Error: File `lmodern.sty' not found.
+65:./styles/reflector.sty:17: Emergency stop.
+79:./styles/reflector.sty:17:  ==> Fatal error occurred, no output PDF file produc
+::endgroup::
+::group::MISSING FILES OR INCLUDES
+59:! LaTeX Error: File `lmodern.sty' not found.
+::endgroup::
+::group::REFERENCE WARNINGS
+No matches found.
+::endgroup::
+::group::BIBER OUTPUT
+Not found: /home/runner/work/reflector/reflector/paper/.cache/aux/paper.blg
+::endgroup::
+::group::BIBER WARNINGS
+Not found: /home/runner/work/reflector/reflector/paper/.cache/aux/paper.blg
+::endgroup::
+Failure to make '.cache/out/paper.pdf'
+LaTeX build failed. Printing focused diagnostics... |
 
 ### Metadata consistency
 
@@ -106,11 +229,134 @@ Overall result: ⚠️ **Conditionally ready** (non-failing blockers remain)
 
 ## Unresolved Issues
 
-- WARN: LaTeX and build validation — Paper compiles cleanly: latexmk is not installed in this environment; local compile check is blocked.
+- FAIL: LaTeX and build validation — Paper compiles cleanly: ./scripts/build-paper.sh paper failed: Building: /home/runner/work/reflector/reflector/paper/paper.tex
+Output:   /home/runner/work/reflector/reflector/paper/.cache/out/
+Rc files read:
+  /etc/LatexMk
+  /home/runner/work/reflector/reflector/.latexmkrc
+Latexmk: Run number 1 of rule 'pdflatex'
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
+ \write18 enabled.
+entering extended mode
+Latexmk: Getting log file '.cache/aux/paper.log'
+Collected error summary (may duplicate other messages):
+  pdflatex: Command for 'pdflatex' gave return code 1
+      Refer to '.cache/aux/paper.log' and/or above output for details
+
+::group::LaTeX diagnostics summary
+Paper directory: /home/runner/work/reflector/reflector/paper
+Aux directory:   /home/runner/work/reflector/reflector/paper/.cache/aux
+Output directory: /home/runner/work/reflector/reflector/paper/.cache/out
+LaTeX log:       /home/runner/work/reflector/reflector/paper/.cache/aux/paper.log
+Biber log:       /home/runner/work/reflector/reflector/paper/.cache/aux/paper.blg
+Partial PDF:     /home/runner/work/reflector/reflector/paper/.cache/out/paper.pdf
+Partial PDF not found.
+::endgroup::
+::group::LATEX LOG TAIL
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.30)  30 MAY 2026 17:16
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**paper.tex
+(./paper.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2023/05/17 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count187
+\c@section=\count188
+\c@subsection=\count189
+\c@subsubsection=\count190
+\c@paragraph=\count191
+\c@subparagraph=\count192
+\c@figure=\count193
+\c@table=\count194
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen140
+) (./macros/metadata.tex (./config/title.tex)) (./styles/reflector.sty
+Package: reflector 2025/01/01 reflector Publication Style
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks17
+\inpenc@posthook=\toks18
+) (/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+) (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2024/01/07 v24.1 The Babel package
+\babel@savecnt=\count195
+\U@D=\dimen141
+\l@unhyphenated=\language5
+(/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count196
+(/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'british' set to \l@english
+(babel)             (\language0). Reported on input line 82.
+Package babel Info: Hyphen rules for 'UKenglish' set to \l@english
+(babel)             (\language0). Reported on input line 83.
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@english
+(babel)             (\language0). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@english
+(babel)             (\language0). Reported on input line 108.
+)) (/usr/share/texlive/texmf-dist/tex/generic/babel/locale/en/babel-english.tex
+Package babel Info: Importing font and identification data for english
+(babel)             from babel-en.ini. Reported on input line 11.
+)
+
+! LaTeX Error: File `lmodern.sty' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: sty)
+
+Enter file name: 
+./styles/reflector.sty:17: Emergency stop.
+<read *> 
+         
+l.17 \RequirePackage
+                    {microtype}^^M 
+Here is how much of TeX's memory you used:
+ 1537 strings out of 476182
+ 24812 string characters out of 5795595
+ 1922975 words of memory out of 5000000
+ 23595 multiletter control sequences out of 15000+600000
+ 559138 words of font info for 38 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 55i,0n,66p,143b,103s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+./styles/reflector.sty:17:  ==> Fatal error occurred, no output PDF file produc
+ed!
+::endgroup::
+::group::LIKELY LATEX FAILURES
+59:! LaTeX Error: File `lmodern.sty' not found.
+65:./styles/reflector.sty:17: Emergency stop.
+79:./styles/reflector.sty:17:  ==> Fatal error occurred, no output PDF file produc
+::endgroup::
+::group::MISSING FILES OR INCLUDES
+59:! LaTeX Error: File `lmodern.sty' not found.
+::endgroup::
+::group::REFERENCE WARNINGS
+No matches found.
+::endgroup::
+::group::BIBER OUTPUT
+Not found: /home/runner/work/reflector/reflector/paper/.cache/aux/paper.blg
+::endgroup::
+::group::BIBER WARNINGS
+Not found: /home/runner/work/reflector/reflector/paper/.cache/aux/paper.blg
+::endgroup::
+Failure to make '.cache/out/paper.pdf'
+LaTeX build failed. Printing focused diagnostics...
 
 ## Recommended Fixes
 
-- Install `latexmk` + TeX Live toolchain locally/CI and rerun `./scripts/build-paper.sh paper` to close build reproducibility confidence.
+- Resolve: **LaTeX and build validation / Paper compiles cleanly**.
 
 ## Final Publication Checklist
 
