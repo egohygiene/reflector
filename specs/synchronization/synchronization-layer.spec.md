@@ -42,7 +42,7 @@ Each checkpoint SHOULD capture:
 
 - Synchronization must be explicit before recursive continuation.
 - Specifications remain authoritative for architectural intent.
-- Audits gate publication continuation when drift is detected.
+- Audits gate publication continuation when recursive drift is detected.
 - Observability is preserved through inspectable artifacts and workflow logs.
 
 ---

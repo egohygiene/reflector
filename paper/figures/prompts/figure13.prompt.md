@@ -1,10 +1,10 @@
-# figure19.prompt.md
+# figure13.prompt.md
 
 ## Prompt history
 - v0 (placeholder): Initial layout-stabilization prompt placeholder retained for reproducibility.
 
 ## Generation context
-- Canonical figure file: paper/figures/figure19.png
+- Canonical figure file: paper/figures/figure13.png
 - Target dimensions: 1600x900
 - Publication constraints: PNG output, LaTeX-compatible, arXiv-safe, Pages-safe.
 
