@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -122,7 +123,7 @@ REMEDIATION: dict[int, str] = {
     11: "Check that math delimiters `(`, `)`, `[`, `]`, `\\{`, `\\}` are correctly nested.",
     13: "Add `\\@` before a period that ends an abbreviation: `e.g.\\ ` or `cf.\\ `.",
     17: "Find and close the unmatched `$` sign to restore math mode balance.",
-    18: "Replace `\"` with `` ` `` `` ` `` (opening) and `''` (closing). Use `\\enquote{}` from csquotes.",
+    18: "Replace `\"` with ` `` ` (opening) and `''` (closing). Use `\\enquote{}` from csquotes.",
     19: "Ensure every `\\begin{env}` has a matching `\\end{env}` and they are not interleaved.",
     22: "Replace `{\\rm text}` with `\\textrm{text}` or `\\mathrm{text}` inside math.",
     33: "Replace `\\def\\cmd{...}` with `\\newcommand{\\cmd}{...}` or `\\renewcommand`.",
@@ -259,7 +260,7 @@ def run_chktex(paper_dir: Path, chktexrc: Path | None) -> tuple[int, str]:
         opts += ["-n", str(n)]
     opts.append("paper.tex")
 
-    env = {**__import__("os").environ, "TERM": __import__("os").environ.get("TERM", "dumb")}
+    env = {**os.environ, "TERM": os.environ.get("TERM", "dumb")}
     result = subprocess.run(
         opts,
         cwd=paper_dir,
