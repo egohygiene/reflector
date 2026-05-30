@@ -61,5 +61,5 @@ None of these risks block a preprint release or self-archival announcement.
 
 ## Recommended Next Step
 
-Publish as a GitHub release / arXiv preprint now.  
+Publish as a GitHub release / arXiv preprint now.
 Schedule a targeted manuscript revision pass for formal venue submission.
