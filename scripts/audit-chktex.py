@@ -323,8 +323,10 @@ def _severity_badge(severity: str) -> str:
 def generate_report(result: AuditResult) -> str:
     lines: list[str] = []
 
+    # REUSE-IgnoreStart
     lines.append("<!-- SPDX-FileCopyrightText: 2026 Alan Szmyt -->")
     lines.append("<!-- SPDX-License-Identifier: Apache-2.0 -->")
+    # REUSE-IgnoreEnd
     lines.append("")
     lines.append("# ChkTeX Audit Report")
     lines.append("")
