@@ -1,6 +1,6 @@
 # Publication Readiness Audit Report
 
-Generated at: `2026-05-30T17:16:16Z`
+Generated at: `2026-05-30T18:16:45Z`
 
 ## Executive Summary
 
@@ -91,7 +91,7 @@ Partial PDF:     /home/runner/work/reflector/reflector/paper/.cache/out/paper.pd
 Partial PDF not found.
 ::endgroup::
 ::group::LATEX LOG TAIL
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.30)  30 MAY 2026 17:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.30)  30 MAY 2026 18:16
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -253,7 +253,7 @@ Partial PDF:     /home/runner/work/reflector/reflector/paper/.cache/out/paper.pd
 Partial PDF not found.
 ::endgroup::
 ::group::LATEX LOG TAIL
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.30)  30 MAY 2026 17:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.30)  30 MAY 2026 18:16
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
