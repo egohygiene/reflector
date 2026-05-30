@@ -144,6 +144,27 @@ tasks:
     cmds:
       - ./scripts/build-paper.sh paper
 
+  lint:paper:
+    desc: Run ChkTeX linting on the paper source
+    cmds:
+      - ./scripts/lint-paper.sh paper
+
+  audit:paper:
+    desc: Generate ChkTeX audit report (audits/chktex-audit.md)
+    cmds:
+      - '{{.PYTHON}} scripts/audit-chktex.py --paper paper --output audits/chktex-audit.md'
+
+  qa:paper:
+    desc: Run full publication quality checks (build + lint + audit)
+    cmds:
+      - task: build
+      - task: lint:paper
+      - task: audit:paper
+      - |
+        echo ""
+        echo "✅ Paper quality checks complete."
+        echo "   Audit report: audits/chktex-audit.md"
+
   audit:
     desc: Run local repository audit commands
     cmds:
