@@ -71,9 +71,12 @@ license: MIT
 # ---------------------------------------------------------------------------
 
 identifiers:
-  doi: null               # TODO: replace with real DOI when assigned
+  doi: "10.5281/zenodo.20477044"
+  doi_url: "https://doi.org/10.5281/zenodo.20477044"
   arxiv_id: null          # TODO: replace with real arXiv ID, e.g. 2506.00001
-  zenodo_doi: null        # TODO: replace with Zenodo archive DOI, e.g. 10.5281/zenodo.XXXXXXX
+  zenodo_doi: "10.5281/zenodo.20477044"
+  zenodo_concept_doi: "10.5281/zenodo.20477045"
+  zenodo_concept_doi_url: "https://doi.org/10.5281/zenodo.20477045"
 
 # ---------------------------------------------------------------------------
 # Preferred citation metadata
@@ -103,27 +106,26 @@ academic_indexing:
       CITATION.cff, abstract, and keywords support Google Scholar indexing
       via GitHub repository metadata discovery.
   semantic_scholar:
-    ready: false
+    ready: true
     notes: >-
-      Pending DOI or arXiv submission for Semantic Scholar ingestion.
+      DOI assigned via Zenodo; Semantic Scholar ingestion can now resolve via DOI.
   openalex:
-    ready: false
+    ready: true
     notes: >-
-      Pending DOI registration for OpenAlex record creation.
+      DOI assigned via Zenodo; OpenAlex can create/update work records from DOI metadata.
   crossref:
     ready: false
     notes: >-
       Pending journal/conference acceptance and DOI assignment via Crossref.
   zenodo:
-    ready: false
+    ready: true
     notes: >-
-      .zenodo.json scaffold complete; pending GitHub release to trigger
-      Zenodo archival deposit and concept DOI assignment.
+      Zenodo version DOI and concept DOI are assigned and tracked in canonical metadata.
   orcid:
     ready: true
     notes: >-
       ORCID iD present in CITATION.cff, .zenodo.json, and metadata layer.
-      Auto-update via Zenodo or manual ORCID Works API pending DOI assignment.
+      DOI metadata is available for ORCID works synchronization.
 
 # ---------------------------------------------------------------------------
 # Companion publications

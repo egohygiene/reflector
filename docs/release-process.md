@@ -49,6 +49,7 @@ All release surfaces derive from `VERSION` and are validated automatically:
 | Release-Please manifest | `.release-please-manifest.json` |
 | Citation metadata | `CITATION.cff` |
 | Zenodo metadata | `.zenodo.json` |
+| CodeMeta metadata | `codemeta.json` |
 
 **Drift between `VERSION` and any surface is a validation failure.**
 
@@ -187,6 +188,7 @@ To trigger a complete publication release:
    - `.release-please-manifest.json` → `".": "0.1.1"`
    - `CITATION.cff` → `version: 0.1.1`
    - `.zenodo.json` → `"version": "0.1.1"`
+   - `codemeta.json` → `"version": "0.1.1"`
 
 3. **Add changelog entry:**
 
@@ -248,10 +250,37 @@ The `zenodo-readiness.md` report (included in every GitHub Release) provides a d
 3. Create a Zenodo deposit manually at [zenodo.org](https://zenodo.org).
 4. Upload all release artifacts.
 5. Submit for review.
-6. Record the assigned DOI in `metadata/publication.yaml`, `CITATION.cff`, and `.zenodo.json`.
-7. Tag a DOI-update release.
+6. Record the assigned DOI in `metadata/publication.yaml`, `CITATION.cff`, `.zenodo.json`, and `codemeta.json`.
+7. Regenerate release metadata so DOI fields remain synchronized.
 
 **DOI assignment is always manual.** The workflow prepares all metadata and artifacts; DOI minting requires a human decision.
+
+---
+
+## DOI Canonicalization
+
+reflector now tracks two Zenodo DOI forms:
+
+- **Version DOI (canonical for citation):** `10.5281/zenodo.20477044`
+- **Concept DOI (latest-family discovery):** `10.5281/zenodo.20477045`
+
+Canonical usage policy:
+
+1. Use the **version DOI** in citation metadata (`CITATION.cff`, `codemeta.json`, release manifest DOI fields) to preserve reproducibility.
+2. Track the **concept DOI** for discovery and latest-release routing metadata.
+3. Keep both DOI forms synchronized via `scripts/validate-metadata.py`.
+
+Future DOI-aware release lifecycle:
+
+```
+Release
+  ↓
+Zenodo DOI assigned
+  ↓
+metadata/publication.yaml + citation surfaces synchronized
+  ↓
+metadata validation + release metadata publish
+```
 
 ---
 
