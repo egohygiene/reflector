@@ -630,7 +630,8 @@ jobs:
           CHECKSUMS_FILE="${RELEASE_DIR}/checksums.txt"
 
           cd "${RELEASE_DIR}"
-          find . -maxdepth 1 -type f \
+          # Exclude checksums.txt itself to avoid a circular dependency.
+          find . -maxdepth 1 -type f ! -name "checksums.txt" \
             \( -name "*.pdf" -o -name "*.zip" -o -name "*.tar.gz" -o -name "*.json" -o -name "*.md" -o -name "*.png" -o -name "*.txt" \) \
             | sort \
             | xargs sha256sum \
@@ -679,7 +680,7 @@ jobs:
                       capture_output=True, text=True, check=True,
                   )
                   sha256 = result.stdout.split()[0]
-                  artifacts[asset.stem] = {
+                  artifacts[asset.name] = {
                       "filename": asset.name,
                       "path": str(asset.relative_to(Path.cwd())),
                       "sha256": sha256,
@@ -819,6 +820,13 @@ jobs:
             ' CHANGELOG.md
           } > "${RELEASE_NOTES}"
 
+          # Validate that changelog content was extracted for this version.
+          BODY_LINES="$(awk 'NR > 2 && /\S/' "${RELEASE_NOTES}" | wc -l)"
+          if [[ "${BODY_LINES}" -eq 0 ]]; then
+            echo "::warning::No changelog entry found for version ${VERSION} in CHANGELOG.md." \
+              "Release notes will contain only the tag header."
+          fi
+
           echo "Release notes written to ${RELEASE_NOTES}"
           cat "${RELEASE_NOTES}"
 
@@ -858,12 +866,30 @@ jobs:
           echo "=== Release artifact inventory ==="
           find "${RELEASE_DIR}" -maxdepth 1 -type f | sort
 
+      - name: Flatten release artifacts for upload
+        run: |
+          set -euo pipefail
+
+          RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
+          FLAT_DIR="release-flat"
+
+          mkdir -p "${FLAT_DIR}"
+
+          # Copy all top-level files from the release directory to a flat staging area.
+          # This ensures download-artifact preserves a simple flat structure in the
+          # release job, avoiding nested release/reflector-vX.Y.Z/ path components.
+          find "${RELEASE_DIR}" -maxdepth 1 -type f | while read -r f; do
+            cp "${f}" "${FLAT_DIR}/"
+          done
+
+          echo "Flattened release artifacts:"
+          ls -lh "${FLAT_DIR}/"
+
       - name: Upload release artifacts
         uses: actions/upload-artifact@v7
         with:
           name: release-artifacts-${{ steps.version.outputs.tag }}
-          path: |
-            ${{ steps.version.outputs.release_dir }}
+          path: release-flat/
           if-no-files-found: error
           retention-days: 30
 
