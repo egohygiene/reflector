@@ -13,6 +13,7 @@
 [![REUSE Compliance](https://img.shields.io/github/actions/workflow/status/egohygiene/reflector/reuse.yml?branch=main&style=for-the-badge&label=REUSE%20Compliance)](https://github.com/egohygiene/reflector/actions/workflows/reuse.yml)
 [![arXiv Ready](https://img.shields.io/badge/arXiv-Ready-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white)](./specs/publication/arxiv-publication.spec.md)
 [![Hugging Face Ready](https://img.shields.io/badge/Hugging%20Face-Ready-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](./docs/huggingface.md)
+[![DOI](https://zenodo.org/badge/1247115338.svg)](https://zenodo.org/records/20477045)
 
 ![reflector publication preview](./paper/figures/hero.png)
 
