@@ -19,7 +19,10 @@ on:
       - "scripts/audit-publication-readiness.py"
       - "scripts/validate-build-reproducibility.py"
       - "scripts/validate-arxiv-packaging.py"
+      - "scripts/validate-release-lifecycle.py"
       - ".github/workflows/synchronization.yml"
+      - ".github/workflows/release-tag.yml"
+      - ".github/workflows/release-paper.yml"
 
   pull_request:
     branches:
@@ -36,7 +39,10 @@ on:
       - "scripts/audit-publication-readiness.py"
       - "scripts/validate-build-reproducibility.py"
       - "scripts/validate-arxiv-packaging.py"
+      - "scripts/validate-release-lifecycle.py"
       - ".github/workflows/synchronization.yml"
+      - ".github/workflows/release-tag.yml"
+      - ".github/workflows/release-paper.yml"
 
   workflow_dispatch:
 
@@ -137,3 +143,22 @@ jobs:
           path: audits/arxiv-validation.md
           if-no-files-found: warn
           retention-days: 30
+
+  validate-release-lifecycle:
+    name: Validate Release Lifecycle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml>=6.0
+
+      - name: Validate release lifecycle contracts
+        run: python scripts/validate-release-lifecycle.py

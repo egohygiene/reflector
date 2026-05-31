@@ -68,6 +68,10 @@ jobs:
           RELEASE_BUNDLE="release/${PAPER_NAME}-${TAG}.zip"
           ARXIV_BUNDLE="release/${PAPER_NAME}-arxiv-${TAG}.zip"
           MANIFEST_PATH="${RELEASE_DIR}/manifest.json"
+          RELEASE_MANIFEST_ASSET="${RELEASE_DIR}/release-manifest.json"
+          PUBLICATION_METADATA_ASSET="${RELEASE_DIR}/publication.json"
+          CHECKSUMS_PATH="${RELEASE_DIR}/checksums.txt"
+          ZENODO_REPORT_PATH="${RELEASE_DIR}/zenodo-readiness.md"
           RELEASE_NOTES_PATH="${RELEASE_DIR}/release-notes.md"
           MAGAZINE_PDF_SOURCE="magazine/dist/reflector-magazine.pdf"
           MAGAZINE_PRINT_PDF_SOURCE="magazine/dist/reflector-magazine-print.pdf"
@@ -83,6 +87,10 @@ jobs:
           echo "release_bundle=${RELEASE_BUNDLE}" >> "$GITHUB_OUTPUT"
           echo "arxiv_bundle=${ARXIV_BUNDLE}" >> "$GITHUB_OUTPUT"
           echo "manifest_path=${MANIFEST_PATH}" >> "$GITHUB_OUTPUT"
+          echo "release_manifest_asset=${RELEASE_MANIFEST_ASSET}" >> "$GITHUB_OUTPUT"
+          echo "publication_metadata_asset=${PUBLICATION_METADATA_ASSET}" >> "$GITHUB_OUTPUT"
+          echo "checksums_path=${CHECKSUMS_PATH}" >> "$GITHUB_OUTPUT"
+          echo "zenodo_report_path=${ZENODO_REPORT_PATH}" >> "$GITHUB_OUTPUT"
           echo "release_notes_path=${RELEASE_NOTES_PATH}" >> "$GITHUB_OUTPUT"
           echo "release_name=${PAPER_NAME} ${TAG}" >> "$GITHUB_OUTPUT"
           echo "pdf_path=${PDF_PATH}" >> "$GITHUB_OUTPUT"
@@ -124,6 +132,13 @@ jobs:
             echo "VERSION (${VERSION_FILE_VALUE}) does not match release tag version (${VERSION_NO_V})." >&2
             exit 1
           fi
+
+      - name: Validate release lifecycle synchronization
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pyyaml>=6.0
+          python scripts/validate-metadata.py
+          python scripts/validate-release-lifecycle.py
 
       - name: Build LaTeX PDF
         uses: xu-cheng/latex-action@v4
@@ -206,12 +221,16 @@ jobs:
           MAGAZINE_PRINT_PDF_SOURCE="${{ steps.vars.outputs.magazine_print_pdf_source }}"
           MAGAZINE_PDF_ASSET="${{ steps.vars.outputs.magazine_pdf_asset }}"
           MAGAZINE_PRINT_PDF_ASSET="${{ steps.vars.outputs.magazine_print_pdf_asset }}"
+          RELEASE_MANIFEST_ASSET="${{ steps.vars.outputs.release_manifest_asset }}"
+          PUBLICATION_METADATA_ASSET="${{ steps.vars.outputs.publication_metadata_asset }}"
 
           mkdir --parents "${SOURCE_DIR}" "${ARXIV_DIR}"
 
           cp "${PDF_PATH}" "${PDF_ASSET}"
           cp "${MAGAZINE_PDF_SOURCE}" "${MAGAZINE_PDF_ASSET}"
           cp "${MAGAZINE_PRINT_PDF_SOURCE}" "${MAGAZINE_PRINT_PDF_ASSET}"
+          cp "release-manifest.json" "${RELEASE_MANIFEST_ASSET}"
+          cp "publication.json" "${PUBLICATION_METADATA_ASSET}"
 
           for file in "paper.tex" "references.bib"; do
             if [[ -f "${PAPER_DIR}/${file}" ]]; then
@@ -346,6 +365,93 @@ jobs:
           )
           PY
 
+      - name: Generate checksums
+        run: |
+          set -euo pipefail
+
+          PDF_ASSET="${{ steps.vars.outputs.pdf_asset }}"
+          MAGAZINE_PDF_ASSET="${{ steps.vars.outputs.magazine_pdf_asset }}"
+          MAGAZINE_PRINT_PDF_ASSET="${{ steps.vars.outputs.magazine_print_pdf_asset }}"
+          RELEASE_BUNDLE="${{ steps.vars.outputs.release_bundle }}"
+          ARXIV_BUNDLE="${{ steps.vars.outputs.arxiv_bundle }}"
+          MANIFEST_PATH="${{ steps.vars.outputs.manifest_path }}"
+          RELEASE_MANIFEST_ASSET="${{ steps.vars.outputs.release_manifest_asset }}"
+          PUBLICATION_METADATA_ASSET="${{ steps.vars.outputs.publication_metadata_asset }}"
+          CHECKSUMS_PATH="${{ steps.vars.outputs.checksums_path }}"
+
+          mkdir --parents "$(dirname "${CHECKSUMS_PATH}")"
+          sha256sum \
+            "${PDF_ASSET}" \
+            "${MAGAZINE_PDF_ASSET}" \
+            "${MAGAZINE_PRINT_PDF_ASSET}" \
+            "${RELEASE_BUNDLE}" \
+            "${ARXIV_BUNDLE}" \
+            "${MANIFEST_PATH}" \
+            "${RELEASE_MANIFEST_ASSET}" \
+            "${PUBLICATION_METADATA_ASSET}" > "${CHECKSUMS_PATH}"
+
+      - name: Validate Pages deployment wiring
+        run: |
+          set -euo pipefail
+          pages_workflow=".github/workflows/pages.yml"
+          grep -q "Deploy GitHub Pages" "${pages_workflow}"
+          grep -q "docs/reflector.pdf" "${pages_workflow}"
+          grep -q "docs/reflector-magazine.pdf" "${pages_workflow}"
+          grep -q "docs/reflector-magazine-print.pdf" "${pages_workflow}"
+          grep -q "docs/publication.json" "${pages_workflow}"
+
+      - name: Generate Zenodo readiness report
+        run: |
+          set -euo pipefail
+
+          VERSION_NO_V="${{ steps.vars.outputs.version_no_v }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          CHECKSUMS_PATH="${{ steps.vars.outputs.checksums_path }}"
+          ZENODO_REPORT_PATH="${{ steps.vars.outputs.zenodo_report_path }}"
+
+          VERSION_NO_V="${VERSION_NO_V}" TAG="${TAG}" CHECKSUMS_PATH="${CHECKSUMS_PATH}" ZENODO_REPORT_PATH="${ZENODO_REPORT_PATH}" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          import yaml
+
+          version = os.environ["VERSION_NO_V"]
+          tag = os.environ["TAG"]
+          checksums_path = Path(os.environ["CHECKSUMS_PATH"])
+          report_path = Path(os.environ["ZENODO_REPORT_PATH"])
+
+          metadata = yaml.safe_load(Path("metadata/publication.yaml").read_text(encoding="utf-8"))
+          zenodo = json.loads(Path(".zenodo.json").read_text(encoding="utf-8"))
+          citation = yaml.safe_load(Path("CITATION.cff").read_text(encoding="utf-8"))
+
+          checks = [
+              ("metadata/publication.yaml version", str(metadata.get("version")) == version),
+              (".zenodo.json version", str(zenodo.get("version")) == version),
+              ("CITATION.cff version", str(citation.get("version")) == version),
+              ("checksums.txt generated", checksums_path.exists()),
+              ("ORCID present in .zenodo.json", bool((zenodo.get("creators") or [{}])[0].get("orcid"))),
+          ]
+
+          status = "ready" if all(ok for _, ok in checks) else "blocked"
+          lines = [
+              f"# Zenodo Readiness Report — {tag}",
+              "",
+              f"- Status: **{status}**",
+              f"- Version: `{version}`",
+              f"- Tag: `{tag}`",
+              f"- Release URL: `https://github.com/{os.environ['GITHUB_REPOSITORY']}/releases/tag/{tag}`",
+              f"- Source ZIP: `https://github.com/{os.environ['GITHUB_REPOSITORY']}/archive/refs/tags/{tag}.zip`",
+              f"- Source TAR.GZ: `https://github.com/{os.environ['GITHUB_REPOSITORY']}/archive/refs/tags/{tag}.tar.gz`",
+              "",
+              "## Checks",
+          ]
+          for name, ok in checks:
+              lines.append(f"- [{'x' if ok else ' '}] {name}")
+
+          report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
       - name: Verify release artifacts
         run: |
           set -euo pipefail
@@ -356,6 +462,10 @@ jobs:
           test -f "${{ steps.vars.outputs.release_bundle }}"
           test -f "${{ steps.vars.outputs.arxiv_bundle }}"
           test -f "${{ steps.vars.outputs.manifest_path }}"
+          test -f "${{ steps.vars.outputs.release_manifest_asset }}"
+          test -f "${{ steps.vars.outputs.publication_metadata_asset }}"
+          test -f "${{ steps.vars.outputs.checksums_path }}"
+          test -f "${{ steps.vars.outputs.zenodo_report_path }}"
           test -f "${{ steps.vars.outputs.release_notes_path }}"
 
           echo "=== Release artifact files ==="
@@ -402,3 +512,7 @@ jobs:
             ${{ steps.vars.outputs.release_bundle }}
             ${{ steps.vars.outputs.arxiv_bundle }}
             ${{ steps.vars.outputs.manifest_path }}
+            ${{ steps.vars.outputs.release_manifest_asset }}
+            ${{ steps.vars.outputs.publication_metadata_asset }}
+            ${{ steps.vars.outputs.checksums_path }}
+            ${{ steps.vars.outputs.zenodo_report_path }}

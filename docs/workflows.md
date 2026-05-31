@@ -66,6 +66,29 @@ Synchronization review checkpoints:
 3. Prefer testing synchronization and build workflows locally before pushing.
 4. Use hosted GitHub Actions for deployment/release workflows requiring cloud permissions.
 
+## 9) Automated Release Lifecycle Workflow
+
+Canonical release version source: `VERSION`.
+
+All release version surfaces derive from `VERSION` and are validated by:
+
+- `scripts/validate-metadata.py`
+- `scripts/validate-release-lifecycle.py`
+
+Release lifecycle:
+
+```mermaid
+flowchart TD
+  A[Push to main] --> B[Validate metadata + release lifecycle]
+  B --> C[Create annotated tag from VERSION]
+  C --> D[release-paper workflow]
+  D --> E[Build paper + magazine artifacts]
+  E --> F[Generate release manifest + checksums]
+  F --> G[Create GitHub Release and attach assets]
+  G --> H[Pages workflow publishes docs artifacts]
+  G --> I[Generate Zenodo readiness report]
+```
+
 ## Reusable Blueprint Specs
 
 - `specs/workflows/recursive-issue-orchestration.spec.md`

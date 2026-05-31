@@ -124,7 +124,7 @@ To run the workflow with strict warning enforcement (fail on any warning):
 
 ## Release Usage
 
-Before creating a release tag:
+Before merging a release version bump to `main`:
 
 1. Run the full quality pipeline locally:
 
@@ -143,8 +143,10 @@ Before creating a release tag:
    git commit -m "docs: update chktex audit for release"
    ```
 
-5. The `release-paper.yml` workflow will build and publish the paper. The
-   `paper-quality.yml` workflow should pass cleanly before the release tag is pushed.
+5. `release-tag.yml` will create an annotated `vMAJOR.MINOR.PATCH` tag from
+   `VERSION` automatically, then `release-paper.yml` will build and publish the
+   release artifacts (including checksums + Zenodo readiness report). Ensure
+   `paper-quality.yml` passes cleanly before merging.
 
 ---
 
