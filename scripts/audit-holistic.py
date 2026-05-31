@@ -165,6 +165,7 @@ REQUIRED_REFLECTOR_MODULES = {
 REQUIRED_WORKFLOWS = {
     "build-paper.yml",
     "pages.yml",
+    "publication.yml",
     "release-paper.yml",
     "release-please.yml",
     "commitlint.yml",
