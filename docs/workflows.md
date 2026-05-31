@@ -66,7 +66,48 @@ Synchronization review checkpoints:
 3. Prefer testing synchronization and build workflows locally before pushing.
 4. Use hosted GitHub Actions for deployment/release workflows requiring cloud permissions.
 
-## 9) Automated Release Lifecycle Workflow
+## 9) Publication Orchestration Workflow
+
+The canonical publication entry point is:
+
+```
+.github/workflows/publication.yml
+```
+
+This unified workflow coordinates all publication stages in a deterministic pipeline:
+
+```mermaid
+flowchart TD
+  A[VERSION changes on main] --> B[Stage 1: Validate]
+  B --> B1[Metadata synchronization]
+  B --> B2[Release lifecycle contracts]
+  B --> B3[arXiv packaging readiness]
+  B --> B4[Build reproducibility]
+  B --> B5[Publication readiness audit]
+  B --> B6[REUSE compliance]
+
+  A --> C[Stage 2: Audit — ChkTeX]
+
+  B --> D[Stage 3: Build paper PDF]
+  B --> E[Stage 3: Build magazine PDFs]
+
+  D --> F[Stage 4: Package]
+  E --> F
+  C --> F
+  F --> F1[Assemble release/ directory]
+  F --> F2[Generate arXiv bundles zip + tar.gz]
+  F --> F3[Generate checksums.txt]
+  F --> F4[Generate release manifest]
+  F --> F5[Generate Zenodo readiness report]
+
+  F --> G[Stage 5: Create GitHub Release]
+  G --> H[GitHub Release with all artifacts]
+  G --> I[Zenodo-ready package]
+```
+
+Full documentation: [`docs/release-process.md`](release-process.md)
+
+## 10) Automated Release Lifecycle Workflow
 
 Canonical release version source: `VERSION`.
 
@@ -75,19 +116,13 @@ All release version surfaces derive from `VERSION` and are validated by:
 - `scripts/validate-metadata.py`
 - `scripts/validate-release-lifecycle.py`
 
-Release lifecycle:
+The publication workflow (section 9 above) is the canonical release lifecycle.
+The following independent workflows continue to provide focused checks:
 
-```mermaid
-flowchart TD
-  A[Push to main] --> B[Validate metadata + release lifecycle]
-  B --> C[Create annotated tag from VERSION]
-  C --> D[release-paper workflow]
-  D --> E[Build paper + magazine artifacts]
-  E --> F[Generate release manifest + checksums]
-  F --> G[Create GitHub Release and attach assets]
-  G --> H[Pages workflow publishes docs artifacts]
-  G --> I[Generate Zenodo readiness report]
-```
+- `.github/workflows/release-tag.yml` — VERSION-driven annotated tag creation
+- `.github/workflows/release-paper.yml` — tag-triggered release build (legacy entry point)
+- `.github/workflows/synchronization.yml` — continuous synchronization validation
+- `.github/workflows/paper-quality.yml` — continuous ChkTeX quality checks
 
 ## Reusable Blueprint Specs
 

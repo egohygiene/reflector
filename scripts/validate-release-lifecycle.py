@@ -27,6 +27,15 @@ REQUIRED_TAG_WORKFLOW_TOKENS = (
     "git tag -a",
     "git push origin",
 )
+REQUIRED_PUBLICATION_WORKFLOW_TOKENS = (
+    "python scripts/validate-metadata.py",
+    "python scripts/validate-release-lifecycle.py",
+    "Create GitHub Release",
+    "checksums.txt",
+    "release-manifest.json",
+    "zenodo-readiness.md",
+    "reflector-arxiv",
+)
 
 
 def log_error(message: str) -> None:
@@ -91,6 +100,7 @@ def validate_version_surfaces(repo_root: Path) -> bool:
 def validate_workflow_contracts(repo_root: Path) -> bool:
     release_workflow_path = repo_root / ".github" / "workflows" / "release-paper.yml"
     tag_workflow_path = repo_root / ".github" / "workflows" / "release-tag.yml"
+    publication_workflow_path = repo_root / ".github" / "workflows" / "publication.yml"
 
     try:
         release_workflow_text = release_workflow_path.read_text(encoding="utf-8")
@@ -109,6 +119,13 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
         if token not in tag_workflow_text:
             valid = False
             log_error(f"release-tag.yml is missing required token: '{token}'.")
+
+    if publication_workflow_path.exists():
+        publication_workflow_text = publication_workflow_path.read_text(encoding="utf-8")
+        for token in REQUIRED_PUBLICATION_WORKFLOW_TOKENS:
+            if token not in publication_workflow_text:
+                valid = False
+                log_error(f"publication.yml is missing required token: '{token}'.")
 
     return valid
 
