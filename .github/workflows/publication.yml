@@ -516,8 +516,7 @@ jobs:
             fi
           done
 
-          # ── Publication manifest copies ──────────────────────────────────
-          cp release-manifest.json "${RELEASE_DIR}/release-manifest.json"
+          # ── Publication metadata ─────────────────────────────────────────
           cp publication.json "${RELEASE_DIR}/publication.json"
 
           echo "Release directory assembled at ${RELEASE_DIR}."
@@ -619,91 +618,6 @@ jobs:
 
           echo "arXiv ZIP:    ${ARXIV_ZIP}"
           echo "arXiv TAR.GZ: ${ARXIV_TARGZ}"
-
-      - name: Generate checksums (SHA-256)
-        run: |
-          set -euo pipefail
-
-          TAG="${{ steps.version.outputs.tag }}"
-          PAPER_NAME="${{ steps.version.outputs.paper_name }}"
-          RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
-          CHECKSUMS_FILE="${RELEASE_DIR}/checksums.txt"
-
-          cd "${RELEASE_DIR}"
-          # Exclude checksums.txt itself to avoid a circular dependency.
-          find . -maxdepth 1 -type f ! -name "checksums.txt" \
-            \( -name "*.pdf" -o -name "*.zip" -o -name "*.tar.gz" -o -name "*.json" -o -name "*.md" -o -name "*.png" -o -name "*.txt" \) \
-            | sort \
-            | xargs sha256sum \
-            | sed 's|\./||' \
-            > checksums.txt
-
-          echo "Checksums generated:"
-          cat checksums.txt
-
-      - name: Generate release manifest (release-manifest.json)
-        run: |
-          set -euo pipefail
-
-          TAG="${{ steps.version.outputs.tag }}"
-          VERSION="${{ steps.version.outputs.version }}"
-          PAPER_NAME="${{ steps.version.outputs.paper_name }}"
-          RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
-          MANIFEST_PATH="${RELEASE_DIR}/manifest.json"
-
-          TAG="${TAG}" \
-          VERSION="${VERSION}" \
-          PAPER_NAME="${PAPER_NAME}" \
-          RELEASE_DIR="${RELEASE_DIR}" \
-          MANIFEST_PATH="${MANIFEST_PATH}" \
-          python - <<'PY'
-          import json
-          import os
-          import subprocess
-          from datetime import UTC, datetime
-          from pathlib import Path
-
-          tag = os.environ["TAG"]
-          version = os.environ["VERSION"]
-          paper_name = os.environ["PAPER_NAME"]
-          release_dir = Path(os.environ["RELEASE_DIR"])
-          manifest_path = Path(os.environ["MANIFEST_PATH"])
-          repo = os.environ.get("GITHUB_REPOSITORY", "egohygiene/reflector")
-          sha = os.environ.get("GITHUB_SHA", "")
-          generated_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          artifacts = {}
-          for asset in sorted(release_dir.glob("*")):
-              if asset.is_file() and asset.name != "manifest.json":
-                  result = subprocess.run(
-                      ["sha256sum", str(asset)],
-                      capture_output=True, text=True, check=True,
-                  )
-                  sha256 = result.stdout.split()[0]
-                  artifacts[asset.name] = {
-                      "filename": asset.name,
-                      "path": str(asset.relative_to(Path.cwd())),
-                      "sha256": sha256,
-                      "size_bytes": asset.stat().st_size,
-                  }
-
-          manifest = {
-              "schema_version": "1.0.0",
-              "project": paper_name,
-              "version": version,
-              "tag": tag,
-              "commit": sha,
-              "generated_at": generated_at,
-              "repository": f"https://github.com/{repo}",
-              "release_url": f"https://github.com/{repo}/releases/tag/{tag}",
-              "pages_url": f"https://{repo.split('/')[0]}.github.io/{repo.split('/')[1]}/",
-              "artifacts": artifacts,
-          }
-
-          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-          print(f"Manifest written to {manifest_path}")
-          print(json.dumps(manifest, indent=2))
-          PY
 
       - name: Generate Zenodo readiness report
         run: |
@@ -830,6 +744,29 @@ jobs:
           echo "Release notes written to ${RELEASE_NOTES}"
           cat "${RELEASE_NOTES}"
 
+      - name: Generate checksums and release manifest
+        run: |
+          set -euo pipefail
+
+          python scripts/stage-publication-release.py \
+            --release-dir "${{ steps.version.outputs.release_dir }}" \
+            --version "${{ steps.version.outputs.version }}" \
+            --tag "${{ steps.version.outputs.tag }}" \
+            --paper-name "${{ steps.version.outputs.paper_name }}" \
+            --repository "${{ github.repository }}" \
+            --commit "${{ github.sha }}" \
+            --require reflector.pdf \
+            --require reflector-magazine.pdf \
+            --require reflector-magazine-print.pdf \
+            --require reflector-arxiv-${{ steps.version.outputs.tag }}.zip \
+            --require reflector-arxiv-${{ steps.version.outputs.tag }}.tar.gz \
+            --require source.zip \
+            --require publication.json \
+            --require publication-readiness.md \
+            --require chktex-audit.md \
+            --require zenodo-readiness.md \
+            --require release-notes.md
+
       - name: Verify release artifacts
         run: |
           set -euo pipefail
@@ -842,7 +779,6 @@ jobs:
             "${RELEASE_DIR}/reflector-magazine-print.pdf"
             "${RELEASE_DIR}/checksums.txt"
             "${RELEASE_DIR}/release-manifest.json"
-            "${RELEASE_DIR}/manifest.json"
             "${RELEASE_DIR}/zenodo-readiness.md"
             "${RELEASE_DIR}/release-notes.md"
           )
@@ -865,6 +801,27 @@ jobs:
           echo ""
           echo "=== Release artifact inventory ==="
           find "${RELEASE_DIR}" -maxdepth 1 -type f | sort
+
+      - name: Publish workflow summary
+        if: always()
+        run: |
+          set -euo pipefail
+
+          RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
+
+          {
+            echo "# Publication package summary"
+            echo ""
+            echo "- Release directory: \`${RELEASE_DIR}\`"
+            echo "- Tag: \`${{ steps.version.outputs.tag }}\`"
+            echo "- Version: \`${{ steps.version.outputs.version }}\`"
+            echo ""
+            echo "## Staged artifacts"
+            echo ""
+            while IFS= read -r file; do
+              echo "- \`${file}\`"
+            done < <(find "${RELEASE_DIR}" -maxdepth 1 -type f | sort)
+          } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Flatten release artifacts for upload
         run: |
@@ -969,7 +926,6 @@ jobs:
             release-staging/reflector-magazine-print.pdf
             release-staging/source.zip
             release-staging/checksums.txt
-            release-staging/manifest.json
             release-staging/release-manifest.json
             release-staging/publication-readiness.md
             release-staging/chktex-audit.md

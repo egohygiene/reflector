@@ -105,7 +105,10 @@ flowchart TD
   G --> I[Zenodo-ready package]
 ```
 
-Full documentation: [`docs/release-process.md`](release-process.md)
+Full documentation:
+
+- [`docs/release-process.md`](release-process.md)
+- [`docs/publication-infrastructure.md`](publication-infrastructure.md)
 
 ## 10) Automated Release Lifecycle Workflow
 
