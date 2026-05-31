@@ -74,7 +74,32 @@ The canonical publication entry point is:
 .github/workflows/publication.yml
 ```
 
-This unified workflow coordinates all publication stages in a deterministic pipeline:
+This workflow now applies artifact-aware scope detection to support incremental rebuilds:
+
+```mermaid
+flowchart TD
+  A[paper/** change] --> B[Stage 1: Validate + ChkTeX]
+  B --> C[Stage 3: Build paper PDF]
+  C --> D[Stage 3: Build arXiv bundles]
+
+  E[VERSION change] --> F[Stage 1: Validate + REUSE + ChkTeX]
+  F --> G[Stage 3: Build paper PDF]
+  F --> H[Stage 3: Build magazine PDFs]
+  G --> I[Stage 4: Package release artifacts]
+  H --> I
+  I --> J[Stage 5: Create GitHub Release]
+
+  K[magazine/** change] --> L[build-magazine.yml + pages.yml]
+  L --> M[Deploy latest magazine artifacts to Pages]
+```
+
+Scope behavior:
+
+- `paper/**` changes rebuild paper + arXiv publication bundles (without release packaging).
+- `VERSION` changes trigger full publication packaging and GitHub Release creation.
+- `magazine/**` changes are handled by the magazine and Pages workflows without rebuilding paper artifacts.
+
+The full release path remains deterministic:
 
 ```mermaid
 flowchart TD
@@ -100,10 +125,11 @@ flowchart TD
   F --> F4[Generate release manifest]
   F --> F5[Generate Zenodo readiness report]
 
-  F --> G[Stage 5: Create GitHub Release]
-  G --> H[GitHub Release with all artifacts]
-  G --> I[Zenodo-ready package]
+  F --> G[Stage 5: Create GitHub Release with staged artifacts]
 ```
+
+Zenodo-ready assets remain part of the Stage 4 package output (checksums,
+manifest, and readiness report) and are carried forward into the release stage.
 
 Full documentation:
 

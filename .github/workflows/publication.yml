@@ -18,7 +18,6 @@ on:
       - "paper/**/styles/**"
       - "paper/**/figures/**"
       - "paper/**/references/**"
-      - "magazine/**"
       - "publication.json"
       - "release-manifest.json"
       - "CITATION.cff"
@@ -26,7 +25,6 @@ on:
       - ".latexmkrc"
       - ".chktexrc"
       - "scripts/build-paper.sh"
-      - "scripts/build-magazine.sh"
       - "scripts/validate-metadata.py"
       - "scripts/validate-release-lifecycle.py"
       - "scripts/validate-arxiv-packaging.py"
@@ -50,6 +48,10 @@ on:
         description: "Fail if ChkTeX warnings are found (true/false)"
         required: false
         default: "false"
+      release_scope:
+        description: "Publication scope: auto, paper, full"
+        required: false
+        default: "auto"
 
 permissions:
   contents: write
@@ -65,6 +67,95 @@ concurrency:
 
 jobs:
 
+  detect-scope:
+    name: Detect Publication Scope
+    runs-on: ubuntu-latest
+
+    outputs:
+      paper_changed: ${{ steps.scope.outputs.paper_changed }}
+      full_release: ${{ steps.scope.outputs.full_release }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Determine publication scope
+        id: scope
+        run: |
+          set -euo pipefail
+
+          EVENT="${{ github.event_name }}"
+          SCOPE_INPUT="${{ github.event.inputs.release_scope || 'auto' }}"
+          PAPER_CHANGED="false"
+          FULL_RELEASE="false"
+
+          if [[ "${EVENT}" == "workflow_dispatch" ]]; then
+            case "${SCOPE_INPUT}" in
+              auto|full)
+                PAPER_CHANGED="true"
+                FULL_RELEASE="true"
+                ;;
+              paper)
+                PAPER_CHANGED="true"
+                FULL_RELEASE="false"
+                ;;
+              *)
+                echo "::error::Invalid release_scope='${SCOPE_INPUT}'. Use auto, paper, or full."
+                exit 1
+                ;;
+            esac
+          else
+            BASE="${{ github.event.before }}"
+            if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
+              BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
+            fi
+            if [[ -n "${BASE}" ]]; then
+              CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
+            else
+              CHANGED_FILES="$(git ls-files)"
+            fi
+            PAPER_SCOPE_PATTERNS=(
+              '^paper/'
+              '^metadata/'
+              '^publication\.json$'
+              '^release-manifest\.json$'
+              '^CITATION\.cff$'
+              '^\.zenodo\.json$'
+              '^\.latexmkrc$'
+              '^\.chktexrc$'
+              '^scripts/build-paper\.sh$'
+              '^scripts/validate-metadata\.py$'
+              '^scripts/validate-release-lifecycle\.py$'
+              '^scripts/validate-arxiv-packaging\.py$'
+              '^scripts/validate-build-reproducibility\.py$'
+              '^scripts/audit-publication-readiness\.py$'
+              '^scripts/audit-chktex\.py$'
+              '^scripts/lint-paper\.sh$'
+            )
+            echo "Changed files:"
+            echo "${CHANGED_FILES}"
+
+            if echo "${CHANGED_FILES}" | grep -Eq '^VERSION$'; then
+              FULL_RELEASE="true"
+              PAPER_CHANGED="true"
+            else
+              for pattern in "${PAPER_SCOPE_PATTERNS[@]}"; do
+                if echo "${CHANGED_FILES}" | grep -Eq "${pattern}"; then
+                  PAPER_CHANGED="true"
+                  break
+                fi
+              done
+            fi
+          fi
+
+          echo "paper_changed=${PAPER_CHANGED}" >> "$GITHUB_OUTPUT"
+          echo "full_release=${FULL_RELEASE}" >> "$GITHUB_OUTPUT"
+
+          echo "paper_changed=${PAPER_CHANGED}"
+          echo "full_release=${FULL_RELEASE}"
+
   # ============================================================
   # STAGE 1 — VALIDATE
   # Synchronization, metadata, release lifecycle, arXiv packaging,
@@ -74,6 +165,8 @@ jobs:
 
   validate:
     name: Validate Publication
+    needs: [detect-scope]
+    if: needs.detect-scope.outputs.paper_changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -122,6 +215,8 @@ jobs:
 
   validate-reuse:
     name: Validate REUSE Compliance
+    needs: [detect-scope]
+    if: needs.detect-scope.outputs.full_release == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -138,6 +233,8 @@ jobs:
 
   audit-chktex:
     name: ChkTeX Audit
+    needs: [detect-scope]
+    if: needs.detect-scope.outputs.paper_changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -265,7 +362,8 @@ jobs:
 
   build-paper:
     name: Build Paper
-    needs: [validate]
+    needs: [detect-scope, validate]
+    if: needs.detect-scope.outputs.paper_changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -310,6 +408,19 @@ jobs:
           cp "${{ steps.vars.outputs.paper }}/.cache/out/paper.pdf" dist/reflector.pdf
           echo "Built: dist/reflector.pdf"
 
+      - name: Publish paper workflow summary
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          SHA="$(sha256sum dist/reflector.pdf | awk '{print $1}')"
+          {
+            echo "## Paper Build Summary"
+            echo ""
+            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | --- | --- |"
+            echo "| reflector.pdf | ${VERSION} | \`${SHA}\` | release/reflector-v${VERSION}/reflector.pdf |"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
       - name: Upload paper PDF artifact
         uses: actions/upload-artifact@v7
         with:
@@ -329,6 +440,114 @@ jobs:
           retention-days: 7
 
   # ============================================================
+  # STAGE 3 — BUILD ARXIV
+  # Package arXiv source bundles from paper source inputs.
+  # Depends on build-paper to guarantee synchronized paper inputs.
+  # ============================================================
+
+  build-arxiv:
+    name: Build arXiv Bundles
+    needs: [detect-scope, build-paper]
+    # Full release runs package job, which assembles and archives canonical arXiv bundles.
+    # This job is reserved for incremental paper-only publication runs.
+    if: needs.detect-scope.outputs.paper_changed == 'true' && needs.detect-scope.outputs.full_release != 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Determine paper directory and version
+        id: vars
+        run: |
+          set -euo pipefail
+          PAPER="${{ github.event.inputs.paper || 'paper' }}"
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          TAG="v${VERSION}"
+          echo "paper=${PAPER}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Assemble arXiv source bundle
+        run: |
+          set -euo pipefail
+
+          PAPER_DIR="${{ steps.vars.outputs.paper }}"
+          ARXIV_DIR="dist/arxiv"
+          mkdir --parents "${ARXIV_DIR}"
+
+          for file in "paper.tex" "references.bib"; do
+            if [[ -f "${PAPER_DIR}/${file}" ]]; then
+              cp "${PAPER_DIR}/${file}" "${ARXIV_DIR}/${file}"
+            fi
+          done
+
+          if [[ -f ".latexmkrc" ]]; then
+            cp ".latexmkrc" "${ARXIV_DIR}/.latexmkrc"
+          fi
+
+          for directory in "sections" "figures" "diagrams" "assets" "references" "styles" "macros" "config"; do
+            if [[ -d "${PAPER_DIR}/${directory}" ]]; then
+              cp --recursive "${PAPER_DIR}/${directory}" "${ARXIV_DIR}/${directory}"
+            fi
+          done
+
+          if [[ -f "${PAPER_DIR}/00README.json" ]]; then
+            cp "${PAPER_DIR}/00README.json" "${ARXIV_DIR}/00README.json"
+          fi
+
+      - name: Package arXiv bundles
+        run: |
+          set -euo pipefail
+
+          TAG="${{ steps.vars.outputs.tag }}"
+          ARXIV_DIR="dist/arxiv"
+          ZIP_PATH="dist/reflector-arxiv-${TAG}.zip"
+          TARGZ_PATH="dist/reflector-arxiv-${TAG}.tar.gz"
+          ZIP_ABS_PATH="${GITHUB_WORKSPACE}/${ZIP_PATH}"
+
+          (
+            cd "${ARXIV_DIR}"
+            zip -X -r "${ZIP_ABS_PATH}" .
+          )
+
+          tar --sort=name \
+              --mtime="1970-01-01 00:00:00 UTC" \
+              --owner=0 --group=0 --numeric-owner \
+              -czf "${TARGZ_PATH}" \
+              -C "${ARXIV_DIR}" .
+
+      - name: Publish arXiv workflow summary
+        run: |
+          set -euo pipefail
+
+          VERSION="${{ steps.vars.outputs.version }}"
+          TAG="${{ steps.vars.outputs.tag }}"
+          ZIP_PATH="dist/reflector-arxiv-${TAG}.zip"
+          TARGZ_PATH="dist/reflector-arxiv-${TAG}.tar.gz"
+          ZIP_SHA="$(sha256sum "${ZIP_PATH}" | awk '{print $1}')"
+          TARGZ_SHA="$(sha256sum "${TARGZ_PATH}" | awk '{print $1}')"
+
+          {
+            echo "## arXiv Build Summary"
+            echo ""
+            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | --- | --- |"
+            echo "| reflector-arxiv-${TAG}.zip | ${VERSION} | \`${ZIP_SHA}\` | release/reflector-${TAG}/reflector-arxiv-${TAG}.zip |"
+            echo "| reflector-arxiv-${TAG}.tar.gz | ${VERSION} | \`${TARGZ_SHA}\` | release/reflector-${TAG}/reflector-arxiv-${TAG}.tar.gz |"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload arXiv bundle artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: reflector-arxiv-bundles
+          path: |
+            dist/reflector-arxiv-${{ steps.vars.outputs.tag }}.zip
+            dist/reflector-arxiv-${{ steps.vars.outputs.tag }}.tar.gz
+          if-no-files-found: error
+          retention-days: 30
+
+  # ============================================================
   # STAGE 3 — BUILD MAGAZINE (parallel with build-paper)
   # Compile reflector-magazine.pdf and reflector-magazine-print.pdf.
   # Depends on validate (all validation must pass first).
@@ -336,7 +555,8 @@ jobs:
 
   build-magazine:
     name: Build Magazine
-    needs: [validate]
+    needs: [detect-scope, validate]
+    if: needs.detect-scope.outputs.full_release == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -386,6 +606,21 @@ jobs:
           echo "Built: magazine/dist/reflector-magazine.pdf"
           echo "Built: magazine/dist/reflector-magazine-print.pdf"
 
+      - name: Publish magazine workflow summary
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          MAG_SHA="$(sha256sum magazine/dist/reflector-magazine.pdf | awk '{print $1}')"
+          PRINT_SHA="$(sha256sum magazine/dist/reflector-magazine-print.pdf | awk '{print $1}')"
+          {
+            echo "## Magazine Build Summary"
+            echo ""
+            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | --- | --- |"
+            echo "| reflector-magazine.pdf | ${VERSION} | \`${MAG_SHA}\` | release/reflector-v${VERSION}/reflector-magazine.pdf |"
+            echo "| reflector-magazine-print.pdf | ${VERSION} | \`${PRINT_SHA}\` | release/reflector-v${VERSION}/reflector-magazine-print.pdf |"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
       - name: Upload magazine PDF artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -414,7 +649,8 @@ jobs:
 
   package:
     name: Package Release Artifacts
-    needs: [build-paper, build-magazine, audit-chktex, validate]
+    needs: [detect-scope, build-paper, build-magazine, audit-chktex, validate]
+    if: needs.detect-scope.outputs.full_release == 'true'
     runs-on: ubuntu-latest
 
     outputs:
@@ -834,19 +1070,24 @@ jobs:
           set -euo pipefail
 
           RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
 
           {
             echo "# Publication package summary"
             echo ""
             echo "- Release directory: \`${RELEASE_DIR}\`"
-            echo "- Tag: \`${{ steps.version.outputs.tag }}\`"
-            echo "- Version: \`${{ steps.version.outputs.version }}\`"
+            echo "- Tag: \`${TAG}\`"
+            echo "- Version: \`${VERSION}\`"
             echo ""
-            echo "## Staged artifacts"
+            echo "## Artifact Inventory"
             echo ""
-            while IFS= read -r file; do
-              echo "- \`${file}\`"
-            done < <(find "${RELEASE_DIR}" -maxdepth 1 -type f | sort)
+            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | --- | --- |"
+            while read -r checksum filename; do
+              target="release/reflector-${TAG}/${filename}"
+              echo "| ${filename} | ${VERSION} | \`${checksum}\` | ${target} |"
+            done < "${RELEASE_DIR}/checksums.txt"
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Flatten release artifacts for upload
@@ -897,11 +1138,14 @@ jobs:
 
   release:
     name: Create GitHub Release
-    needs: [package, validate-reuse]
+    needs: [detect-scope, package, validate-reuse]
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+      needs.detect-scope.outputs.full_release == 'true' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'push' && github.ref == 'refs/heads/main')
+      )
 
     steps:
       - name: Checkout repository

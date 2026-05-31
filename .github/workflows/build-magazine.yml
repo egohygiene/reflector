@@ -81,6 +81,21 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Publish magazine build summary
+        if: success()
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          ARTIFACT_PATH="magazine/dist/${{ matrix.variant.dist_name }}"
+          SHA="$(sha256sum "${ARTIFACT_PATH}" | awk '{print $1}')"
+          {
+            echo "## Magazine Build Summary (${{ matrix.variant.dist_name }})"
+            echo ""
+            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | --- | --- |"
+            echo "| ${{ matrix.variant.dist_name }} | ${VERSION} | \`${SHA}\` | artifact:${{ matrix.variant.artifact_name }} |"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
       - name: Upload build artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v7
