@@ -13,6 +13,7 @@ import yaml
 
 
 SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
+DOI_PATTERN = re.compile(r"^10\.\d{4,9}/[-._;()/:A-Z0-9]+$", re.IGNORECASE)
 MISSING = object()
 
 # Canonical paper title — single source of truth for title consistency checks.
@@ -131,6 +132,19 @@ def _extract_zenodo_orcid(zenodo: dict) -> object:
     return creators[0].get("orcid", MISSING)
 
 
+def _normalise_doi(value: object) -> object:
+    if value is MISSING or value is None:
+        return MISSING
+    if not isinstance(value, str):
+        return value
+    doi = value.strip()
+    for prefix in ("https://doi.org/", "http://doi.org/", "doi:"):
+        if doi.lower().startswith(prefix):
+            doi = doi[len(prefix):]
+            break
+    return doi
+
+
 def main() -> int:
     repository_root = Path(__file__).resolve().parent.parent
 
@@ -226,10 +240,11 @@ def main() -> int:
     release_please_manifest = load_json(repository_root / ".release-please-manifest.json")
     citation = load_yaml(repository_root / "CITATION.cff")
     zenodo = load_json(repository_root / ".zenodo.json")
+    codemeta = load_json(repository_root / "codemeta.json")
     readme_json = load_json(repository_root / "paper" / "00README.json")
     if any(
         item is None
-        for item in (publication, release_manifest, release_please_manifest, citation, zenodo, readme_json)
+        for item in (publication, release_manifest, release_please_manifest, citation, zenodo, codemeta, readme_json)
     ):
         return 1
 
@@ -313,6 +328,145 @@ def main() -> int:
                 f"{name} does not match canonical ORCID.\n"
                 f"  expected: '{CANONICAL_ORCID}'\n"
                 f"  found:    '{actual_orcid}'"
+            )
+
+    # ---------------------------------------------------------------------------
+    # DOI consistency — canonical DOI must match all publication metadata surfaces.
+    # ---------------------------------------------------------------------------
+
+    publication_identifiers = meta_publication.get("identifiers", {})
+    canonical_doi = (
+        _normalise_doi(publication_identifiers.get("doi", MISSING))
+        if isinstance(publication_identifiers, dict)
+        else MISSING
+    )
+    canonical_doi_url = (
+        publication_identifiers.get("doi_url", MISSING)
+        if isinstance(publication_identifiers, dict)
+        else MISSING
+    )
+    canonical_concept_doi = (
+        _normalise_doi(publication_identifiers.get("zenodo_concept_doi", MISSING))
+        if isinstance(publication_identifiers, dict)
+        else MISSING
+    )
+
+    for field_name, field_value in [
+        ("metadata/publication.yaml identifiers.doi", canonical_doi),
+        ("metadata/publication.yaml identifiers.doi_url", canonical_doi_url),
+        ("metadata/publication.yaml identifiers.zenodo_concept_doi", canonical_concept_doi),
+    ]:
+        if field_value is MISSING:
+            has_error = True
+            log_error(f"Missing required DOI field: {field_name}.")
+
+    if canonical_doi is not MISSING and not DOI_PATTERN.fullmatch(str(canonical_doi)):
+        has_error = True
+        log_error(f"metadata/publication.yaml identifiers.doi is not a valid DOI: '{canonical_doi}'.")
+    if (
+        canonical_doi is not MISSING
+        and canonical_doi_url is not MISSING
+        and canonical_doi_url != f"https://doi.org/{canonical_doi}"
+    ):
+        has_error = True
+        log_error(
+            "metadata/publication.yaml identifiers.doi_url does not match canonical DOI.\n"
+            f"  expected: 'https://doi.org/{canonical_doi}'\n"
+            f"  found:    '{canonical_doi_url}'"
+        )
+
+    if canonical_doi is not MISSING:
+        doi_checks = [
+            ("CITATION.cff.doi", _normalise_doi(citation.get("doi", MISSING))),
+            (".zenodo.json.doi", _normalise_doi(zenodo.get("doi", MISSING))),
+            ("publication.json.future.doi_generation.doi", _normalise_doi(
+                publication.get("future", {}).get("doi_generation", {}).get("doi", MISSING)
+            )),
+            ("release-manifest.json.future_integrations.doi.canonical_doi", _normalise_doi(
+                release_manifest.get("future_integrations", {}).get("doi", {}).get("canonical_doi", MISSING)
+            )),
+            ("codemeta.json.identifier", _normalise_doi(codemeta.get("identifier", MISSING))),
+        ]
+        for name, actual_doi in doi_checks:
+            if actual_doi is MISSING:
+                has_error = True
+                log_error(f"Missing required DOI field: {name}.")
+                continue
+            if actual_doi != canonical_doi:
+                has_error = True
+                log_error(
+                    f"{name} does not match canonical DOI.\n"
+                    f"  expected: '{canonical_doi}'\n"
+                    f"  found:    '{actual_doi}'"
+                )
+
+        doi_url_checks = [
+            ("publication.json.future.doi_generation.doi_url", publication.get("future", {}).get("doi_generation", {}).get("doi_url", MISSING)),
+            ("release-manifest.json.future_integrations.doi.canonical_doi_url", release_manifest.get("future_integrations", {}).get("doi", {}).get("canonical_doi_url", MISSING)),
+        ]
+        for name, actual_url in doi_url_checks:
+            if actual_url is MISSING:
+                has_error = True
+                log_error(f"Missing required DOI URL field: {name}.")
+                continue
+            expected_url = f"https://doi.org/{canonical_doi}"
+            if actual_url != expected_url:
+                has_error = True
+                log_error(
+                    f"{name} does not match canonical DOI URL.\n"
+                    f"  expected: '{expected_url}'\n"
+                    f"  found:    '{actual_url}'"
+                )
+
+    repository_zenodo = meta_repository.get("future_integrations", {}).get("zenodo", {})
+    repository_concept_doi = _normalise_doi(repository_zenodo.get("concept_doi", MISSING))
+    if canonical_concept_doi is not MISSING and repository_concept_doi != canonical_concept_doi:
+        has_error = True
+        log_error(
+            "metadata/repository.yaml future_integrations.zenodo.concept_doi does not match canonical concept DOI.\n"
+            f"  expected: '{canonical_concept_doi}'\n"
+            f"  found:    '{repository_concept_doi}'"
+        )
+    if canonical_concept_doi is not MISSING:
+        concept_checks = [
+            (".zenodo.json.conceptdoi", _normalise_doi(zenodo.get("conceptdoi", MISSING))),
+            ("publication.json.future.doi_generation.concept_doi", _normalise_doi(
+                publication.get("future", {}).get("doi_generation", {}).get("concept_doi", MISSING)
+            )),
+            ("release-manifest.json.future_integrations.zenodo.concept_doi", _normalise_doi(
+                release_manifest.get("future_integrations", {}).get("zenodo", {}).get("concept_doi", MISSING)
+            )),
+        ]
+        for name, actual_doi in concept_checks:
+            if actual_doi is MISSING:
+                has_error = True
+                log_error(f"Missing required concept DOI field: {name}.")
+                continue
+            if actual_doi != canonical_concept_doi:
+                has_error = True
+                log_error(
+                    f"{name} does not match canonical concept DOI.\n"
+                    f"  expected: '{canonical_concept_doi}'\n"
+                    f"  found:    '{actual_doi}'"
+                )
+
+    codemeta_checks = [
+        ("codemeta.json.name", codemeta.get("name", MISSING), meta_repository.get("name", MISSING)),
+        ("codemeta.json.version", codemeta.get("version", MISSING), version),
+        ("codemeta.json.codeRepository", codemeta.get("codeRepository", MISSING), canonical_repo_github_url),
+        ("codemeta.json.url", codemeta.get("url", MISSING), canonical_repo_pages_url),
+    ]
+    for name, actual_value, expected in codemeta_checks:
+        if actual_value is MISSING:
+            has_error = True
+            log_error(f"Missing required codemeta field: {name}.")
+            continue
+        if expected is not MISSING and actual_value != expected:
+            has_error = True
+            log_error(
+                f"{name} does not match canonical metadata.\n"
+                f"  expected: '{expected}'\n"
+                f"  found:    '{actual_value}'"
             )
 
     # ---------------------------------------------------------------------------

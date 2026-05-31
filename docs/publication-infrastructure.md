@@ -63,7 +63,25 @@ It:
 1. validates the required staged artifacts,
 2. writes deterministic SHA-256 checksums in filename order,
 3. writes `release-manifest.json` with artifact inventory, checksum inventory, and release URLs,
-4. fails with explicit expected-path diagnostics when a staged artifact is missing.
+4. embeds DOI metadata (canonical version DOI + concept DOI) for publication/citation tooling,
+5. fails with explicit expected-path diagnostics when a staged artifact is missing.
+
+## DOI Synchronization Contract
+
+The canonical DOI fields are sourced from:
+
+- `metadata/publication.yaml` (`identifiers.doi`, `identifiers.zenodo_concept_doi`)
+- `metadata/repository.yaml` (`future_integrations.doi`, `future_integrations.zenodo`)
+
+These values must remain synchronized with:
+
+- `CITATION.cff`
+- `.zenodo.json`
+- `codemeta.json`
+- `release-manifest.json` (repository metadata)
+- staged `release-manifest.json` generated in `release/reflector-vX.Y.Z/`
+
+Validation is enforced by `scripts/validate-metadata.py`.
 
 ## Dry Run and Smoke Testing
 

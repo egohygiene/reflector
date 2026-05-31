@@ -32,11 +32,16 @@ tag_pattern: "vMAJOR.MINOR.PATCH"
 
 future_integrations:
   zenodo:
-    enabled: false
-    concept_doi: null          # TODO: replace when Zenodo concept DOI is assigned
+    enabled: true
+    concept_doi: "10.5281/zenodo.20477045"
+    concept_doi_url: "https://doi.org/10.5281/zenodo.20477045"
+    version_doi: "10.5281/zenodo.20477044"
+    version_doi_url: "https://doi.org/10.5281/zenodo.20477044"
   doi:
-    enabled: false
-    provider: null             # TODO: replace with DOI provider when assigned
+    enabled: true
+    provider: zenodo
+    canonical_doi: "10.5281/zenodo.20477044"
+    canonical_doi_url: "https://doi.org/10.5281/zenodo.20477044"
   huggingface:
     enabled: false
     space_url: null            # TODO: replace with Hugging Face Space URL when created

@@ -14,7 +14,8 @@ contact:
     given-names: Alan
     orcid: https://orcid.org/0009-0008-5291-9795
 repository-code: https://github.com/egohygiene/reflector
-url: https://egohygiene.github.io/reflector/
+url: https://doi.org/10.5281/zenodo.20477044
+doi: 10.5281/zenodo.20477044
 abstract: >-
   Recursive AI-augmented software engineering introduces a new class of
   development systems in which autonomous agents operate within iterative
@@ -56,3 +57,5 @@ preferred-citation:
       given-names: Alan
       orcid: https://orcid.org/0009-0008-5291-9795
   year: 2026
+  doi: 10.5281/zenodo.20477044
+  url: https://doi.org/10.5281/zenodo.20477044

@@ -51,6 +51,14 @@ def run_release_stage(tmp_path: Path, release_dir: Path, *extra_args: str) -> su
         "abc123",
         "--generated-at",
         "2026-05-31T00:00:00Z",
+        "--doi",
+        "10.5281/zenodo.20477044",
+        "--doi-url",
+        "https://doi.org/10.5281/zenodo.20477044",
+        "--concept-doi",
+        "10.5281/zenodo.20477045",
+        "--concept-doi-url",
+        "https://doi.org/10.5281/zenodo.20477045",
     ]
     for name in REQUIRED_FILES:
         command.extend(["--require", name])
@@ -84,6 +92,10 @@ def test_stage_publication_release_generates_deterministic_inventory(tmp_path: P
     assert manifest["tag"] == "v0.1.0"
     assert manifest["generated_at"] == "2026-05-31T00:00:00Z"
     assert manifest["release_dir"] == "release/reflector-v0.1.0"
+    assert manifest["doi"] == "10.5281/zenodo.20477044"
+    assert manifest["doi_url"] == "https://doi.org/10.5281/zenodo.20477044"
+    assert manifest["concept_doi"] == "10.5281/zenodo.20477045"
+    assert manifest["concept_doi_url"] == "https://doi.org/10.5281/zenodo.20477045"
     assert manifest["checksums"]["path"] == "release/reflector-v0.1.0/checksums.txt"
     assert [artifact["filename"] for artifact in manifest["artifacts"]] == sorted(REQUIRED_FILES)
     assert all(

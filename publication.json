@@ -23,12 +23,19 @@
   },
   "future": {
     "zenodo_archive": {
-      "enabled": false,
-      "record_id": null
+      "enabled": true,
+      "record_id": "20477044",
+      "concept_record_id": "20477045",
+      "version_doi": "10.5281/zenodo.20477044",
+      "concept_doi": "10.5281/zenodo.20477045"
     },
     "doi_generation": {
-      "enabled": false,
-      "doi": null
+      "enabled": true,
+      "provider": "zenodo",
+      "doi": "10.5281/zenodo.20477044",
+      "doi_url": "https://doi.org/10.5281/zenodo.20477044",
+      "concept_doi": "10.5281/zenodo.20477045",
+      "concept_doi_url": "https://doi.org/10.5281/zenodo.20477045"
     }
   }
 }
