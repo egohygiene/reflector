@@ -34,6 +34,9 @@ jobs:
   deploy:
     name: Deploy Pages
     runs-on: ubuntu-latest
+    env:
+      PAPER_SCOPE_PATTERN: '^paper/|^scripts/build-paper\.sh$|^\.latexmkrc$'
+      MAGAZINE_SCOPE_PATTERN: '^magazine/|^scripts/build-magazine\.sh$'
 
     environment:
       name: github-pages
@@ -75,18 +78,20 @@ jobs:
             if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
               BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
             fi
-            if [[ -z "${BASE}" ]]; then
-              BASE="$(git rev-list --max-count=1 HEAD)"
+            if [[ -n "${BASE}" ]]; then
+              CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
+            else
+              CHANGED_FILES="$(git ls-files)"
             fi
-
-            CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
+            # Pages only rebuilds paper when deployable paper assets change.
+            # Publication scope detection includes additional metadata/release paths.
             echo "Changed files:"
             echo "${CHANGED_FILES}"
 
-            if echo "${CHANGED_FILES}" | grep -Eq '^paper/|^scripts/build-paper\.sh$|^\.latexmkrc$'; then
+            if echo "${CHANGED_FILES}" | grep -Eq "${PAPER_SCOPE_PATTERN}"; then
               BUILD_PAPER="true"
             fi
-            if echo "${CHANGED_FILES}" | grep -Eq '^magazine/|^scripts/build-magazine\.sh$'; then
+            if echo "${CHANGED_FILES}" | grep -Eq "${MAGAZINE_SCOPE_PATTERN}"; then
               BUILD_MAGAZINE="true"
             fi
           fi
@@ -181,6 +186,8 @@ jobs:
           PDF_SOURCE="docs/reflector.pdf"
           if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
             PDF_SOURCE="paper/.cache/out/paper.pdf"
+          else
+            echo "Using existing docs/reflector.pdf (paper build skipped)."
           fi
 
           MAGAZINE_PDF_SOURCE="docs/reflector-magazine.pdf"
@@ -188,6 +195,8 @@ jobs:
           if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
             MAGAZINE_PDF_SOURCE="magazine/dist/reflector-magazine.pdf"
             MAGAZINE_PRINT_PDF_SOURCE="magazine/dist/reflector-magazine-print.pdf"
+          else
+            echo "Using existing docs magazine PDFs (magazine build skipped)."
           fi
 
           if [[ ! -f "${PDF_SOURCE}" ]]; then
@@ -243,6 +252,18 @@ jobs:
         run: |
           set -euo pipefail
 
+          BASE="${{ github.event.before }}"
+          if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
+            BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
+          fi
+          if [[ -n "${BASE}" ]]; then
+            CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
+          else
+            CHANGED_FILES="$(git ls-files)"
+          fi
+          ENFORCE_SCOPE_MATCH="true"
+          [[ "${{ github.event_name }}" == "workflow_dispatch" ]] && ENFORCE_SCOPE_MATCH="false"
+
           PDF_SOURCE="docs/reflector.pdf"
           if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
             PDF_SOURCE="paper/.cache/out/paper.pdf"
@@ -296,17 +317,44 @@ jobs:
           PRINT_DOCS_SHA="$(sha256sum "${DOCS_MAGAZINE_PRINT_PDF}" | awk '{print $1}')"
           PRINT_SITE_SHA="$(sha256sum "_site/reflector-magazine-print.pdf" | awk '{print $1}')"
 
-          if [[ "${PDF_SOURCE_SHA}" != "${PDF_DOCS_SHA}" || "${PDF_SOURCE_SHA}" != "${PDF_SITE_SHA}" ]]; then
-            echo "Error: reflector.pdf checksum mismatch between source and published routes." >&2
+          if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
+            if [[ "${PDF_SOURCE_SHA}" != "${PDF_DOCS_SHA}" || "${PDF_SOURCE_SHA}" != "${PDF_SITE_SHA}" ]]; then
+              echo "Error: reflector.pdf checksum mismatch between built source and published routes." >&2
+              exit 1
+            fi
+          elif [[ "${ENFORCE_SCOPE_MATCH}" == "true" ]] && echo "${CHANGED_FILES}" | grep -Eq "${PAPER_SCOPE_PATTERN}"; then
+            echo "Error: paper-scope changes detected but paper build was skipped." >&2
+            exit 1
+          elif [[ "${PDF_DOCS_SHA}" != "${PDF_SITE_SHA}" ]]; then
+            echo "Error: reflector.pdf checksum mismatch between docs and _site routes." >&2
             exit 1
           fi
-          if [[ "${MAG_SOURCE_SHA}" != "${MAG_DOCS_SHA}" || "${MAG_SOURCE_SHA}" != "${MAG_SITE_SHA}" ]]; then
-            echo "Error: reflector-magazine.pdf checksum mismatch between source and published routes." >&2
+
+          if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
+            if [[ "${MAG_SOURCE_SHA}" != "${MAG_DOCS_SHA}" || "${MAG_SOURCE_SHA}" != "${MAG_SITE_SHA}" ]]; then
+              echo "Error: reflector-magazine.pdf checksum mismatch between built source and published routes." >&2
+              exit 1
+            fi
+            if [[ "${PRINT_SOURCE_SHA}" != "${PRINT_DOCS_SHA}" || "${PRINT_SOURCE_SHA}" != "${PRINT_SITE_SHA}" ]]; then
+              echo "Error: reflector-magazine-print.pdf checksum mismatch between built source and published routes." >&2
+              exit 1
+            fi
+          elif [[ "${ENFORCE_SCOPE_MATCH}" == "true" ]] && echo "${CHANGED_FILES}" | grep -Eq "${MAGAZINE_SCOPE_PATTERN}"; then
+            echo "Error: magazine-scope changes detected but magazine build was skipped." >&2
+            exit 1
+          elif [[ "${MAG_DOCS_SHA}" != "${MAG_SITE_SHA}" ]]; then
+            echo "Error: reflector-magazine.pdf checksum mismatch between docs and _site routes." >&2
+            exit 1
+          elif [[ "${PRINT_DOCS_SHA}" != "${PRINT_SITE_SHA}" ]]; then
+            echo "Error: reflector-magazine-print.pdf checksum mismatch between docs and _site routes." >&2
             exit 1
           fi
-          if [[ "${PRINT_SOURCE_SHA}" != "${PRINT_DOCS_SHA}" || "${PRINT_SOURCE_SHA}" != "${PRINT_SITE_SHA}" ]]; then
-            echo "Error: reflector-magazine-print.pdf checksum mismatch between source and published routes." >&2
-            exit 1
+
+          if [[ "${PDF_SOURCE_SHA}" == "${PDF_DOCS_SHA}" && "${{ steps.scope.outputs.build_paper }}" != "true" ]]; then
+            echo "Paper artifact reused from docs/reflector.pdf for this deployment."
+          fi
+          if [[ "${MAG_SOURCE_SHA}" == "${MAG_DOCS_SHA}" && "${{ steps.scope.outputs.build_magazine }}" != "true" ]]; then
+            echo "Magazine artifacts reused from docs/ for this deployment."
           fi
 
           echo "Published routes:"

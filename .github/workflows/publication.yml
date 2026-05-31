@@ -93,17 +93,13 @@ jobs:
 
           if [[ "${EVENT}" == "workflow_dispatch" ]]; then
             case "${SCOPE_INPUT}" in
-              full)
+              auto|full)
                 PAPER_CHANGED="true"
                 FULL_RELEASE="true"
                 ;;
               paper)
                 PAPER_CHANGED="true"
                 FULL_RELEASE="false"
-                ;;
-              auto)
-                PAPER_CHANGED="true"
-                FULL_RELEASE="true"
                 ;;
               *)
                 echo "::error::Invalid release_scope='${SCOPE_INPUT}'. Use auto, paper, or full."
@@ -115,19 +111,42 @@ jobs:
             if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
               BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
             fi
-            if [[ -z "${BASE}" ]]; then
-              BASE="$(git rev-list --max-count=1 HEAD)"
+            if [[ -n "${BASE}" ]]; then
+              CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
+            else
+              CHANGED_FILES="$(git ls-files)"
             fi
-
-            CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
+            PAPER_SCOPE_PATTERNS=(
+              '^paper/'
+              '^metadata/'
+              '^publication\.json$'
+              '^release-manifest\.json$'
+              '^CITATION\.cff$'
+              '^\.zenodo\.json$'
+              '^\.latexmkrc$'
+              '^\.chktexrc$'
+              '^scripts/build-paper\.sh$'
+              '^scripts/validate-metadata\.py$'
+              '^scripts/validate-release-lifecycle\.py$'
+              '^scripts/validate-arxiv-packaging\.py$'
+              '^scripts/validate-build-reproducibility\.py$'
+              '^scripts/audit-publication-readiness\.py$'
+              '^scripts/audit-chktex\.py$'
+              '^scripts/lint-paper\.sh$'
+            )
             echo "Changed files:"
             echo "${CHANGED_FILES}"
 
             if echo "${CHANGED_FILES}" | grep -Eq '^VERSION$'; then
               FULL_RELEASE="true"
               PAPER_CHANGED="true"
-            elif echo "${CHANGED_FILES}" | grep -Eq '^(paper/|metadata/|publication\.json|release-manifest\.json|CITATION\.cff|\.zenodo\.json|\.latexmkrc|\.chktexrc|scripts/build-paper\.sh|scripts/validate-metadata\.py|scripts/validate-release-lifecycle\.py|scripts/validate-arxiv-packaging\.py|scripts/validate-build-reproducibility\.py|scripts/audit-publication-readiness\.py|scripts/audit-chktex\.py|scripts/lint-paper\.sh)'; then
-              PAPER_CHANGED="true"
+            else
+              for pattern in "${PAPER_SCOPE_PATTERNS[@]}"; do
+                if echo "${CHANGED_FILES}" | grep -Eq "${pattern}"; then
+                  PAPER_CHANGED="true"
+                  break
+                fi
+              done
             fi
           fi
 
@@ -429,6 +448,8 @@ jobs:
   build-arxiv:
     name: Build arXiv Bundles
     needs: [detect-scope, build-paper]
+    # Full release runs package job, which assembles and archives canonical arXiv bundles.
+    # This job is reserved for incremental paper-only publication runs.
     if: needs.detect-scope.outputs.paper_changed == 'true' && needs.detect-scope.outputs.full_release != 'true'
     runs-on: ubuntu-latest
 
@@ -483,10 +504,11 @@ jobs:
           ARXIV_DIR="dist/arxiv"
           ZIP_PATH="dist/reflector-arxiv-${TAG}.zip"
           TARGZ_PATH="dist/reflector-arxiv-${TAG}.tar.gz"
+          ZIP_ABS_PATH="${GITHUB_WORKSPACE}/${ZIP_PATH}"
 
           (
             cd "${ARXIV_DIR}"
-            zip -X -r "${OLDPWD}/${ZIP_PATH}" .
+            zip -X -r "${ZIP_ABS_PATH}" .
           )
 
           tar --sort=name \

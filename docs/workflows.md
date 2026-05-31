@@ -128,6 +128,9 @@ flowchart TD
   F --> G[Stage 5: Create GitHub Release with staged artifacts]
 ```
 
+Zenodo-ready assets remain part of the Stage 4 package output (checksums,
+manifest, and readiness report) and are carried forward into the release stage.
+
 Full documentation:
 
 - [`docs/release-process.md`](release-process.md)
