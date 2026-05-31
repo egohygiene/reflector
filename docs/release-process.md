@@ -116,8 +116,7 @@ release/reflector-vX.Y.Z/
 ├── reflector-arxiv-vX.Y.Z.tar.gz       # arXiv submission bundle (TAR.GZ)
 ├── source.zip                          # full source archive
 ├── checksums.txt                       # SHA-256 checksums for all assets
-├── manifest.json                       # generated release manifest
-├── release-manifest.json               # repository release manifest
+├── release-manifest.json               # generated staged release manifest
 ├── publication.json                    # publication metadata
 ├── publication-readiness.md            # publication readiness report
 ├── chktex-audit.md                     # ChkTeX audit report
@@ -161,8 +160,7 @@ Creates the annotated release tag (if absent) and publishes the GitHub Release w
 | `reflector-magazine-print.pdf` | Print magazine PDF |
 | `source.zip` | Full source archive |
 | `checksums.txt` | SHA-256 checksums |
-| `manifest.json` | Generated release manifest |
-| `release-manifest.json` | Repository release manifest |
+| `release-manifest.json` | Generated staged release manifest |
 | `publication-readiness.md` | Publication readiness audit |
 | `chktex-audit.md` | ChkTeX audit report |
 | `zenodo-readiness.md` | Zenodo readiness report |
@@ -223,6 +221,8 @@ The publication workflow can be triggered manually via `workflow_dispatch`:
 | `fail_on_warnings` | Fail on any ChkTeX warning | `false` |
 
 Use `dry_run: true` to test the full pipeline without publishing a release.
+
+For the canonical staging layout, checksum contract, and manifest generation rules, see [`docs/publication-infrastructure.md`](publication-infrastructure.md).
 
 ---
 
