@@ -655,6 +655,9 @@ jobs:
               ("metadata/publication.yaml version matches VERSION", str(metadata.get("version")) == version),
               (".zenodo.json version matches VERSION", str(zenodo.get("version")) == version),
               ("CITATION.cff version matches VERSION", str(citation.get("version")) == version),
+              ("metadata/publication.yaml has DOI", bool((metadata.get("identifiers") or {}).get("doi"))),
+              ("CITATION.cff has DOI", bool(citation.get("doi"))),
+              (".zenodo.json has DOI", bool(zenodo.get("doi"))),
               ("ORCID present in .zenodo.json creators", bool((zenodo.get("creators") or [{}])[0].get("orcid"))),
               (".zenodo.json has title", bool(zenodo.get("title"))),
               (".zenodo.json has description", bool(zenodo.get("description"))),
@@ -706,9 +709,9 @@ jobs:
               "",
               "1. Verify GitHub Release contains all artifacts above.",
               "2. Upload artifacts to Zenodo deposit manually.",
-              "3. Assign DOI via Zenodo.",
-              "4. Update `metadata/publication.yaml`, `CITATION.cff`, and `.zenodo.json` with assigned DOI.",
-              "5. Tag a metadata-update release.",
+              "3. Verify Zenodo DOI metadata remains synchronized (`metadata/publication.yaml`, `CITATION.cff`, `.zenodo.json`, `codemeta.json`).",
+              "4. Run `python scripts/validate-metadata.py` after any metadata edit.",
+              "5. Tag a metadata-update release when DOI metadata changes.",
               "",
           ]
 
@@ -748,6 +751,25 @@ jobs:
         run: |
           set -euo pipefail
 
+          readarray -t DOI_METADATA < <(python - <<'PY'
+          import yaml
+          from pathlib import Path
+
+          publication = yaml.safe_load(Path("metadata/publication.yaml").read_text(encoding="utf-8"))
+          repository = yaml.safe_load(Path("metadata/repository.yaml").read_text(encoding="utf-8"))
+          identifiers = publication.get("identifiers", {})
+          zenodo = repository.get("future_integrations", {}).get("zenodo", {})
+          print(identifiers.get("doi", ""))
+          print(identifiers.get("doi_url", ""))
+          print(zenodo.get("concept_doi", ""))
+          print(zenodo.get("concept_doi_url", ""))
+          PY
+          )
+          DOI="${DOI_METADATA[0]}"
+          DOI_URL="${DOI_METADATA[1]}"
+          CONCEPT_DOI="${DOI_METADATA[2]}"
+          CONCEPT_DOI_URL="${DOI_METADATA[3]}"
+
           python scripts/stage-publication-release.py \
             --release-dir "${{ steps.version.outputs.release_dir }}" \
             --version "${{ steps.version.outputs.version }}" \
@@ -755,6 +777,10 @@ jobs:
             --paper-name "${{ steps.version.outputs.paper_name }}" \
             --repository "${{ github.repository }}" \
             --commit "${{ github.sha }}" \
+            --doi "${DOI}" \
+            --doi-url "${DOI_URL}" \
+            --concept-doi "${CONCEPT_DOI}" \
+            --concept-doi-url "${CONCEPT_DOI_URL}" \
             --require reflector.pdf \
             --require reflector-magazine.pdf \
             --require reflector-magazine-print.pdf \

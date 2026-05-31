@@ -26,6 +26,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="GitHub owner/repository used for generated URLs.",
     )
     parser.add_argument("--commit", default="", help="Git commit SHA for the release.")
+    parser.add_argument("--doi", default="", help="Canonical version DOI for this release.")
+    parser.add_argument("--doi-url", default="", help="Canonical DOI URL for this release.")
+    parser.add_argument("--concept-doi", default="", help="Zenodo concept DOI for this release family.")
+    parser.add_argument("--concept-doi-url", default="", help="Zenodo concept DOI URL for this release family.")
     parser.add_argument(
         "--generated-at",
         default="",
@@ -118,6 +122,10 @@ def write_manifest(
     required_paths: dict[str, Path],
     checksums_path: Path,
     checksum_inventory: dict[str, str],
+    doi: str,
+    doi_url: str,
+    concept_doi: str,
+    concept_doi_url: str,
 ) -> Path:
     manifest_path = release_dir / "release-manifest.json"
     owner, repo = repository.split("/", 1)
@@ -147,6 +155,10 @@ def write_manifest(
         "repository": f"https://github.com/{repository}",
         "release_url": f"https://github.com/{repository}/releases/tag/{tag}",
         "pages_url": f"https://{owner}.github.io/{repo}/",
+        "doi": doi,
+        "doi_url": doi_url,
+        "concept_doi": concept_doi,
+        "concept_doi_url": concept_doi_url,
         "checksums": {
             "algorithm": "sha256",
             "path": display_path(checksums_path, repo_root),
@@ -189,6 +201,10 @@ def main() -> int:
         required_paths=required_paths,
         checksums_path=checksums_path,
         checksum_inventory=checksum_inventory,
+        doi=args.doi,
+        doi_url=args.doi_url,
+        concept_doi=args.concept_doi,
+        concept_doi_url=args.concept_doi_url,
     )
 
     print("[publication-release] staged artifact inventory:")

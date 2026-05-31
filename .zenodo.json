@@ -7,6 +7,8 @@
   "license": "mit",
   "language": "eng",
   "version": "0.1.1",
+  "doi": "10.5281/zenodo.20477044",
+  "conceptdoi": "10.5281/zenodo.20477045",
   "publication_date": "2026-05-22",
   "creators": [
     {
@@ -36,7 +38,12 @@
       "identifier": "https://egohygiene.github.io/reflector/",
       "relation": "isDocumentedBy",
       "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.20477045",
+      "relation": "isVersionOf",
+      "scheme": "doi"
     }
   ],
-  "notes": "Pre-publication draft. DOI and arXiv identifiers pending formal submission. Author ORCID: https://orcid.org/0009-0008-5291-9795"
+  "notes": "Zenodo DOI assigned. Canonical citation DOI is 10.5281/zenodo.20477044; concept DOI is 10.5281/zenodo.20477045. Author ORCID: https://orcid.org/0009-0008-5291-9795"
 }

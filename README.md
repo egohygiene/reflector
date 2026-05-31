@@ -13,7 +13,7 @@
 [![REUSE Compliance](https://img.shields.io/github/actions/workflow/status/egohygiene/reflector/reuse.yml?branch=main&style=for-the-badge&label=REUSE%20Compliance)](https://github.com/egohygiene/reflector/actions/workflows/reuse.yml)
 [![arXiv Ready](https://img.shields.io/badge/arXiv-Ready-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white)](./specs/publication/arxiv-publication.spec.md)
 [![Hugging Face Ready](https://img.shields.io/badge/Hugging%20Face-Ready-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](./docs/huggingface.md)
-[![DOI](https://zenodo.org/badge/1247115338.svg)](https://zenodo.org/records/20477045)
+[![DOI](https://zenodo.org/badge/1247115338.svg)](https://doi.org/10.5281/zenodo.20477044)
 
 ![reflector publication preview](./paper/figures/hero.png)
 
@@ -128,10 +128,27 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 
 - GitHub Pages landing page: <https://egohygiene.github.io/reflector/>
 - Canonical PDF route: <https://egohygiene.github.io/reflector/reflector.pdf>
+- DOI (canonical version DOI): <https://doi.org/10.5281/zenodo.20477044>
+- DOI (Zenodo concept DOI): <https://doi.org/10.5281/zenodo.20477045>
 - Citation metadata: [`CITATION.cff`](./CITATION.cff)
+- CodeMeta metadata: [`codemeta.json`](./codemeta.json)
 - Publication metadata: [`publication.json`](./publication.json)
 - Paper source and section status: [`paper/README.md`](./paper/README.md)
 - arXiv-oriented publication spec: [`specs/publication/arxiv-publication.spec.md`](./specs/publication/arxiv-publication.spec.md)
+
+## Citation
+
+Use the version DOI when citing a specific archived release:
+
+> 10.5281/zenodo.20477044
+
+`CITATION.cff` is the canonical machine-readable citation source for GitHub and downstream tooling.
+
+## Publication
+
+- Release metadata and DOI synchronization contract: [`release-manifest.json`](./release-manifest.json)
+- Release workflow and DOI lifecycle: [`docs/release-process.md`](./docs/release-process.md)
+- Publication infrastructure details: [`docs/publication-infrastructure.md`](./docs/publication-infrastructure.md)
 
 ## Hugging Face readiness
 
