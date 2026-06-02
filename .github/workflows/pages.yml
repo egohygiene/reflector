@@ -45,6 +45,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Determine deployment scope
         id: scope
@@ -77,6 +79,10 @@ jobs:
             BASE="${{ github.event.before }}"
             if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
               BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
+            fi
+            if [[ -n "${BASE}" ]] && ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+              echo "Base commit ${BASE} is unavailable in checkout history; falling back to full repository scan."
+              BASE=""
             fi
             if [[ -n "${BASE}" ]]; then
               CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
@@ -256,6 +262,10 @@ jobs:
           if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
             BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
           fi
+          if [[ -n "${BASE}" ]] && ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            echo "Base commit ${BASE} is unavailable in checkout history; falling back to full repository scan."
+            BASE=""
+          fi
           if [[ -n "${BASE}" ]]; then
             CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
           else
@@ -370,14 +380,17 @@ jobs:
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
 
           VERSION="$(tr -d '[:space:]' < VERSION)"
+          PDF_SIZE="$(stat -c%s "${DOCS_PDF}")"
+          MAG_SIZE="$(stat -c%s "${DOCS_MAGAZINE_PDF}")"
+          PRINT_SIZE="$(stat -c%s "${DOCS_MAGAZINE_PRINT_PDF}")"
           {
             echo "## Pages Deployment Summary"
             echo ""
-            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
-            echo "| --- | --- | --- | --- |"
-            echo "| reflector.pdf | ${VERSION} | \`${PDF_DOCS_SHA}\` | /reflector/reflector.pdf |"
-            echo "| reflector-magazine.pdf | ${VERSION} | \`${MAG_DOCS_SHA}\` | /reflector/reflector-magazine.pdf |"
-            echo "| reflector-magazine-print.pdf | ${VERSION} | \`${PRINT_DOCS_SHA}\` | /reflector/reflector-magazine-print.pdf |"
+            echo "| Artifact | Version | Size (bytes) | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | ---: | --- | --- |"
+            echo "| reflector.pdf | ${VERSION} | ${PDF_SIZE} | \`${PDF_DOCS_SHA}\` | /reflector/reflector.pdf |"
+            echo "| reflector-magazine.pdf | ${VERSION} | ${MAG_SIZE} | \`${MAG_DOCS_SHA}\` | /reflector/reflector-magazine.pdf |"
+            echo "| reflector-magazine-print.pdf | ${VERSION} | ${PRINT_SIZE} | \`${PRINT_DOCS_SHA}\` | /reflector/reflector-magazine-print.pdf |"
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Setup GitHub Pages

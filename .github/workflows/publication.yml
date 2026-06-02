@@ -910,8 +910,10 @@ jobs:
               "reflector-magazine-print.pdf",
               f"reflector-arxiv-{tag}.zip",
               f"reflector-arxiv-{tag}.tar.gz",
+              "publication.json",
               "checksums.txt",
-              "manifest.json",
+              "release-manifest.json",
+              "publication-inventory.json",
               "source.zip",
           ]
 
@@ -1039,8 +1041,13 @@ jobs:
             "${RELEASE_DIR}/reflector.pdf"
             "${RELEASE_DIR}/reflector-magazine.pdf"
             "${RELEASE_DIR}/reflector-magazine-print.pdf"
+            "${RELEASE_DIR}/reflector-arxiv-${{ steps.version.outputs.tag }}.zip"
+            "${RELEASE_DIR}/reflector-arxiv-${{ steps.version.outputs.tag }}.tar.gz"
+            "${RELEASE_DIR}/source.zip"
+            "${RELEASE_DIR}/publication.json"
             "${RELEASE_DIR}/checksums.txt"
             "${RELEASE_DIR}/release-manifest.json"
+            "${RELEASE_DIR}/publication-inventory.json"
             "${RELEASE_DIR}/zenodo-readiness.md"
             "${RELEASE_DIR}/release-notes.md"
           )
@@ -1082,11 +1089,16 @@ jobs:
             echo ""
             echo "## Artifact Inventory"
             echo ""
-            echo "| Artifact | Version | Checksum (sha256) | Deployment Target |"
-            echo "| --- | --- | --- | --- |"
+            echo "| Artifact | Version | Size (bytes) | Checksum (sha256) | Deployment Target |"
+            echo "| --- | --- | ---: | --- | --- |"
             while read -r checksum filename; do
               target="release/reflector-${TAG}/${filename}"
-              echo "| ${filename} | ${VERSION} | \`${checksum}\` | ${target} |"
+              artifact_path="${RELEASE_DIR}/${filename}"
+              size_bytes="n/a"
+              if [[ -f "${artifact_path}" ]]; then
+                size_bytes="$(stat -c%s "${artifact_path}")"
+              fi
+              echo "| ${filename} | ${VERSION} | ${size_bytes} | \`${checksum}\` | ${target} |"
             done < "${RELEASE_DIR}/checksums.txt"
           } >> "${GITHUB_STEP_SUMMARY}"
 
@@ -1194,12 +1206,84 @@ jobs:
             release-staging/reflector.pdf
             release-staging/reflector-magazine.pdf
             release-staging/reflector-magazine-print.pdf
+            release-staging/reflector-arxiv-${{ needs.package.outputs.tag }}.zip
+            release-staging/reflector-arxiv-${{ needs.package.outputs.tag }}.tar.gz
             release-staging/source.zip
+            release-staging/publication.json
             release-staging/checksums.txt
             release-staging/release-manifest.json
+            release-staging/publication-inventory.json
             release-staging/publication-readiness.md
             release-staging/chktex-audit.md
             release-staging/zenodo-readiness.md
+
+      - name: Validate publication distribution
+        if: github.event.inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.package.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          PAGES_BASE="https://${OWNER}.github.io/${REPO_NAME}/"
+          echo "Validating Pages routes..."
+          for route in \
+            "" \
+            "reflector.pdf" \
+            "reflector-magazine.pdf" \
+            "reflector-magazine-print.pdf"; do
+            url="${PAGES_BASE}${route}"
+            echo "Checking ${url}"
+            curl --location --silent --show-error --fail --head "${url}" >/dev/null
+          done
+
+          echo "Validating release assets for ${TAG}..."
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          tag = os.environ["TAG"]
+          token = os.environ["GH_TOKEN"]
+          url = f"https://api.github.com/repos/{repo}/releases/tags/{tag}"
+          request = urllib.request.Request(
+              url,
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": "Bearer " + token,
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.urlopen(request) as response:
+              release = json.load(response)
+
+          assets = {asset["name"] for asset in release.get("assets", [])}
+          expected = {
+              "reflector.pdf",
+              "reflector-magazine.pdf",
+              "reflector-magazine-print.pdf",
+              f"reflector-arxiv-{tag}.zip",
+              f"reflector-arxiv-{tag}.tar.gz",
+              "source.zip",
+              "publication.json",
+              "checksums.txt",
+              "release-manifest.json",
+              "publication-inventory.json",
+              "publication-readiness.md",
+              "chktex-audit.md",
+              "zenodo-readiness.md",
+          }
+          missing = sorted(expected - assets)
+          if missing:
+              print("Missing release assets:")
+              for name in missing:
+                  print(f"- {name}")
+              raise SystemExit(1)
+          print("All expected release assets are present.")
+          PY
 
       - name: Print dry run summary
         if: github.event.inputs.dry_run == 'true'

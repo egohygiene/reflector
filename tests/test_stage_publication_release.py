@@ -81,8 +81,10 @@ def test_stage_publication_release_generates_deterministic_inventory(tmp_path: P
 
     checksums_path = release_dir / "checksums.txt"
     manifest_path = release_dir / "release-manifest.json"
+    inventory_path = release_dir / "publication-inventory.json"
     assert checksums_path.is_file()
     assert manifest_path.is_file()
+    assert inventory_path.is_file()
 
     checksum_lines = checksums_path.read_text(encoding="utf-8").splitlines()
     assert checksum_lines == sorted(checksum_lines, key=lambda line: line.split("  ", 1)[1])
@@ -102,6 +104,18 @@ def test_stage_publication_release_generates_deterministic_inventory(tmp_path: P
         artifact["path"].startswith("release/reflector-v0.1.0/")
         for artifact in manifest["artifacts"]
     )
+
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    assert inventory["project"] == "reflector"
+    assert inventory["tag"] == "v0.1.0"
+    assert {item["artifact"] for item in inventory["artifacts"]} == set(REQUIRED_FILES) | {
+        "checksums.txt",
+        "release-manifest.json",
+    }
+    for item in inventory["artifacts"]:
+        assert item["checksum"]
+        assert item["release_url"].endswith(f"/{item['artifact']}")
+        assert "publication_target" in item
 
 
 def test_stage_publication_release_reports_missing_required_artifact(tmp_path: Path) -> None:
