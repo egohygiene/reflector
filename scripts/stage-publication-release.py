@@ -36,6 +36,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Explicit UTC timestamp for deterministic tests (default: current time).",
     )
     parser.add_argument(
+        "--pages-base-url",
+        default="",
+        help="Optional GitHub Pages base URL. Defaults to https://<owner>.github.io/<repo>/",
+    )
+    parser.add_argument(
         "--require",
         action="append",
         default=[],
@@ -174,6 +179,61 @@ def write_manifest(
     return manifest_path.resolve()
 
 
+def write_publication_inventory(
+    release_dir: Path,
+    paper_name: str,
+    repository: str,
+    tag: str,
+    pages_base_url: str,
+    required_paths: dict[str, Path],
+    checksums_path: Path,
+    manifest_path: Path,
+) -> Path:
+    inventory_path = release_dir / "publication-inventory.json"
+    owner, repo = repository.split("/", 1)
+    release_download_base = f"https://github.com/{repository}/releases/download/{tag}"
+    pages_base = pages_base_url.strip() or f"https://{owner}.github.io/{repo}/"
+    if not pages_base.endswith("/"):
+        pages_base = f"{pages_base}/"
+    pages_artifacts = {
+        "reflector.pdf",
+        "reflector-magazine.pdf",
+        "reflector-magazine-print.pdf",
+    }
+
+    inventory_paths = dict(required_paths)
+    inventory_paths["checksums.txt"] = checksums_path.resolve()
+    inventory_paths["release-manifest.json"] = manifest_path.resolve()
+
+    artifacts = []
+    for name in sorted(inventory_paths):
+        path = inventory_paths[name]
+        targets = ["github-release", "zenodo"]
+        pages_url = ""
+        if name in pages_artifacts:
+            pages_url = f"{pages_base}{name}"
+            targets = ["github-pages", "github-release", "zenodo"]
+        artifacts.append(
+            {
+                "artifact": name,
+                "checksum": sha256_for_file(path),
+                "pages_url": pages_url,
+                "release_url": f"{release_download_base}/{name}",
+                "publication_target": targets,
+            }
+        )
+
+    inventory = {
+        "schema_version": "1.0.0",
+        "project": paper_name,
+        "tag": tag,
+        "artifacts": artifacts,
+    }
+    inventory_path.write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
+    print(f"[publication-release] publication-inventory.json written to {inventory_path.resolve()}")
+    return inventory_path.resolve()
+
+
 def main() -> int:
     args = build_parser().parse_args()
     repo_root = Path.cwd().resolve()
@@ -206,6 +266,16 @@ def main() -> int:
         concept_doi=args.concept_doi,
         concept_doi_url=args.concept_doi_url,
     )
+    inventory_path = write_publication_inventory(
+        release_dir=release_dir,
+        paper_name=args.paper_name,
+        repository=args.repository,
+        tag=args.tag,
+        pages_base_url=args.pages_base_url,
+        required_paths=required_paths,
+        checksums_path=checksums_path,
+        manifest_path=manifest_path,
+    )
 
     print("[publication-release] staged artifact inventory:")
     print(f"  release_dir={display_path(release_dir, repo_root)}")
@@ -213,6 +283,7 @@ def main() -> int:
         print(f"  - {display_path(required_paths[name], repo_root)}")
     print(f"  - {display_path(checksums_path, repo_root)}")
     print(f"  - {display_path(manifest_path, repo_root)}")
+    print(f"  - {display_path(inventory_path, repo_root)}")
     return 0
 
 
