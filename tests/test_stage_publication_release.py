@@ -115,7 +115,8 @@ def test_stage_publication_release_generates_deterministic_inventory(tmp_path: P
     for item in inventory["artifacts"]:
         assert item["checksum"]
         assert item["release_url"].endswith(f"/{item['artifact']}")
-        assert "publication_target" in item
+        assert isinstance(item["publication_target"], list)
+        assert item["publication_target"]
 
 
 def test_stage_publication_release_reports_missing_required_artifact(tmp_path: Path) -> None:

@@ -380,9 +380,9 @@ jobs:
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
 
           VERSION="$(tr -d '[:space:]' < VERSION)"
-          PDF_SIZE="$(stat -c%s "${DOCS_PDF}")"
-          MAG_SIZE="$(stat -c%s "${DOCS_MAGAZINE_PDF}")"
-          PRINT_SIZE="$(stat -c%s "${DOCS_MAGAZINE_PRINT_PDF}")"
+          PDF_SIZE="$(wc -c < "${DOCS_PDF}" | tr -d '[:space:]')"
+          MAG_SIZE="$(wc -c < "${DOCS_MAGAZINE_PDF}" | tr -d '[:space:]')"
+          PRINT_SIZE="$(wc -c < "${DOCS_MAGAZINE_PRINT_PDF}" | tr -d '[:space:]')"
           {
             echo "## Pages Deployment Summary"
             echo ""

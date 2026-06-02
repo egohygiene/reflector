@@ -36,6 +36,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Explicit UTC timestamp for deterministic tests (default: current time).",
     )
     parser.add_argument(
+        "--pages-base-url",
+        default="",
+        help="Optional GitHub Pages base URL. Defaults to https://<owner>.github.io/<repo>/",
+    )
+    parser.add_argument(
         "--require",
         action="append",
         default=[],
@@ -179,6 +184,7 @@ def write_publication_inventory(
     paper_name: str,
     repository: str,
     tag: str,
+    pages_base_url: str,
     required_paths: dict[str, Path],
     checksums_path: Path,
     manifest_path: Path,
@@ -186,11 +192,13 @@ def write_publication_inventory(
     inventory_path = release_dir / "publication-inventory.json"
     owner, repo = repository.split("/", 1)
     release_download_base = f"https://github.com/{repository}/releases/download/{tag}"
-    pages_base = f"https://{owner}.github.io/{repo}/"
-    pages_routes = {
-        "reflector.pdf": "reflector.pdf",
-        "reflector-magazine.pdf": "reflector-magazine.pdf",
-        "reflector-magazine-print.pdf": "reflector-magazine-print.pdf",
+    pages_base = pages_base_url.strip() or f"https://{owner}.github.io/{repo}/"
+    if not pages_base.endswith("/"):
+        pages_base = f"{pages_base}/"
+    pages_artifacts = {
+        "reflector.pdf",
+        "reflector-magazine.pdf",
+        "reflector-magazine-print.pdf",
     }
 
     inventory_paths = dict(required_paths)
@@ -200,11 +208,11 @@ def write_publication_inventory(
     artifacts = []
     for name in sorted(inventory_paths):
         path = inventory_paths[name]
-        targets = "github-release,zenodo"
+        targets = ["github-release", "zenodo"]
         pages_url = ""
-        if name in pages_routes:
-            pages_url = f"{pages_base}{pages_routes[name]}"
-            targets = "github-pages,github-release,zenodo"
+        if name in pages_artifacts:
+            pages_url = f"{pages_base}{name}"
+            targets = ["github-pages", "github-release", "zenodo"]
         artifacts.append(
             {
                 "artifact": name,
@@ -263,6 +271,7 @@ def main() -> int:
         paper_name=args.paper_name,
         repository=args.repository,
         tag=args.tag,
+        pages_base_url=args.pages_base_url,
         required_paths=required_paths,
         checksums_path=checksums_path,
         manifest_path=manifest_path,

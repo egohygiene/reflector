@@ -1096,7 +1096,9 @@ jobs:
               artifact_path="${RELEASE_DIR}/${filename}"
               size_bytes="n/a"
               if [[ -f "${artifact_path}" ]]; then
-                size_bytes="$(stat -c%s "${artifact_path}")"
+                size_bytes="$(wc -c < "${artifact_path}" | tr -d '[:space:]')"
+              else
+                echo "::warning::Summary artifact missing while computing size: ${artifact_path}"
               fi
               echo "| ${filename} | ${VERSION} | ${size_bytes} | \`${checksum}\` | ${target} |"
             done < "${RELEASE_DIR}/checksums.txt"
@@ -1243,6 +1245,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import urllib.error
           import urllib.request
 
           repo = os.environ["GITHUB_REPOSITORY"]
@@ -1257,8 +1260,20 @@ jobs:
                   "X-GitHub-Api-Version": "2022-11-28",
               },
           )
-          with urllib.request.urlopen(request) as response:
-              release = json.load(response)
+          try:
+              with urllib.request.urlopen(request) as response:
+                  release = json.load(response)
+          except urllib.error.HTTPError as exc:
+              print(f"Failed to query release metadata: HTTP {exc.code} for {url}")
+              if exc.code in (401, 403):
+                  print("Hint: verify GITHUB_TOKEN has at least contents:read permission to access release metadata.")
+              elif exc.code == 404:
+                  print(f"Hint: verify release tag '{tag}' exists before validation.")
+              raise
+          except urllib.error.URLError as exc:
+              print(f"Failed to query release metadata: {exc.reason}")
+              print("Hint: verify network connectivity to api.github.com from the runner.")
+              raise
 
           assets = {asset["name"] for asset in release.get("assets", [])}
           expected = {
