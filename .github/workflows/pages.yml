@@ -329,14 +329,23 @@ jobs:
           if [[ -f "${DOCS_PDF}" ]]; then
             PAPER_PDF_AVAILABLE="true"
           fi
+          PDF_SOURCE_SHA="N/A"
+          PDF_DOCS_SHA="N/A"
+          PDF_SITE_SHA="N/A"
           MAGAZINE_PDF_AVAILABLE="false"
           if [[ -f "${DOCS_MAGAZINE_PDF}" ]]; then
             MAGAZINE_PDF_AVAILABLE="true"
           fi
+          MAG_SOURCE_SHA="N/A"
+          MAG_DOCS_SHA="N/A"
+          MAG_SITE_SHA="N/A"
           MAGAZINE_PRINT_PDF_AVAILABLE="false"
           if [[ -f "${DOCS_MAGAZINE_PRINT_PDF}" ]]; then
             MAGAZINE_PRINT_PDF_AVAILABLE="true"
           fi
+          PRINT_SOURCE_SHA="N/A"
+          PRINT_DOCS_SHA="N/A"
+          PRINT_SITE_SHA="N/A"
 
           if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
             for required_path in "${PDF_SOURCE}" "${DOCS_PDF}"; do
@@ -417,7 +426,7 @@ jobs:
               exit 1
             fi
           fi
-          if [[ "${MAG_SOURCE_SHA}" == "${MAG_DOCS_SHA}" && "${{ steps.scope.outputs.build_magazine }}" != "true" ]]; then
+          if [[ "${MAGAZINE_PDF_AVAILABLE}" == "true" && "${MAG_SOURCE_SHA}" == "${MAG_DOCS_SHA}" && "${{ steps.scope.outputs.build_magazine }}" != "true" ]]; then
             echo "Magazine artifacts reused from docs/ for this deployment."
           fi
 
@@ -434,9 +443,18 @@ jobs:
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
 
           VERSION="$(tr -d '[:space:]' < VERSION)"
-          PDF_SIZE="$(wc -c < "${DOCS_PDF}" | tr -d '[:space:]')"
-          MAG_SIZE="$(wc -c < "${DOCS_MAGAZINE_PDF}" | tr -d '[:space:]')"
-          PRINT_SIZE="$(wc -c < "${DOCS_MAGAZINE_PRINT_PDF}" | tr -d '[:space:]')"
+          PDF_SIZE="N/A"
+          if [[ "${PAPER_PDF_AVAILABLE}" == "true" ]]; then
+            PDF_SIZE="$(wc -c < "${DOCS_PDF}" | tr -d '[:space:]')"
+          fi
+          MAG_SIZE="N/A"
+          if [[ "${MAGAZINE_PDF_AVAILABLE}" == "true" ]]; then
+            MAG_SIZE="$(wc -c < "${DOCS_MAGAZINE_PDF}" | tr -d '[:space:]')"
+          fi
+          PRINT_SIZE="N/A"
+          if [[ "${MAGAZINE_PRINT_PDF_AVAILABLE}" == "true" ]]; then
+            PRINT_SIZE="$(wc -c < "${DOCS_MAGAZINE_PRINT_PDF}" | tr -d '[:space:]')"
+          fi
           {
             echo "## Pages Deployment Summary"
             echo ""
