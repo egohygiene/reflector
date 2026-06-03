@@ -111,6 +111,10 @@ jobs:
             if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
               BASE="$(git rev-list --max-count=1 HEAD^ 2>/dev/null || true)"
             fi
+            if [[ -n "${BASE}" ]] && ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+              echo "Base commit ${BASE} is unavailable in checkout history; falling back to full repository scan."
+              BASE=""
+            fi
             if [[ -n "${BASE}" ]]; then
               CHANGED_FILES="$(git diff --name-only "${BASE}" "${GITHUB_SHA}")"
             else

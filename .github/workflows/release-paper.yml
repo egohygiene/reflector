@@ -498,7 +498,23 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: Check if GitHub Release already exists
+        id: release_check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.vars.outputs.tag }}"
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists. Skipping release creation to avoid race condition with publication.yml."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Release ${TAG} does not exist. Proceeding with release creation."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create GitHub Release
+        if: steps.release_check.outputs.skip != 'true'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.vars.outputs.tag }}
