@@ -690,26 +690,26 @@ jobs:
           echo "Release: ${RELEASE_DIR}"
 
       - name: Download paper PDF
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: reflector-pdf
           path: dist/
 
       - name: Download magazine PDFs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: reflector-magazine-pdfs
           path: dist/magazine/
 
       - name: Download ChkTeX audit report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: chktex-audit-report
           path: audits/
         continue-on-error: true
 
       - name: Download publication readiness report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: publication-readiness-report
           path: audits/
@@ -1172,7 +1172,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download release artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-artifacts-${{ needs.package.outputs.tag }}
           path: release-staging/
