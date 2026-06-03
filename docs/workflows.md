@@ -160,3 +160,10 @@ The following independent workflows continue to provide focused checks:
 - `specs/workflows/figure-pipeline.spec.md`
 - `specs/synchronization/synchronization-layer.spec.md`
 - `specs/repositories/publication-repository.spec.md`
+
+## Publication Reference Documentation
+
+- [`docs/publication-system-reference.md`](publication-system-reference.md) — authoritative end-to-end publication lifecycle
+- [`docs/publication-workflow-reference.md`](publication-workflow-reference.md) — workflow registry, triggers, ownership, dependencies
+- [`docs/publication-artifact-reference.md`](publication-artifact-reference.md) — artifact lifecycle, producers, consumers, destinations
+- [`docs/publication-lessons-learned.md`](publication-lessons-learned.md) — lessons learned and future recommendations
