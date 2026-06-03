@@ -104,6 +104,10 @@ Publication pipeline is manifest/spec-aware and deterministic by design:
 4. publish/deploy artifacts with traceable metadata
 
 For detailed subsystem references:
+- `docs/publication-system-reference.md` — authoritative end-to-end publication lifecycle
+- `docs/publication-workflow-reference.md` — workflow registry, triggers, ownership
+- `docs/publication-artifact-reference.md` — artifact lifecycle, producers, consumers
+- `docs/publication-lessons-learned.md` — lessons learned and future recommendations
 - `docs/architecture-overview.md`
 - `docs/workflows.md`
 - `docs/publication-architecture.md`
