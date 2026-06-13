@@ -155,11 +155,8 @@ The following independent workflows continue to provide focused checks:
 
 ## Reusable Blueprint Specs
 
-- `specs/workflows/recursive-issue-orchestration.spec.md`
-- `specs/workflows/recursive-workflow-blueprints.spec.md`
-- `specs/workflows/figure-pipeline.spec.md`
-- `specs/synchronization/synchronization-layer.spec.md`
-- `specs/repositories/publication-repository.spec.md`
+- `specs/reflector.spec.md` — canonical portable Reflector specification (recursive synchronization, workflow lifecycle, human-AI collaboration, artifact coordination, milestone boundaries)
+- `specs/workflows/figure-pipeline.spec.md` — figure asset pipeline from placeholder to publication-ready
 
 ## Publication Reference Documentation
 
