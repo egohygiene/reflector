@@ -1,0 +1,91 @@
+
+\begin{table*}[t!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{} & 
+\multicolumn{2}{c}{ \begin{tabular}{@{}c@{}}
+    \textbf{Pour Package in Bowl} \\
+    $n=6$
+  \end{tabular}} & 
+\multicolumn{2}{c}{ \begin{tabular}{@{}c@{}}
+    \textbf{Assemble Toy Car} \\
+    $n=6$
+  \end{tabular}} & 
+\multicolumn{2}{c}{ \begin{tabular}{@{}c@{}}
+    \textbf{Pack Gift Box} \\
+    $n=6$
+  \end{tabular}} & 
+\multicolumn{2}{c}{ \begin{tabular}{@{}c@{}}
+    \textbf{Average} \\
+    $n=18$
+  \end{tabular}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+ & \centering \ours{} & LLM & \ours{} & LLM & \ours{} & LLM & \ours{} (ours) & LLM \\
+% mostly percentages except likert.
+\midrule
+Entire Task Success Rate (\%, $\uparrow$) & $\mathbf{100}$ & $83$ & $\mathbf{67}$ & $0$ & $\mathbf{67}$ & $0$ & $\mathbf{77.8 \pm 15.7}$ & $27.8 \pm 39.3$ \\
+\% of task steps completed ($\uparrow$) & $\mathbf{100}$ & $93$ & $\mathbf{94}$ & $31$ & $\mathbf{88}$ & $50$ & $\mathbf{93.8 \pm 5.1}$ & $58.2 \pm 26.0$ \\
+\% of steps performed by Human & $27$ & $29$ & $60$ & $5$ & $35$ & $21$ & $40.5 \pm 14.2$ & $18.2 \pm 9.7$ \\
+\midrule
+\% Users Preferring ... ($\uparrow$) & $\mathbf{67}$ & $33$ & $\mathbf{100}$ & $0$ & $\mathbf{67}$ & $33$ & $\mathbf{77.8}$ & $22.2$ \\
+Communicative ability ($\uparrow, /5$) & $3.7$ & $\mathbf{3.8}$ & $\mathbf{4.3}$ & $1.3$ & $\mathbf{2.8}$ & $2.3$ & $\mathbf{3.6 \pm 1.0}$ & $2.5 \pm 1.4$ \\
+\begin{tabular}[c]{@{}l@{}}Awareness of its Limitations\end{tabular} ($\uparrow, /5$) & $\mathbf{3.3}$ & $\mathbf{3.3}$ & $\mathbf{3.7}$ & $1.2$ & $\mathbf{4.2}$ & $2.5$ & $\mathbf{3.7 \pm 1.4}$ & $2.3 \pm 1.6$ \\
+Overall Satisfaction working w/ Robot ($\uparrow, /5$) & $\mathbf{3.8}$ & $3.7$ & $\mathbf{3.5}$ & $1.5$ & $\mathbf{3.5}$ & $2.5$ & $\mathbf{3.6 \pm 0.8}$ & $2.6 \pm 1.4$ \\
+\bottomrule
+% fractional and percentage mix.
+% \midrule
+% Entire Task Success Rate & \textbf{3/6} & 0/6 & \textbf{4/6} & 0/6 & \textbf{4/6} & 0/6 & \textbf{61.1\%} & 0\% \\
+% Avg steps/trial completed (H+R) & \textbf{4.2/5} & 3.0/5 & \textbf{7.5/8} & 2.3/8 & \textbf{7.0/8} & 4.0/8 & \textbf{88.2\%} & 46.4\% \\
+% \% of steps performed by H & 21.4\% & 5.0\% & 60\% & 5.5\% & \textbf{34.9\%} & 20.8\% & \textbf{38.8\%} & 10.4\% \\
+% Preferred by... & \textbf{5/6}& 1/6 & \textbf{6/6} & 0/6 & 4/6 & 2/6 & \textbf{83.3\%} & 16.7\% \\
+% Communicative ability & \textbf{3.3/5} & 2.3/5 & \textbf{4.3/5} & 1.3/5 & \textbf{2.8/5} & 2.3/5 & \textbf{3.5/5} & 2.0/5 \\
+% \begin{tabular}[c]{@{}l@{}}``Clearly communicated to me\\ when it couldn’t do something.''\end{tabular} & \textbf{4.3/5} & 2.3/5 & \textbf{3.7/5} & 1.2/5 & \textbf{4.2/5} & 2.5/5 & \textbf{4.1/5} & 2.0/5 \\
+% \bottomrule
+\end{tabular}
+}
+% \vspace{0.5mm}
+\caption{
+Comparison between \ours{} (ours) and the LLM baseline across three real-world tasks on both objective (top 3 rows) and subjective (bottom 4 rows) metrics. Ratings out of 5 are on the Likert scale. Through more effective task allocation and communication, \ours{} achieves much higher task success rates and overall user satisfaction.}
+\label{tab:real-world}
+\end{table*}
+
+
+\section{Experimental Evaluation}
+\label{sec:exp}
+We evaluate \methodname{} in the real-world, on a Tiago mobile manipulator working with 18 unique human participants on household tasks, and in simulation, on a collaborative framework we developed atop Mini-Behavior gridworld~\cite{jin2023minibehavior}. In our simulation framework, a robotic agent collaborates with a simulated human with parametrizable helpfulness and mood-varying dialog, which allows for larger-scale experimentation and controlled comparisons across methods across a wider range of human behavior and dialog dynamics. A successful robotic collaborator must achieve task success (our primary evaluation metric) while minimizing human effort (our secondary metric).
+We also report \textbf{subjective measures of robot behavior}, including user satisfaction, preference rankings, and Likert-scale ratings.
+
+\textbf{Environment.} In the real-world, we perform our experiments in a mock apartment with a kitchen and living room area with commonplace furniture. %The kitchen contains a sink, countertop, and shelf, while the living room contains a TV, console table, coffee table, and sofa.
+In all of our tasks, the robot and human work together on opposite sides of a coffee table. Simulating a household setting, the participant spends nearly all of their time on the couch, where they can do their personal (i.e., non-task-related) work. The human can be as inactive or proactive as they wish in performing physical and verbal actions as defined in Section~\ref{sec:prob-setting} (though we continue the trial if they initiate dialog beyond the scope). Each human user study consists of two 20-30 minute trials, in which they collaborate with both our method and a pure LLM baseline, ordered randomly. All trials \textbf{terminate} under any of the following conditions: a primitive fails irrecoverably, $4T$ %$\mathcal{M}$
+steps have elapsed for a plan of length $T$, an infeasible step is allocated to the robot twice consecutively, or the human refuses twice to perform a step infeasible for the robot.
+
+\textbf{Skills.} To perform long-horizon household tasks, the robot has access to several mobile-manipulation action primitives. \texttt{pick\_place\_mobile(obj, place\_loc)} moves to \texttt{obj} and places it atop \texttt{place\_loc}, another object in a potentially different room. \texttt{pour(obj, cont)} travels to \texttt{obj} and pours its contents into \texttt{cont}. Finally, \texttt{fold(obj)} folds down box flaps.
+
+To initiate and respond within mixed-initiative dialog, the robot uses the following open-vocabulary verbal action primitives for dynamic collaboration with the human: \texttt{ask\_for\_human\_help} on a \texttt{step} the human is best suited to perform, \texttt{propose\_split} to split \texttt{steps} with the human, \texttt{explain\_incapability} to ask the human to perform a \texttt{step} that the robot can't perform, and \texttt{respond\_to\_human} to \texttt{accept/reject} requests the robot is capable/incapable of executing.
+
+\textbf{Baselines.} Because multiple components of our method are powered by LLMs, we compare our approach to a pure LLM baseline (\textbf{LLM}) given the same information as our meta-planner: symbolic state, dialog history, task plan, and $\alpha$ human-robot effort tradeoff factor. The LLM baseline is also provided with a list of the robot’s available skills and assumes that the human always successfully completes a step once they agree to perform it. The LLM baseline is prompted to produce a plan allocation $G$ that primarily optimizes for task success and secondarily minimizes human effort.
+
+To control for the amount of human effort in the user studies, we compute an additional random allocation baseline that does not involve a human participant, \textbf{RECB} (random effort-controlled baseline). Let $p_c$ denote the proportion of steps done by the human in our method's trials. RECB randomly allocates the current step to the human with probability $p_{c}$ and assumes a perfectly helpful human and oracle robot primitives with 100\% success rate.
+
+In simulation, we additionally compare against an \textbf{RL} baseline (hierarchical task allocator + robot policy)
+% Appendix Reference: see \ref{app:rl-baseline} for details)
+and a naive \textbf{Random} baseline allocating either agent (with probability 50\%) to perform the next step.
+% and completes the task successfully.
+
+% Recognizing that fully compliant human behavior is unrealistic, we introduce a stronger baseline, \textbf{RECB-2}, which more closely mirrors the human interaction patterns observed in our user studies. RECB-2 incorporates two empirical parameters: the proportion of steps our method attempted to assign to the human ($p_a$), and the proportion of those requests that were accepted by the human ($p_b$).
+% At each step, RECB-2 assigns the task to the human with probability $p_a$, and the human accepts with probability $p_b$.
+% Both RECB-1 and RECB-2 assume access to oracle robot primitives with a 100\% success rate. Due to user study time constraints, we evaluated these baselines in simulation only and compared them to our method within the Mini-Behavior\cite{jin2023minibehavior} environment.
+
+\textbf{Ablations.} To measure the importance of mixed-initiative dialog, we perform the following ablations in simulation: \textbf{H-init} and \textbf{R-init}, where the human or the robot alone, respectively, can initiate any dialog. We further ablate components of \ours{} in simulation by running it \textbf{w/o P\_H} (no $p_{H, t}$ estimation) and \textbf{w/o Plan Hierarchy} (where our method talks to the human in terms of granular, low-level steps instead of more understandable, high-level subtasks).
+
+% \textbf{Termination.} Trials for all methods terminate under any of the following conditions: an irrecoverable primitive failure occurs, $4T$ $\mathcal{M}$ steps have elapsed for a plan of length $T$, an infeasible step is allocated to the robot twice consecutively, or the human refuses twice to perform a step that the robot is incapable of executing.
+
+\textbf{Tasks.} We perform user studies on 3 real-world tasks, each with 6 users for a total of 18 unique participants.
+\textbf{(1) Pour package into bowl}: bring the bowl, package, and scissors from the kitchen, cut open the package, and pour it into the bowl.
+\textbf{(2) Assemble toy car}: bring the car parts, wheels, and drill from the shelf to the coffee table, drill in the wheels, switch the drill bit, and finally drill in the windows and seats.
+\textbf{(3) Pack gift box}: fold the gift box, put tissue wrapping paper and a toy car in the box, close the lid, wrap ribbons, and tape down a gift bow.
+Each task is 5 to 8 mobile manipulation steps long and requires varying degrees of human involvement.
+
+% Appendix Reference: (see \ref{app:task-description}).
