@@ -62,10 +62,11 @@ Publication specifications are organized under `specs/`:
 | Path | Purpose |
 | --- | --- |
 | `specs/reflector.spec.md` | Canonical reflector specification |
+| `specs/synchronization/synchronization-checkpoint.spec.md` | Synchronization checkpoint lifecycle, evidence, and transition contracts |
+| `specs/repositories/repository-architecture.spec.md` | Portable repository architecture baseline and conformance boundaries |
+| `specs/governance/human-governance.spec.md` | Human authority, escalation, and publication approval boundaries |
 | `specs/publication/` | Manifest architecture, semantic content boundaries, workflow model, renderer abstraction, arXiv publication orientation |
 | `specs/workflows/` | Recursive workflow and figure pipeline blueprints |
-| `specs/synchronization/` | Checkpoint and boundary contracts |
-| `specs/repositories/` | Portable publication repository architecture standards |
 
 ## Workflow Organization
 

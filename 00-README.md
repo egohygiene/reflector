@@ -20,6 +20,9 @@ or architecture detail (see [`docs/architecture-overview.md`](./docs/architectur
 | Toolchain requirements and installation | [`docs/toolchain.md`](./docs/toolchain.md) |
 | Contribution workflow and conventions | [`CONTRIBUTING.md`](./CONTRIBUTING.md) |
 | AI assistant execution guidance | [`docs/ai-onboarding.md`](./docs/ai-onboarding.md) |
+| Synchronization checkpoint contract | [`specs/synchronization/synchronization-checkpoint.spec.md`](./specs/synchronization/synchronization-checkpoint.spec.md) |
+| Human governance contract | [`specs/governance/human-governance.spec.md`](./specs/governance/human-governance.spec.md) |
+| Portable repository architecture contract | [`specs/repositories/repository-architecture.spec.md`](./specs/repositories/repository-architecture.spec.md) |
 | Roadmap and phase status | [`ROADMAP.md`](./ROADMAP.md) |
 | Publication system reference | [`docs/publication-system-reference.md`](./docs/publication-system-reference.md) |
 | Workflow registry | [`docs/publication-workflow-reference.md`](./docs/publication-workflow-reference.md) |
@@ -147,6 +150,9 @@ Publication pipeline is manifest/spec-aware and deterministic by design:
 - `docs/publication-artifact-reference.md` — artifact lifecycle, producers, consumers
 - `docs/publication-lessons-learned.md` — lessons learned and future recommendations
 - `docs/architecture-overview.md` — repository structure and synchronization architecture
+- `specs/synchronization/synchronization-checkpoint.spec.md` — explicit checkpoint lifecycle and evidence contracts
+- `specs/repositories/repository-architecture.spec.md` — portable repository architecture baseline
+- `specs/governance/human-governance.spec.md` — bounded autonomy and human approval authority
 - `docs/workflows.md` — workflow reference
 - `docs/publication-architecture.md` — publication architecture detail
 - `docs/ai-onboarding.md` — AI-specific execution guidance

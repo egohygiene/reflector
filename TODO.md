@@ -37,9 +37,17 @@ Issue #204 completion items:
 - [x] Create `audits/README.md` as the canonical committed audit archive index
 - [x] Add explicit Zenodo deposition handoff checklist and recovery guidance to `docs/release-process.md`
 
+Issue #205 completion items:
+
+- [x] Add synchronization checkpoint specification: `specs/synchronization/synchronization-checkpoint.spec.md`
+- [x] Add portable repository architecture specification: `specs/repositories/repository-architecture.spec.md`
+- [x] Add human governance specification: `specs/governance/human-governance.spec.md`
+- [x] Align master and onboarding/navigation docs with implemented specification hierarchy (`specs/reflector.spec.md`, `docs/architecture-overview.md`, `docs/ai-onboarding.md`, `00-README.md`)
+
 New follow-up tasks (outside issue scope):
 
 - [ ] Define and document a retention policy for raw point-in-time audit logs in `audits/` (for example, `.log` snapshots)
+- [ ] Add a lightweight specification-link/conformance check in CI to detect stale spec path references early
 
 ---
 

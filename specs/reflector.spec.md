@@ -171,6 +171,19 @@ Publication Specs    (release + deployment contracts)
 Implementation       (bounded by all layers above)
 ```
 
+## Master and Subordinate Specification Relationships
+
+This document is the authoritative master specification for Reflector philosophy, lifecycle, and canonical terminology.
+
+Subordinate specifications extend this master with narrower authority:
+
+- [`specs/synchronization/synchronization-checkpoint.spec.md`](./synchronization/synchronization-checkpoint.spec.md) — checkpoint states, evidence, transition criteria, and recovery behavior.
+- [`specs/repositories/repository-architecture.spec.md`](./repositories/repository-architecture.spec.md) — portable repository architecture baselines and conformance boundaries.
+- [`specs/governance/human-governance.spec.md`](./governance/human-governance.spec.md) — human authority, escalation, and approval boundaries.
+- [`specs/publication/`](./publication/) and [`specs/workflows/`](./workflows/) — publication and workflow-specific contracts.
+
+Subordinate specifications MUST NOT contradict canonical terminology or lifecycle semantics defined here.
+
 ---
 
 # Recursive Synchronization

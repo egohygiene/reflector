@@ -10,8 +10,9 @@ Before writing any code or documentation, orient in this order:
 1. `00-README.md` — internal repository map and navigation
 2. `docs/architecture-overview.md` — repository structure and synchronization architecture
 3. `specs/reflector.spec.md` — canonical specification contracts
-4. `specs/publication/` — publication workflow and manifest contracts
-5. The relevant section in `docs/` for the subsystem you are modifying
+4. `specs/synchronization/synchronization-checkpoint.spec.md` and `specs/governance/human-governance.spec.md` — checkpoint and approval boundaries
+5. `specs/repositories/repository-architecture.spec.md` and `specs/publication/` — portable architecture and publication contracts
+6. The relevant section in `docs/` for the subsystem you are modifying
 
 ## Repository Philosophy
 
@@ -51,13 +52,15 @@ Each iteration should reduce drift and increase observability.
 ## Specification-Driven Execution
 
 Before or during implementation, align with `specs/`, especially
-`specs/publication/` and `specs/reflector.spec.md`.
+`specs/reflector.spec.md`, `specs/synchronization/synchronization-checkpoint.spec.md`,
+`specs/governance/human-governance.spec.md`, and `specs/publication/`.
 
 Specs define:
 
 - expected workflow behavior
 - deterministic publication contracts
 - semantic/render separation constraints
+- human-gated continuation and publication boundaries
 
 ## Publication Architecture Orientation
 
