@@ -8,6 +8,7 @@ on:
     branches:
       - main
     paths:
+      - "VERSION"
       - "metadata/**"
       - "paper/**"
       - "specs/**"
@@ -15,7 +16,10 @@ on:
       - "release-manifest.json"
       - "CITATION.cff"
       - ".zenodo.json"
+      - "codemeta.json"
+      - ".release-please-manifest.json"
       - "scripts/validate-metadata.py"
+      - "scripts/sync-version.py"
       - "scripts/audit-publication-readiness.py"
       - "scripts/validate-build-reproducibility.py"
       - "scripts/validate-arxiv-packaging.py"
@@ -31,6 +35,7 @@ on:
     branches:
       - main
     paths:
+      - "VERSION"
       - "metadata/**"
       - "paper/**"
       - "specs/**"
@@ -38,7 +43,10 @@ on:
       - "release-manifest.json"
       - "CITATION.cff"
       - ".zenodo.json"
+      - "codemeta.json"
+      - ".release-please-manifest.json"
       - "scripts/validate-metadata.py"
+      - "scripts/sync-version.py"
       - "scripts/audit-publication-readiness.py"
       - "scripts/validate-build-reproducibility.py"
       - "scripts/validate-arxiv-packaging.py"
@@ -187,3 +195,22 @@ jobs:
 
       - name: Validate release lifecycle contracts
         run: python scripts/validate-release-lifecycle.py
+
+  validate-version-sync:
+    name: Validate Version Surface Synchronization
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml>=6.0
+
+      - name: Verify all version surfaces match VERSION
+        run: python scripts/sync-version.py --check
