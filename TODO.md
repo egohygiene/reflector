@@ -44,10 +44,26 @@ Issue #205 completion items:
 - [x] Add human governance specification: `specs/governance/human-governance.spec.md`
 - [x] Align master and onboarding/navigation docs with implemented specification hierarchy (`specs/reflector.spec.md`, `docs/architecture-overview.md`, `docs/ai-onboarding.md`, `00-README.md`)
 
+Issue #206 completion items:
+
+- [x] Created `tests/conftest.py` with shared fixtures (console capture, audit entries, milestones, boundaries)
+- [x] Created `tests/cli/test_main.py` — 30 CLI tests covering all commands (run, synchronize, audit, milestone, status, huggingface, sync), help, exit codes, argument parsing, error behavior, and filesystem effects
+- [x] Created `tests/audits/test_pipeline.py` — 31 tests for all four audit pipeline stages, invariant validation, drift detection, aggregation, and report rendering
+- [x] Created `tests/synchronization/test_checkpoint.py` — 21 tests for checkpoint initialization, boundary listing, evaluate with known/unknown/null IDs, and render helpers
+- [x] Created `tests/orchestration/test_milestone.py` — 30 tests including parameterized transitions, terminal state protection, synchronization boundary enforcement, and inspect/list/advance behavior
+- [x] Created `tests/examples/test_examples.py` — 14 tests that mechanically verify each worked example is importable and produces correct return values
+- [x] Created `reflector/examples/audit_example.py` — annotated audit pipeline worked example
+- [x] Created `reflector/examples/synchronization_example.py` — annotated synchronization checkpoint worked example
+- [x] Created `reflector/examples/milestone_example.py` — annotated milestone orchestration worked example with enforced boundary demonstration
+- [x] Created `reflector/examples/README.md` — examples index with usage instructions and spec references
+- [x] Updated `pyproject.toml` — added `[tool.pytest.ini_options]` with `testpaths`, `markers` (integration), and discovery configuration
+- [x] Updated `.github/workflows/synchronization.yml` — added `test-runtime` CI job and path triggers for `reflector/**`, `tests/**`, `pyproject.toml`
+
 New follow-up tasks (outside issue scope):
 
-- [ ] Define and document a retention policy for raw point-in-time audit logs in `audits/` (for example, `.log` snapshots)
-- [ ] Add a lightweight specification-link/conformance check in CI to detect stale spec path references early
+- [ ] Add coverage measurement (`pytest-cov`) to CI once a coverage threshold is established
+- [ ] Extend audit pipeline with pluggable event sources for real agent action capture
+- [ ] Add test markers for `slow` and `filesystem` tests to allow selective test runs
 
 ---
 

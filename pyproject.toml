@@ -49,3 +49,12 @@ Documentation = "https://egohygiene.github.io/reflector/"
 
 [tool.setuptools.packages.find]
 include = ["reflector*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+  "integration: marks tests as integration tests (deselect with -m 'not integration')",
+]
