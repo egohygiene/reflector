@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to this repository.
 
+For environment setup, see [`docs/getting-started.md`](./docs/getting-started.md).
+
 ## Repository Structure
 
 The paper uses a publisher-agnostic publication architecture that separates
