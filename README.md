@@ -125,6 +125,7 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 | Paper overview | [`paper/README.md`](./paper/README.md) |
 | Magazine overview | [`magazine/README.md`](./magazine/README.md) |
 | Publication specs | [`specs/publication/`](./specs/publication/) |
+| Audit archive index | [`audits/README.md`](./audits/README.md) |
 | Research notes | [`docs/research/`](./docs/research/) |
 | Roadmap | [`ROADMAP.md`](./ROADMAP.md) |
 
@@ -153,6 +154,7 @@ Use the version DOI when citing a specific archived release:
 - Release metadata and DOI synchronization contract: [`release-manifest.json`](./release-manifest.json)
 - Release workflow and DOI lifecycle: [`docs/release-process.md`](./docs/release-process.md)
 - Publication infrastructure details: [`docs/publication-infrastructure.md`](./docs/publication-infrastructure.md)
+- Committed audit archive index: [`audits/README.md`](./audits/README.md)
 
 ## Hugging Face readiness
 

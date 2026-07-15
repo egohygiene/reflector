@@ -32,6 +32,15 @@ Follow-up tasks (outside issue scope):
 - [ ] Add link validation to CI to catch broken relative links going forward
 - [ ] Consider consolidating `docs/publication-architecture.md` into `docs/architecture-overview.md`
 
+Issue #204 completion items:
+
+- [x] Create `audits/README.md` as the canonical committed audit archive index
+- [x] Add explicit Zenodo deposition handoff checklist and recovery guidance to `docs/release-process.md`
+
+New follow-up tasks (outside issue scope):
+
+- [ ] Define and document a retention policy for raw point-in-time audit logs in `audits/` (for example, `.log` snapshots)
+
 ---
 
 ## Release blockers (must complete before publication is considered complete)
@@ -86,7 +95,7 @@ Key artifacts: [`paper/00README.json`](./paper/00README.json), [`audits/arxiv-va
 
 ### Phase 5 — Repository Publication
 
-Key artifacts: [`.github/workflows/release-paper.yml`](./.github/workflows/release-paper.yml), [`.github/workflows/pages.yml`](./.github/workflows/pages.yml), [`release/`](./release/)
+Key artifacts: [`.github/workflows/release-paper.yml`](./.github/workflows/release-paper.yml), [`.github/workflows/pages.yml`](./.github/workflows/pages.yml), [`docs/release-process.md`](./docs/release-process.md)
 
 - [ ] Create GitHub Release
 - [ ] Upload canonical artifacts
