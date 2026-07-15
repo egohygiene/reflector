@@ -213,6 +213,31 @@ Reference artifacts: [`ROADMAP.md`](./ROADMAP.md), [`docs/research/`](./docs/res
 
 ---
 
+## Publication Consistency Governance (issue #207)
+
+Tracks the work from issue #207 — Add magazine-to-manuscript consistency auditing.
+
+- [x] Created `specs/publication/magazine-consistency.spec.md` — consistency specification
+- [x] Created `magazine/consistency-mapping.yaml` — cross-artifact mapping file
+- [x] Created `scripts/audit-magazine-consistency.py` — read-only deterministic audit engine
+- [x] Created `tests/audits/fixtures/magazine_consistency/` — minimal independent test fixtures
+- [x] Created `tests/audits/test_magazine_consistency.py` — 82 tests covering all required scenarios
+- [x] Updated `Taskfile.yml` — added `audit:magazine` task
+- [x] Updated `.github/workflows/paper-quality.yml` — integrated magazine consistency audit job
+- [x] All 8 consistency rules implemented (RULE-001 through RULE-008)
+- [x] Exception governance: narrowly scoped, documented exceptions supported
+- [x] Deterministic output ordering verified
+- [x] Nonzero exit status for FAIL-severity violations
+- [x] Zero exit status for advisory-only findings
+
+Follow-up tasks (outside issue scope):
+
+- [ ] Add `magazine/spec.md` version field synchronized with `metadata/publication.yaml`
+- [ ] Add content-drift detection for figure captions referenced in both artifacts
+- [ ] Consider automatic exception expiration enforcement in CI
+
+---
+
 ## Acceptance Criteria
 
 - [x] TODO.md exists

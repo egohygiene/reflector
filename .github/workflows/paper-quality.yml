@@ -16,9 +16,13 @@ on:
       - "paper/**/styles/**"
       - "paper/**/figures/**"
       - "paper/**/references/**"
+      - "magazine/**"
+      - "metadata/**"
+      - "magazine/consistency-mapping.yaml"
       - ".chktexrc"
       - "scripts/lint-paper.sh"
       - "scripts/audit-chktex.py"
+      - "scripts/audit-magazine-consistency.py"
       - ".latexmkrc"
       - ".github/workflows/paper-quality.yml"
 
@@ -34,9 +38,13 @@ on:
       - "paper/**/styles/**"
       - "paper/**/figures/**"
       - "paper/**/references/**"
+      - "magazine/**"
+      - "metadata/**"
+      - "magazine/consistency-mapping.yaml"
       - ".chktexrc"
       - "scripts/lint-paper.sh"
       - "scripts/audit-chktex.py"
+      - "scripts/audit-magazine-consistency.py"
       - ".latexmkrc"
       - ".github/workflows/paper-quality.yml"
 
@@ -255,3 +263,44 @@ jobs:
           fi
 
           echo "✅ Quality gate passed."
+
+  magazine-consistency:
+    name: Magazine Consistency Audit
+    runs-on: ubuntu-latest
+    # Run independently of paper build/lint to provide fast feedback on
+    # cross-artifact consistency changes.
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml --quiet
+
+      - name: Run magazine consistency audit
+        id: consistency
+        run: |
+          set -euo pipefail
+          python scripts/audit-magazine-consistency.py \
+            --output audits/magazine-consistency.md
+
+      - name: Print audit report
+        if: always()
+        run: |
+          echo "::group::Magazine Consistency Audit Report"
+          cat audits/magazine-consistency.md
+          echo "::endgroup::"
+
+      - name: Upload audit report artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: magazine-consistency-audit
+          path: audits/magazine-consistency.md
+          if-no-files-found: warn
+          retention-days: 30

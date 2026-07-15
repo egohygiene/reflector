@@ -1,0 +1,20 @@
+spec_version: "1.0"
+
+page_mappings:
+  - id: page01-cover
+    rule: RULE-004
+    manuscript_source: "paper/macros/metadata.tex"
+    magazine_target: "magazine/pages/page01-cover.png"
+    relationship_type: derived-from
+    relationship: required
+    description: "Cover page"
+
+  - id: orphaned-page
+    rule: RULE-004
+    manuscript_source: "paper/sections/nonexistent.tex"
+    magazine_target: "magazine/pages/nonexistent-page.png"
+    relationship_type: derived-from
+    relationship: advisory
+    description: "Orphaned mapping entry"
+
+exceptions: []

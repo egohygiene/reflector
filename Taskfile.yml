@@ -191,6 +191,11 @@ tasks:
       - '{{.PYTHON}} scripts/validate-metadata.py'
       - '{{.PYTHON}} scripts/audit-publication-readiness.py'
 
+  audit:magazine:
+    desc: Run magazine-to-manuscript consistency audit (audits/magazine-consistency.md)
+    cmds:
+      - '{{.PYTHON}} scripts/audit-magazine-consistency.py'
+
   examples:
     desc: Run lightweight CLI examples for local experimentation
     aliases: [demo, sandbox]
