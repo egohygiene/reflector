@@ -241,19 +241,44 @@ When a GitHub Release is published:
 
 ---
 
-## Zenodo Workflow
+## Zenodo Deposition Handoff
 
-The `zenodo-readiness.md` report (included in every GitHub Release) provides a deterministic handoff checklist for Zenodo archival:
+The publication workflow automates validation, build, packaging, and GitHub Release publication. Zenodo deposition and DOI publication remain human-gated.
 
-1. Open `zenodo-readiness.md` from the GitHub Release assets.
-2. Verify all checklist items pass.
-3. Create a Zenodo deposit manually at [zenodo.org](https://zenodo.org).
-4. Upload all release artifacts.
-5. Submit for review.
-6. Record the assigned DOI in `metadata/publication.yaml`, `CITATION.cff`, `.zenodo.json`, and `codemeta.json`.
-7. Regenerate release metadata so DOI fields remain synchronized.
+### Automation boundary
 
-**DOI assignment is always manual.** The workflow prepares all metadata and artifacts; DOI minting requires a human decision.
+| Step category | Ownership | Notes |
+|---|---|---|
+| Automated | GitHub Actions (`.github/workflows/publication.yml`) | Produces release artifacts and `zenodo-readiness.md`. |
+| Manual | Maintainer/releaser | Performs deposition drafting, upload checks, metadata review, and DOI publication actions. |
+| Human approval gate | Maintainer/releaser | Final Zenodo publish action must not occur until prior checks pass. |
+
+### Sequential Zenodo deposition checklist
+
+1. **Preconditions (automated outputs required):** Confirm publication workflow validation completed successfully (`scripts/validate-metadata.py`, `scripts/validate-release-lifecycle.py`) and that no release-blocking checks are failing.
+2. **Verify target GitHub Release exists and is complete (manual):** Open the intended tag release and confirm required assets are present (`reflector.pdf`, `reflector-magazine.pdf`, `reflector-magazine-print.pdf`, `checksums.txt`, `release-manifest.json`, `publication-readiness.md`, `chktex-audit.md`, `zenodo-readiness.md`).
+3. **Select Zenodo environment (manual):** Use [Zenodo Sandbox](https://sandbox.zenodo.org) for process testing and [Zenodo production](https://zenodo.org) for real publication.
+4. **Sandbox test first (manual, recommended):** Rehearse deposition steps in sandbox whenever process logic or metadata workflows change.
+5. **Create or update the deposition draft (manual):** Open an existing draft for the target release if present; otherwise create one deposition draft only.
+6. **Upload and verify artifacts (manual):** Upload canonical release artifacts and verify filenames/checksums against `checksums.txt`.
+7. **Review deposition metadata (manual):** Confirm authorship, version, license, description, repository relation, and related identifiers align with `metadata/publication.yaml`, `CITATION.cff`, `.zenodo.json`, `codemeta.json`, and `publication.json`.
+8. **Final publication gate (human approval):** Publish the Zenodo deposition only after all prior checks succeed and metadata is verified.
+9. **DOI confirmation (manual):** Confirm Zenodo has minted/published the DOI and that the DOI resolves.
+10. **Synchronize DOI surfaces (manual + automated validation):** Update DOI-bearing metadata (`metadata/publication.yaml`, `CITATION.cff`, `.zenodo.json`, `codemeta.json`, and any DOI fields in release metadata), then run metadata synchronization validation.
+11. **Run post-deposition validation (manual command execution):** Run `python scripts/validate-metadata.py` and `python scripts/validate-release-lifecycle.py` before any follow-up release metadata publication step.
+12. **Record the completed handoff (manual governance):** Record deposition completion and DOI confirmation in the appropriate release notes and/or committed audit trail under `audits/`.
+
+**Do not treat DOI registration as complete until Zenodo confirms publication.**
+
+### Failure and recovery guidance (pause-and-verify)
+
+- **GitHub Release does not exist:** Stop. Do not start a deposition. Re-run/fix release workflow and verify release publication first.
+- **Expected release artifacts are missing:** Pause deposition updates. Regenerate release artifacts via the publication workflow; avoid partial uploads that create drift.
+- **Zenodo draft metadata is incorrect:** Edit the draft metadata and re-verify against canonical metadata surfaces before publishing. Do not publish with known drift.
+- **DOI reserved but deposition unpublished:** Treat as incomplete handoff. Keep draft unpublished until metadata and artifact checks are complete; then publish once.
+- **Metadata synchronization fails after DOI assignment:** Pause any follow-up release actions, fix metadata drift, re-run validators, and only proceed after passing checks.
+- **Deposition appears to duplicate an existing release:** Stop and reconcile against existing Zenodo records; update the existing draft/record when applicable instead of publishing duplicates.
+- **Release workflow is re-run after Zenodo publication:** Re-verify release assets and metadata; if artifacts changed, update the existing Zenodo record/version per Zenodo policy rather than creating a conflicting duplicate deposition.
 
 ---
 
@@ -318,6 +343,7 @@ The publication workflow will re-run and create a corrected release.
 | `scripts/validate-arxiv-packaging.py` | arXiv packaging validator |
 | `scripts/audit-publication-readiness.py` | Publication readiness auditor |
 | `scripts/audit-chktex.py` | ChkTeX audit report generator |
+| `audits/README.md` | Canonical index for committed audit artifacts |
 | `VERSION` | Canonical version source |
 | `metadata/publication.yaml` | Publication metadata |
 | `release-manifest.json` | Release manifest schema |

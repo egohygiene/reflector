@@ -23,6 +23,7 @@ or architecture detail (see [`docs/architecture-overview.md`](./docs/architectur
 | Roadmap and phase status | [`ROADMAP.md`](./ROADMAP.md) |
 | Publication system reference | [`docs/publication-system-reference.md`](./docs/publication-system-reference.md) |
 | Workflow registry | [`docs/publication-workflow-reference.md`](./docs/publication-workflow-reference.md) |
+| Committed audit archive index | [`audits/README.md`](./audits/README.md) |
 | Specification contracts | [`specs/`](./specs/) |
 
 ## Repository Overview

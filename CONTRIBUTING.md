@@ -88,6 +88,11 @@ act pull_request -W .github/workflows/synchronization.yml
 
 See [`docs/act.md`](./docs/act.md) for canonical `.actrc` defaults, workflow boundaries, and troubleshooting.
 
+For release handoff and audit navigation, use:
+
+- [`docs/release-process.md`](./docs/release-process.md) — canonical release and Zenodo deposition procedure
+- [`audits/README.md`](./audits/README.md) — canonical committed audit archive index
+
 ## Style Guidelines
 
 - Use spaces (not tabs) for indentation
