@@ -55,6 +55,7 @@ path = [
     "**/*.sty",
     "**/*.cls",
     "**/*.bib",
+    "**/*.bst",
     ".latexmkrc",
     ".latexindent.yml",
 ]
