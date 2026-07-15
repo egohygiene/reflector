@@ -13,6 +13,27 @@ Canonical execution checklist from publication-ready state through release, arch
 
 ---
 
+## Documentation foundation (completed)
+
+Tracks the work from issue #202 — Align repository roadmap and documentation entry points.
+
+- [x] `ROADMAP.md` aligned: completed, active, planned, and aspirational phases distinguished
+- [x] `docs/getting-started.md` created with sequential zero-to-working-environment workflow
+- [x] `00-README.md` updated as canonical internal orientation document
+- [x] `README.md` updated to link to getting-started guide
+- [x] `docs/architecture-overview.md` updated with distinct architectural reference content
+- [x] `docs/ai-onboarding.md` updated with expanded AI execution guidance
+- [x] `CONTRIBUTING.md` updated to reference getting-started guide
+- [x] Navigation and cross-references updated throughout
+
+Follow-up tasks (outside issue scope):
+
+- [ ] Audit all internal markdown links across `docs/` for broken references
+- [ ] Add link validation to CI to catch broken relative links going forward
+- [ ] Consider consolidating `docs/publication-architecture.md` into `docs/architecture-overview.md`
+
+---
+
 ## Release blockers (must complete before publication is considered complete)
 
 ### Phase 1 — Publication Readiness

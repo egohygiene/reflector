@@ -66,6 +66,9 @@ The repository architecture is intentionally layered:
 
 ## Quick start
 
+See [`docs/getting-started.md`](./docs/getting-started.md) for the complete
+zero-to-working-environment walkthrough.
+
 ### Recommended local workflow
 
 reflector's canonical developer workflow uses [`task`](https://taskfile.dev/) with [`uv`](https://docs.astral.sh/uv/):
@@ -113,6 +116,7 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 
 | Need | Start here |
 | --- | --- |
+| Getting started | [`docs/getting-started.md`](./docs/getting-started.md) |
 | Canonical onboarding | [`00-README.md`](./00-README.md) |
 | Repository architecture | [`docs/architecture-overview.md`](./docs/architecture-overview.md) |
 | Publication architecture | [`docs/publication-architecture.md`](./docs/publication-architecture.md) |
