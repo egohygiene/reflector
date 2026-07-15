@@ -178,17 +178,33 @@ To trigger a complete publication release:
    0.1.0  →  0.1.1
    ```
 
-2. **Synchronize all version surfaces:**
+2. **Propagate the version to all downstream metadata surfaces:**
 
-   Update the following to match `VERSION`:
+   ```bash
+   python scripts/sync-version.py
+   ```
 
-   - `metadata/publication.yaml` → `version: "0.1.1"`
-   - `publication.json` → `"version": "0.1.1"`, `"release_tag": "v0.1.1"`
-   - `release-manifest.json` → `"current_version": "0.1.1"`
-   - `.release-please-manifest.json` → `".": "0.1.1"`
-   - `CITATION.cff` → `version: 0.1.1`
-   - `.zenodo.json` → `"version": "0.1.1"`
-   - `codemeta.json` → `"version": "0.1.1"`
+   This command reads `VERSION` and automatically updates all downstream files:
+
+   | File | Field updated |
+   |---|---|
+   | `metadata/publication.yaml` | `version` |
+   | `CITATION.cff` | `version` |
+   | `.zenodo.json` | `version` |
+   | `codemeta.json` | `version` |
+   | `publication.json` | `version`, `release_tag` |
+   | `release-manifest.json` | `current_version` |
+   | `.release-please-manifest.json` | root package version |
+
+   Run `python scripts/sync-version.py --check` to verify synchronization
+   without making any changes. Drift will be reported as non-zero exit.
+
+   Alternatively, use the Taskfile:
+
+   ```bash
+   task sync:version        # apply sync
+   task sync:version:check  # verify sync (dry run)
+   ```
 
 3. **Add changelog entry:**
 

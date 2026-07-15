@@ -277,11 +277,10 @@ Determines whether to rebuild paper and/or magazine on each Pages deployment tri
 When releasing a new version:
 
 - [ ] Update `VERSION` file on `main`
+- [ ] Run `python scripts/sync-version.py` to propagate the new version to all downstream metadata surfaces (or `task sync:version`)
+- [ ] Verify synchronization: `python scripts/sync-version.py --check`
 - [ ] Update `CHANGELOG.md` with release notes
-- [ ] Update `metadata/publication.yaml` version fields
-- [ ] Run `python scripts/validate-metadata.py` locally to verify synchronization
-- [ ] Update `docs/index.html` version string to match new VERSION
-- [ ] Update `paper/macros/metadata.tex` `\paperdate` if release date changes
-- [ ] Update `.zenodo.json` version field if releasing to Zenodo
-- [ ] Verify `release-manifest.json` reflects the new version
+- [ ] Update `paper/macros/metadata.tex` `\paperdate` if the release date changes
 - [ ] Push to `main` — `publication.yml` will orchestrate the full release pipeline
+
+> **Single-location version update:** Bumping the version now requires updating only `VERSION`. Run `sync-version.py` to propagate automatically. The CI (`synchronization.yml` → `validate-version-sync` job) will catch any drift before the release tag is created.
