@@ -238,7 +238,32 @@ Follow-up tasks (outside issue scope):
 
 ---
 
-## Acceptance Criteria
+## Manuscript Quality Remediation (issue #208)
+
+Tracks the work from issue #208 — Improve manuscript quality and repeat the peer-review audit.
+
+- [x] Pre-remediation baseline established: 103 HIGH, 2 MEDIUM, 26 LOW ChkTeX warnings; peer-review score 62/100
+- [x] All 103 W2 (non-breaking space) warnings resolved across 15 section files
+- [x] W8 (wrong dash length) resolved: `human--AI` → `human-AI` in `introduction.tex`
+- [x] W38 (punctuation before quotes) resolved: `context.''` → `context''.` in `implementation_examples.tex`
+- [x] W12 (26 LOW) classified as false positives: sentence-ending periods after citations before LaTeX commands
+- [x] Post-remediation ChkTeX result: 0 HIGH, 0 MEDIUM, 26 LOW (all false positives)
+- [x] Post-remediation peer-review score: 63/100 (was 62/100; typographic quality improved)
+- [x] New audit artifact committed: `audits/manuscript-quality-audit-2026-07-15.md`
+- [x] `audits/chktex-audit.md` updated to reflect post-remediation state
+- [x] `audits/README.md` updated with new audit entry
+
+Deferred findings (require separate editorial revision work):
+
+- [ ] P0: Add claims-boundary subsection distinguishing demonstrated vs hypothesized evidence (`implementation_examples.tex:136`)
+- [ ] P0: Add operational definitions glossary for core terms (drift, alignment, checkpoint sufficiency, trust calibration)
+- [ ] P1: Condense overlapping conceptual sections (reflective auditing / synchronization / framework / mixed-initiative)
+- [ ] P1: Add one concrete end-to-end walkthrough early in main body
+- [ ] P1: Normalize figure label/filename semantics or add explicit mapping table
+- [ ] P2: Add lightweight process metrics from manuscript workflow as evidence
+- [ ] P2: Add explicit venue-fit and contribution-positioning paragraph
+
+---
 
 - [x] TODO.md exists
 - [x] Publication workflow is documented end-to-end

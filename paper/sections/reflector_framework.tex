@@ -1,7 +1,7 @@
 \section{The \reflector{} Framework}
 \label{sec:reflector-framework}
 
-\reflector{} is proposed as a recursive synchronization architecture for AI-assisted software engineering. It is not presented as autonomous general intelligence or as a replacement for engineering judgment. Instead, it turns the prior control primitives into mixed-initiative coordination infrastructure: a systems layer that keeps intent, execution, artifacts, and governance synchronized across repeated delegation cycles \cite{Wiener1948Cybernetics,Shneiderman2020HCAI}.
+\reflector{} is proposed as a recursive synchronization architecture for AI-assisted software engineering. It is not presented as autonomous general intelligence or as a replacement for engineering judgment. Instead, it turns the prior control primitives into mixed-initiative coordination infrastructure: a systems layer that keeps intent, execution, artifacts, and governance synchronized across repeated delegation cycles~\cite{Wiener1948Cybernetics,Shneiderman2020HCAI}.
 
 \begin{figure}[H]
   \centering
@@ -16,7 +16,7 @@
 
 \reflector{} adopts a systems-oriented philosophy: recursive execution should be optimized for coherence, not only for throughput. In practical terms, recursive systems must continuously preserve three alignments: alignment of generated artifacts with current specifications, alignment of local task outcomes with system-level architecture, and alignment of ongoing delegation with human-governed scope.
 
-This philosophy assumes bounded cognition and bounded authority. Human operators cannot continuously reconstruct every intermediate state at AI execution speed, and AI systems should not autonomously revise project intent without explicit governance checkpoints \cite{Simon1957ModelsMan,Amershi2014InteractiveML}. \reflector{} therefore treats synchronization and audit boundaries as first-class architectural requirements rather than optional workflow hygiene.
+This philosophy assumes bounded cognition and bounded authority. Human operators cannot continuously reconstruct every intermediate state at AI execution speed, and AI systems should not autonomously revise project intent without explicit governance checkpoints~\cite{Simon1957ModelsMan,Amershi2014InteractiveML}. \reflector{} therefore treats synchronization and audit boundaries as first-class architectural requirements rather than optional workflow hygiene.
 
 \subsection{Layered Architecture}
 
@@ -59,7 +59,7 @@ Scoped delegation is central because recursive systems amplify local assumptions
 
 Reflective auditing and synchronization are integrated as a single control loop. Audits produce evidence about artifact quality, requirement conformance, and emerging drift. Synchronization checkpoints then use that evidence to decide whether the system should continue, correct, rescope, or pause. In this design, audit is the observability function and synchronization is the reconciliation function.
 
-The integration also improves recursive observability. Instead of relying on post hoc interpretation after multiple autonomous steps, \reflector{} introduces recurrent moments where machine-produced artifacts and human interpretation can be re-coupled. This keeps recursive continuation conditional on explicit alignment rather than implicit momentum \cite{Chandy1985DistributedSnapshots,Lamport1978TimeClocks}.
+The integration also improves recursive observability. Instead of relying on post hoc interpretation after multiple autonomous steps, \reflector{} introduces recurrent moments where machine-produced artifacts and human interpretation can be re-coupled. This keeps recursive continuation conditional on explicit alignment rather than implicit momentum~\cite{Chandy1985DistributedSnapshots,Lamport1978TimeClocks}.
 
 \subsection{Recursive Execution Lifecycle}
 
