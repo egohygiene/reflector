@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build magazine PDF (${{ matrix.variant.dist_name }})
         uses: xu-cheng/latex-action@v4
