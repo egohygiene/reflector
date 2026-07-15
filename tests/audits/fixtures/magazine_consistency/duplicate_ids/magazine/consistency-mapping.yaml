@@ -1,0 +1,20 @@
+spec_version: "1.0"
+
+page_mappings:
+  - id: page01-cover
+    rule: RULE-004
+    manuscript_source: "paper/macros/metadata.tex"
+    magazine_target: "magazine/pages/page01-cover.png"
+    relationship_type: derived-from
+    relationship: required
+    description: "Cover page"
+
+  - id: page01-cover
+    rule: RULE-004
+    manuscript_source: "paper/macros/metadata.tex"
+    magazine_target: "magazine/pages/page02-intro.png"
+    relationship_type: derived-from
+    relationship: required
+    description: "Duplicate ID"
+
+exceptions: []

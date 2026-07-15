@@ -1,0 +1,268 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+#
+# magazine/consistency-mapping.yaml
+#
+# Cross-artifact consistency mapping between the reflector manuscript (paper/)
+# and the visual companion magazine (magazine/).
+#
+# Governs the magazine-to-manuscript consistency audit defined in:
+#   specs/publication/magazine-consistency.spec.md
+#
+# This file declares relationships between manuscript and magazine content
+# where they cannot be derived reliably from existing registries alone.
+# It does not duplicate the complete content of either artifact.
+#
+# Relationship types:
+#   derived-from   — magazine content is visually derived from the manuscript source
+#   companion-to   — magazine content accompanies a manuscript section without being derived
+#   independent    — magazine content has no required manuscript equivalent
+#
+# Relationship strength:
+#   required       — violation produces FAIL status
+#   advisory       — violation produces WARN status
+#
+# ---------------------------------------------------------------------------
+
+spec_version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Metadata synchronization rules
+#
+# Declare which publication metadata fields must or should remain synchronized
+# between the canonical metadata layer and magazine artifacts.
+# ---------------------------------------------------------------------------
+
+metadata_sync:
+  - id: meta-publication-version
+    rule: RULE-007
+    manuscript_source: "metadata/publication.yaml"
+    manuscript_field: "version"
+    magazine_target: "magazine/spec.md"
+    magazine_field: "version"
+    relationship: advisory
+    description: >-
+      Publication version should be consistent between the canonical metadata
+      and the magazine spec. Advisory divergence is acceptable when the magazine
+      spec version tracks visual iteration rather than publication version.
+
+# ---------------------------------------------------------------------------
+# Magazine page mappings
+#
+# Declares the relationship between magazine pages and their corresponding
+# manuscript sources. Every page file declared in magazine/tex/magazine.tex
+# must have a corresponding entry here for documentation purposes.
+#
+# Page existence is validated structurally (RULE-004).
+# Manuscript source existence is validated as advisory (RULE-005).
+# ---------------------------------------------------------------------------
+
+page_mappings:
+  - id: page01-cover
+    rule: RULE-004
+    manuscript_source: "paper/macros/metadata.tex"
+    magazine_target: "magazine/pages/page01-cover.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Cover page is derived from manuscript title and identity metadata.
+
+  - id: page02-what-is-reflector
+    rule: RULE-004
+    manuscript_source: "paper/sections/introduction.tex"
+    magazine_target: "magazine/pages/page02-what-is-reflector.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Introduction page is derived from the manuscript introduction section.
+
+  - id: page03-recursive-drift
+    rule: RULE-004
+    manuscript_source: "paper/sections/recursive_drift.tex"
+    magazine_target: "magazine/pages/page03-recursive-drift.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Recursive drift page is derived from the recursive drift manuscript section.
+
+  - id: page04-synchronization
+    rule: RULE-004
+    manuscript_source: "paper/sections/synchronization.tex"
+    magazine_target: "magazine/pages/page04-synchronization.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Synchronization page is derived from the synchronization manuscript section.
+
+  - id: page05-recursive-loop
+    rule: RULE-004
+    manuscript_source: "paper/sections/reflective_auditing.tex"
+    magazine_target: "magazine/pages/page05-recursive-loop.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Recursive loop page is derived from the reflective auditing manuscript section.
+
+  - id: page06-mixed-initiative-systems
+    rule: RULE-004
+    manuscript_source: "paper/sections/mixed_initiative_recursive_systems.tex"
+    magazine_target: "magazine/pages/page06-mixed-initiative-systems.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Mixed-initiative systems page is derived from the corresponding manuscript section.
+
+  - id: page07-distributed-cognition
+    rule: RULE-004
+    manuscript_source: "paper/sections/cognitive_load_recursive_coordination.tex"
+    magazine_target: "magazine/pages/page07-distributed-cognition.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Distributed cognition page is derived from the cognitive load and recursive
+      coordination manuscript section.
+
+  - id: page08-governance-is-infrastructure
+    rule: RULE-004
+    manuscript_source: "paper/sections/introduction.tex"
+    magazine_target: "magazine/pages/page08-governance-is-infrastructure.png"
+    relationship_type: companion-to
+    relationship: required
+    description: >-
+      Governance page is a companion to the introduction's governance themes,
+      and expands on the governance-as-infrastructure framing from the manuscript.
+
+  - id: page09-reflector-framework
+    rule: RULE-004
+    manuscript_source: "paper/sections/reflector_framework.tex"
+    magazine_target: "magazine/pages/page09-reflector-framework.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Reflector framework page is derived from the reflector framework manuscript section.
+
+  - id: page10-reflector-in-ten-ideas
+    rule: RULE-004
+    manuscript_source: "paper/paper.tex"
+    magazine_target: "magazine/pages/page10-reflector-in-ten-ideas.png"
+    relationship_type: companion-to
+    relationship: required
+    description: >-
+      Ten ideas page is a compressed companion to the full manuscript,
+      synthesizing core ideas rather than deriving from a single section.
+
+  - id: page11-standing-on-the-shoulders-of-giants
+    rule: RULE-004
+    manuscript_source: "paper/references.bib"
+    magazine_target: "magazine/pages/page11-standing-on-the-shoulders-of-giants.png"
+    relationship_type: companion-to
+    relationship: required
+    description: >-
+      References page is a companion to the manuscript bibliography.
+
+  - id: page12-future-directions
+    rule: RULE-004
+    manuscript_source: "paper/sections/future_directions.tex"
+    magazine_target: "magazine/pages/page12-future-directions.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Future directions page is derived from the future directions manuscript section.
+
+  - id: page13-the-future-is-synchronized
+    rule: RULE-004
+    manuscript_source: "paper/sections/future_directions.tex"
+    magazine_target: "magazine/pages/page13-the-future-is-synchronized.png"
+    relationship_type: companion-to
+    relationship: required
+    description: >-
+      Closing page is a companion to the future directions section,
+      communicating the overarching vision rather than specific manuscript content.
+
+  - id: page14-back-cover
+    rule: RULE-004
+    manuscript_source: "paper/macros/metadata.tex"
+    magazine_target: "magazine/pages/page14-back-cover.png"
+    relationship_type: derived-from
+    relationship: required
+    description: >-
+      Back cover is derived from manuscript identity metadata.
+
+# ---------------------------------------------------------------------------
+# Figure mappings
+#
+# Declares advisory relationships between manuscript figures (by figure ID
+# from paper/figures/manifest.md) and magazine pages that visually derive
+# from those figures. These are advisory — visual adaptation is expected and
+# is not a consistency failure.
+# ---------------------------------------------------------------------------
+
+figure_mappings:
+  - id: fig-recursive-sync-to-page05
+    rule: RULE-008
+    manuscript_figure_id: "reflector-figure-1"
+    manuscript_source: "paper/figures/figure1.png"
+    magazine_target: "magazine/pages/page05-recursive-loop.png"
+    relationship_type: derived-from
+    relationship: advisory
+    description: >-
+      The recursive loop magazine page is visually derived from the recursive
+      synchronization loop manuscript figure (reflector-figure-1).
+
+  - id: fig-recursive-drift-to-page03
+    rule: RULE-008
+    manuscript_figure_id: "reflector-figure-2"
+    manuscript_source: "paper/figures/figure2.png"
+    magazine_target: "magazine/pages/page03-recursive-drift.png"
+    relationship_type: derived-from
+    relationship: advisory
+    description: >-
+      The recursive drift magazine page is visually derived from the recursive
+      drift accumulation manuscript figure (reflector-figure-2).
+
+  - id: fig-mixed-initiative-to-page06
+    rule: RULE-008
+    manuscript_figure_id: "reflector-figure-6"
+    manuscript_source: "paper/figures/figure6.png"
+    magazine_target: "magazine/pages/page06-mixed-initiative-systems.png"
+    relationship_type: derived-from
+    relationship: advisory
+    description: >-
+      The mixed-initiative systems magazine page is visually derived from the
+      mixed-initiative recursive collaboration loop manuscript figure (reflector-figure-6).
+
+  - id: fig-framework-to-page09
+    rule: RULE-008
+    manuscript_figure_id: "reflector-figure-5"
+    manuscript_source: "paper/figures/figure5.png"
+    magazine_target: "magazine/pages/page09-reflector-framework.png"
+    relationship_type: derived-from
+    relationship: advisory
+    description: >-
+      The reflector framework magazine page is visually derived from the reflector
+      architecture manuscript figure (reflector-figure-5).
+
+# ---------------------------------------------------------------------------
+# Intentional exceptions
+#
+# Each exception documents an intentional difference that would otherwise
+# be flagged by the consistency audit. Exceptions must be narrowly scoped.
+# Directory-wide or rule-wide suppressions are not permitted.
+#
+# Required fields: id, rule, rationale, scope, approved_by
+# Optional fields: review_date
+# ---------------------------------------------------------------------------
+
+exceptions:
+  - id: exc-magazine-source-section-files
+    rule: RULE-005
+    rationale: >-
+      Several magazine pages map to manuscript section files (*.tex under
+      paper/sections/) that may not yet exist as individual files when the
+      manuscript is organized as a single paper.tex. The mapping uses the most
+      specific available source path. Missing section files are reported as
+      warnings, not errors, because the manuscript content may be embedded
+      in paper.tex rather than split into section files.
+    scope: "page_mappings entries with manuscript_source pointing to paper/sections/"
+    approved_by: "author"
+    review_date: "2027-01-01"
