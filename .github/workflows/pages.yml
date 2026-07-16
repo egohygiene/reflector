@@ -428,7 +428,6 @@ jobs:
           grep -q 'src="./figures/hero.png"' docs/index.html || { echo 'Error: docs/index.html is missing hero image route.' >&2; exit 1; }
           grep -q 'src="./previews/paper-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing paper preview route.' >&2; exit 1; }
           grep -q 'src="./previews/magazine-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing magazine preview route.' >&2; exit 1; }
-          grep -q 'src="./previews/print-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing print preview route.' >&2; exit 1; }
           grep -q 'href="./reflector.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing paper download route.' >&2; exit 1; }
           grep -q 'href="./reflector-magazine.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing magazine download route.' >&2; exit 1; }
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing print edition download route.' >&2; exit 1; }

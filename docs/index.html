@@ -586,6 +586,39 @@
       color: var(--text-faint);
     }
 
+    /* Hero publication infographic */
+    .hero-figure {
+      margin: 0 0 1rem;
+    }
+
+    .hero-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0f1318;
+    }
+
+    /* PDF cover previews — visible on mobile where iframes are hidden */
+    .pdf-cover-preview {
+      display: none;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .pdf-cover-preview img {
+      display: inline-block;
+      width: auto;
+      max-width: 280px;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f1318;
+    }
+
     /* Responsive */
     @media (max-width: 900px) {
       .content-grid {
@@ -617,6 +650,10 @@
 
       .reader-note {
         display: none;
+      }
+
+      .pdf-cover-preview {
+        display: block;
       }
     }
 
@@ -727,6 +764,18 @@
             </div>
           </div>
 
+          <!-- Hero publication infographic -->
+          <figure class="hero-figure" aria-label="Publication hero infographic">
+            <img
+              src="./figures/hero.png"
+              alt="reflector hero infographic: recursive synchronization framework architecture overview."
+              width="1600"
+              height="900"
+              decoding="async"
+              loading="lazy"
+            />
+          </figure>
+
           <div class="actions">
             <a href="./reflector.pdf">📄 Paper PDF</a>
             <a href="./reflector-magazine.pdf">🎨 Magazine</a>
@@ -818,6 +867,17 @@
         </div>
 
         <div id="panel-paper" class="pdf-panel" role="tabpanel" aria-labelledby="tab-paper">
+          <!-- Paper cover preview — shown on mobile where iframe is hidden -->
+          <div class="pdf-cover-preview" aria-label="Paper cover preview">
+            <img
+              src="./previews/paper-cover.webp"
+              alt="First-page preview of the reflector paper PDF."
+              width="1200"
+              height="1600"
+              decoding="async"
+              loading="lazy"
+            />
+          </div>
           <div class="pdf-frame">
             <iframe
               title="reflector paper PDF"
