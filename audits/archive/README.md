@@ -28,15 +28,16 @@ directory and are **not** archived here:
 | `audits/zenodo-readiness.md` | Recurring | CI-generated Zenodo handoff readiness |
 | `audits/publication-artifact-inventory.json` | Current | Machine-readable artifact inventory |
 | `audits/publication-artifact-inventory.md` | Current | Human-readable artifact inventory |
-| `audits/repository-reflection-audit.md` | Current | Active improvement tracking (IMPROVE-06, IMPROVE-08) |
+| `audits/repository-reflection-audit.md` | Current | IMPROVE-06 and IMPROVE-08 resolved in #204; resolutions documented in #230 |
 | `audits/archival-strategy-audit.md` | Reference | Archival strategy decisions |
 | `audits/doi-metadata-audit.md` | Reference | DOI metadata consistency findings |
 | `audits/orcid-synchronization.md` | Reference | ORCID linkage and citation alignment |
 | `audits/pages-asset-lifecycle.md` | Reference | GitHub Pages asset lifecycle behavior |
 | `audits/platform-readiness-assessment.md` | Reference | Platform readiness assessment |
-| `audits/final-publication-polish.md` | Current | Issue #227 publication UX polish audit |
-| `audits/version-bump-workflow-validation.md` | Current | Issue #227 bump-version workflow validation |
-| `audits/reference-implementation-readiness.md` | Current | Issue #227 reference implementation readiness |
+| `audits/publication-ux-audit.md` | Current | Issue #227 publication UX audit (renamed from `final-publication-polish.md` in issue #230) |
+| `audits/version-bump-workflow-validation.md` | Current | Issue #227 bump-version workflow validation; dry-run v0.1.3 added in #230 |
+| `audits/reference-implementation-readiness.md` | Current | Issue #227 reference implementation readiness; lifecycle section added in #230 |
+| `audits/v0.1.3-checkpoint-readiness.md` | Current | Issue #230 v0.1.3 patch release readiness checkpoint |
 
 ---
 
@@ -52,7 +53,7 @@ directory and are **not** archived here:
 | [`manuscript-quality-audit-2026-07-15.md`](./manuscript-quality-audit-2026-07-15.md) | 2026-07-15 | Issue #208 | ChkTeX remediation and peer-review re-audit. Before/after: 105 actionable warnings → 0; peer-review 62/100 → 63/100. |
 | [`pages-publication-validation.md`](./pages-publication-validation.md) | 2026-07-14 | Manual review | GitHub Pages URL validation snapshot. Superseded by ongoing CI. |
 | [`pages-synchronization-findings.md`](./pages-synchronization-findings.md) | 2026-07-14 | Manual review | Pages synchronization findings; addressed and closed. |
-| [`publication-experience-audit.md`](./publication-experience-audit.md) | 2026-07-14 | Pre-issue #227 | Publication UX improvements implemented before issue #227. Superseded by `audits/final-publication-polish.md`. |
+| [`publication-experience-audit.md`](./publication-experience-audit.md) | 2026-07-14 | Pre-issue #227 | Publication UX improvements implemented before issue #227. Superseded by `audits/publication-ux-audit.md`. |
 | [`publication-infrastructure-audit-followup.md`](./publication-infrastructure-audit-followup.md) | 2026-06-02 | Manual review | Follow-up to earlier infrastructure audit; all items closed. |
 | [`publication-lifecycle-validation.md`](./publication-lifecycle-validation.md) | 2026-06-03 | Manual review | Lifecycle contract validation snapshot; superseded by CI validation. |
 | [`publication-performance-review.md`](./publication-performance-review.md) | 2026-06-03 | Manual review | Performance review; findings incorporated and closed. |
@@ -79,4 +80,4 @@ directory and are **not** archived here:
 | Template extraction survey | `template-extraction-notes.md`, `template-extraction-opportunities.md` |
 | Issue #208 — ChkTeX remediation | `manuscript-quality-audit-2026-07-15.md`, `research-peer-review-tasks.md` |
 | Pages stabilization | `pages-publication-validation.md`, `pages-synchronization-findings.md` |
-| Issue #227 — final polish | `publication-experience-audit.md`, `publication-polish-audit.md` (both superseded by `audits/final-publication-polish.md`) |
+| Issue #227 — final polish | `publication-experience-audit.md`, `publication-polish-audit.md` (both superseded by `audits/publication-ux-audit.md`) |

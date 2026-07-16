@@ -176,3 +176,30 @@ reflector is not publishing to Hugging Face yet, but it is now structured to mak
 ## Long-term vision
 
 reflector aims to become a durable reference architecture for recursive engineering systems: publication-aware, specification-driven, synchronization-first, and legible to both humans and automation. The near-term roadmap is to complete the manuscript, harden the audit and release paths, and prepare clean distribution surfaces for arXiv, GitHub Pages, and future Hugging Face publication.
+
+## Repository lifecycle
+
+Reflector serves two roles simultaneously:
+
+- the published **Reflector research project** (the manuscript, magazine, and publication artifacts)
+- the production **reference implementation** of the Reflector publication platform
+
+The intended lifecycle is:
+
+```
+Reflector (reference implementation)
+    ↓
+Template Extraction
+    ↓
+Reusable Publication Platform
+    ↓
+Future Publications
+```
+
+Once template extraction is complete, future improvements to the generalized
+publication infrastructure should occur within the extracted template or its
+eventual standalone repository. Reflector will remain the canonical reference
+implementation demonstrating the platform in a real publication.
+
+See [`audits/reference-implementation-readiness.md`](./audits/reference-implementation-readiness.md)
+and [`ROADMAP.md`](./ROADMAP.md) for the current development status.

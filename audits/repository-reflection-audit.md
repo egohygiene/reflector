@@ -871,6 +871,11 @@ a given domain becomes increasingly difficult. This reduces the value of the arc
 **Recommendation:** Create `audits/README.md` as an index table listing each audit file,
 its generation date, its scope, and the issue that generated it.
 
+**Resolution:** ✅ Resolved in issue [#204](https://github.com/egohygiene/reflector/issues/204).
+`audits/README.md` was created as the canonical audit index. Historical and superseded audits
+were moved to `audits/archive/` with a corresponding `audits/archive/README.md` index.
+This finding is closed.
+
 ---
 
 #### IMPROVE-07: Magazine-to-Paper Content Consistency
@@ -907,6 +912,11 @@ documentation reduces errors.
 **Recommendation:** Add a `### Zenodo Deposition Steps` section to `docs/release-process.md`
 with an explicit checklist covering: login, sandbox test, final deposition, DOI confirmation,
 and metadata synchronization check.
+
+**Resolution:** ✅ Resolved in issue [#204](https://github.com/egohygiene/reflector/issues/204).
+A Zenodo deposition checklist and recovery guidance were added to `docs/release-process.md`.
+The manual handoff boundary is now explicitly documented with step-by-step instructions.
+This finding is closed.
 
 ---
 
@@ -957,8 +967,8 @@ Recommendations are grouped by effort and prioritized by impact.
 | Priority | Action | Issue |
 |---|---|---|
 | 1 | Update `ROADMAP.md` to reflect current state (IMPROVE-02) | New issue |
-| 2 | Create `audits/README.md` audit index (IMPROVE-06) | New issue |
-| 3 | Add Zenodo deposition checklist to `docs/release-process.md` (IMPROVE-08) | New issue |
+| ~~2~~ | ~~Create `audits/README.md` audit index (IMPROVE-06)~~ | ✅ Resolved in #204 |
+| ~~3~~ | ~~Add Zenodo deposition checklist to `docs/release-process.md` (IMPROVE-08)~~ | ✅ Resolved in #204 |
 | 4 | Create `docs/getting-started.md` (IMPROVE-05) | New issue |
 
 ### Medium-Term (3-5 Issues)

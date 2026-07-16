@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2026 Alan Szmyt -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-# Final Publication Polish Audit
+# Publication UX Audit
 
 **Date:** 2026-07-16
 **Issue:** [#227](https://github.com/egohygiene/reflector/issues/227)

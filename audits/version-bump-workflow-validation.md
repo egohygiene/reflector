@@ -145,6 +145,25 @@ so the full release pipeline runs exactly once.
 
 ---
 
+## Dry-Run Verification — v0.1.3
+
+The following dry-run calculation confirms the expected next patch version from the
+current `VERSION` at the time of issue [#230](https://github.com/egohygiene/reflector/issues/230):
+
+| Field | Value |
+|---|---|
+| Current VERSION | `0.1.2` |
+| Bump type | `patch` |
+| Expected next VERSION | `0.1.3` |
+| Expected tag | `v0.1.3` |
+| Computed by | Python: `int("2") + 1 = 3` → `0.1.3` |
+
+A production bump should not be executed automatically. The maintainer may initiate the
+`v0.1.3` release by running `.github/workflows/bump-version.yml` with `bump_type: patch`
+from the default branch.
+
+---
+
 ## Files created
 
 | File | Description |

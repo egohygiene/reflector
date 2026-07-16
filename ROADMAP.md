@@ -94,3 +94,23 @@ Longer-horizon aspirations beyond the initial manuscript release.
 - [ ] Reflector visual companion expansion
 - [ ] Educational adaptations and talks
 - [ ] Extend automation pipelines for multi-paper repositories
+
+---
+
+## Repository Lifecycle
+
+Reflector is both the published research project and the reference implementation
+of a reproducible publication platform. The intended evolution is:
+
+```
+Reflector (reference implementation)
+    ↓
+Template Extraction  ← next major milestone
+    ↓
+Reusable Publication Platform
+    ↓
+Future Publications
+```
+
+Template extraction is the next explicit milestone after the initial manuscript
+publication. It is tracked separately from the manuscript release.
