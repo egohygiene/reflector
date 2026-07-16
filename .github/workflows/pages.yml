@@ -361,14 +361,29 @@ jobs:
           grep -q 'href="./reflector-magazine.pdf"' docs/index.html
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
           grep -q 'href="./publication.json"' docs/index.html
-          grep -q 'src="./reflector.pdf"' docs/index.html
-          grep -q 'src="./reflector-magazine.pdf"' docs/index.html
-          grep -q 'src="./reflector-magazine-print.pdf"' docs/index.html
           grep -q "fetch('./publication.json')" docs/index.html
 
           python - <<'PY'
           import json
+          import re
           from pathlib import Path
+
+          index_html = Path("docs/index.html").read_text(encoding="utf-8")
+          iframe_checks = {
+              "reflector.pdf": r'<iframe[^>]+title="reflector paper PDF"[^>]+src="./reflector\.pdf"',
+              "reflector-magazine.pdf": r'<iframe[^>]+title="reflector magazine PDF"[^>]+src="./reflector-magazine\.pdf"',
+              "reflector-magazine-print.pdf": r'<iframe[^>]+title="reflector print edition PDF"[^>]+src="./reflector-magazine-print\.pdf"',
+          }
+          missing_iframes = [
+              filename
+              for filename, pattern in iframe_checks.items()
+              if not re.search(pattern, index_html, flags=re.DOTALL)
+          ]
+          if missing_iframes:
+              raise SystemExit(
+                  "Error: docs/index.html is missing embedded publication iframe routes for: "
+                  + ", ".join(missing_iframes)
+              )
 
           manifest_path = Path("docs/publication.json")
           try:
@@ -381,9 +396,9 @@ jobs:
               "version": manifest.get("version"),
               "release_tag": manifest.get("release_tag"),
               "pages_url": manifest.get("pages_url"),
-              "paper.pages_url": manifest.get("artifacts", {}).get("paper", {}).get("pages_url"),
-              "magazine.pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("pages_url"),
-              "magazine.print_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("print_pages_url"),
+              "paper_pages_url": manifest.get("artifacts", {}).get("paper", {}).get("pages_url"),
+              "magazine_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("pages_url"),
+              "magazine_print_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("print_pages_url"),
           }
           missing = [name for name, value in required_fields.items() if not value]
           if missing:
