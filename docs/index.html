@@ -619,7 +619,7 @@
         <div class="magazine-callout-actions">
           <a href="./reflector-magazine.pdf" class="btn-primary">🎨 Read Magazine</a>
           <a href="./reflector-magazine-print.pdf" class="btn-secondary">🖨️ Print Edition</a>
-          <button type="button" class="btn-secondary" onclick="switchTab('magazine'); document.getElementById('reader').scrollIntoView({behavior:'smooth'})">
+          <button type="button" class="btn-secondary" id="view-magazine-inline">
             View Inline ↓
           </button>
         </div>
@@ -804,6 +804,18 @@
           switchTab(this.dataset.panel.replace('panel-', ''));
         });
       });
+
+      // "View Inline" callout button — switch to magazine tab and scroll to reader
+      var viewInlineBtn = document.getElementById('view-magazine-inline');
+      if (viewInlineBtn) {
+        viewInlineBtn.addEventListener('click', function () {
+          switchTab('magazine');
+          var reader = document.getElementById('reader');
+          if (reader) {
+            reader.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
     }());
 
     function switchTab(name) {
