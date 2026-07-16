@@ -396,7 +396,8 @@ jobs:
               manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
           except json.JSONDecodeError as error:
               raise SystemExit(
-                  f"Error: {manifest_path} is not valid JSON: {error}"
+                  f"Error: {manifest_path} is not valid JSON at line {error.lineno}, "
+                  f"column {error.colno}: {error.msg}"
               ) from error
           required_fields = {
               "version": manifest.get("version"),
