@@ -19,17 +19,39 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="manifest" href="./site.webmanifest">
   <title>reflector — publication landing</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "reflector: Reflective Synchronization Systems for Recursive AI-Assisted Software Engineering",
+    "author": {
+      "@type": "Person",
+      "name": "Alan Szmyt",
+      "identifier": "https://orcid.org/0009-0008-5291-9795"
+    },
+    "url": "https://egohygiene.github.io/reflector/",
+    "sameAs": "https://doi.org/10.5281/zenodo.20477044",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0"
+  }
+  </script>
   <style>
     :root {
       --bg: #0d1117;
       --surface: #161b22;
       --surface-strong: #1d2530;
+      --surface-accent: #161f2e;
       --border: #30363d;
+      --border-accent: #264f78;
       --text: #c9d1d9;
       --text-muted: #8b949e;
+      --text-faint: #6e7681;
       --accent: #58a6ff;
       --accent-hover: #79c0ff;
+      --accent-dim: rgba(88, 166, 255, 0.12);
       --ok: #3fb950;
+      --magazine: #f78166;
+      --magazine-dim: rgba(247, 129, 102, 0.10);
+      --magazine-border: #5a2d2d;
     }
 
     * {
@@ -39,7 +61,7 @@
     }
 
     body {
-      background: radial-gradient(circle at top, rgba(88, 166, 255, 0.08), transparent 50%), var(--bg);
+      background: radial-gradient(circle at top, rgba(88, 166, 255, 0.07), transparent 55%), var(--bg);
       color: var(--text);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       font-size: 16px;
@@ -48,7 +70,7 @@
     }
 
     .wrap {
-      max-width: 1024px;
+      max-width: 1060px;
       margin: 0 auto;
       padding: 1.4rem;
     }
@@ -56,16 +78,20 @@
     header {
       border: 1px solid var(--border);
       border-radius: 14px;
-      background: rgba(22, 27, 34, 0.78);
-      backdrop-filter: blur(4px);
-      padding: 1.2rem 1.3rem;
+      background: rgba(22, 27, 34, 0.82);
+      backdrop-filter: blur(6px);
+      padding: 1.3rem 1.4rem;
       margin-bottom: 1rem;
     }
 
     .repo-line {
       color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 0.4rem;
+      font-size: 0.88rem;
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .repo-line a {
@@ -73,45 +99,57 @@
       text-decoration: none;
     }
 
+    .repo-line a:hover {
+      color: var(--accent-hover);
+    }
+
+    .repo-line .sep {
+      color: var(--text-faint);
+    }
+
     .title-line {
-      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      font-size: clamp(1.3rem, 2.3vw, 1.9rem);
       line-height: 1.3;
       font-weight: 650;
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
     }
 
     .subtitle {
       color: var(--text-muted);
-      font-size: 1rem;
-      max-width: 78ch;
+      font-size: 0.97rem;
+      max-width: 80ch;
+      line-height: 1.55;
     }
 
     .meta-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 0.65rem;
-      margin-top: 1rem;
+      margin-top: 1.1rem;
     }
 
     .meta-item {
       border: 1px solid var(--border);
       border-radius: 10px;
       background: var(--surface);
-      padding: 0.65rem 0.75rem;
-      min-height: 84px;
+      padding: 0.7rem 0.8rem;
+      min-height: 82px;
     }
 
     .meta-item dt {
-      color: var(--text-muted);
-      font-size: 0.75rem;
+      color: var(--text-faint);
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.3rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.35rem;
+      font-weight: 600;
     }
 
     .meta-item dd {
-      font-size: 0.92rem;
+      font-size: 0.91rem;
       word-break: break-word;
+      line-height: 1.45;
     }
 
     .meta-item a {
@@ -119,21 +157,117 @@
       text-decoration: none;
     }
 
+    .meta-item a:hover {
+      color: var(--accent-hover);
+    }
+
     .status {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.2rem 0.6rem;
+      gap: 0.4rem;
+      padding: 0.18rem 0.55rem;
       border-radius: 999px;
       border: 1px solid #2b5f41;
       background: #162b22;
       color: #8ddb9d;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
+    }
+
+    /* Magazine featured callout */
+    .magazine-callout {
+      border: 1px solid var(--magazine-border);
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--magazine-dim), rgba(22, 27, 34, 0.6));
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .magazine-callout-info {
+      min-width: 0;
+    }
+
+    .callout-eyebrow {
+      color: var(--magazine);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .callout-title {
+      font-size: 1.05rem;
+      font-weight: 650;
+      margin-bottom: 0.35rem;
+      line-height: 1.3;
+    }
+
+    .callout-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      max-width: 65ch;
+    }
+
+    .magazine-callout-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--magazine-border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--magazine);
+      background: rgba(247, 129, 102, 0.08);
+      font-size: 0.88rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: rgba(247, 129, 102, 0.18);
+      border-color: var(--magazine);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-muted);
+      background: var(--surface-strong);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .btn-secondary:hover {
+      color: var(--accent-hover);
+      border-color: var(--accent);
     }
 
     .content-grid {
       display: grid;
-      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
       gap: 1rem;
       margin-bottom: 1rem;
     }
@@ -142,18 +276,23 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       background: var(--surface);
-      padding: 1rem;
+      padding: 1.05rem 1.1rem;
     }
 
     .card h2 {
-      font-size: 1.03rem;
-      margin-bottom: 0.65rem;
+      font-size: 1rem;
+      font-weight: 650;
+      margin-bottom: 0.7rem;
     }
 
     .card h3 {
-      font-size: 0.95rem;
-      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      margin-bottom: 0.55rem;
       color: var(--text-muted);
+      margin-top: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
     }
 
     .hero-figure {
@@ -166,54 +305,70 @@
       height: auto;
       border-radius: 10px;
       border: 1px solid var(--border);
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.6rem;
+      display: block;
     }
 
     .hero-figure figcaption {
-      color: var(--text-muted);
-      font-size: 0.84rem;
+      color: var(--text-faint);
+      font-size: 0.8rem;
+      line-height: 1.4;
     }
 
     .actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.55rem;
+      gap: 0.5rem;
       margin-top: 0.85rem;
     }
 
     .actions a {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.45rem 0.8rem;
+      gap: 0.3rem;
+      padding: 0.42rem 0.75rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       text-decoration: none;
       color: var(--accent);
       background: var(--surface-strong);
-      font-size: 0.9rem;
+      font-size: 0.86rem;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
 
     .actions a:hover {
       color: var(--accent-hover);
       border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .actions a.action-doi {
+      border-color: #264f78;
+      color: #79c0ff;
+      background: rgba(38, 79, 120, 0.15);
+    }
+
+    .actions a.action-doi:hover {
+      background: rgba(38, 79, 120, 0.3);
+      border-color: #58a6ff;
     }
 
     .timeline,
     .research-nav {
       list-style: none;
       display: grid;
-      gap: 0.45rem;
-      margin-top: 0.6rem;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
     }
 
     .timeline li,
     .research-nav li {
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       background: rgba(13, 17, 23, 0.4);
-      padding: 0.55rem 0.65rem;
-      font-size: 0.88rem;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.85rem;
+      line-height: 1.45;
     }
 
     .research-nav a {
@@ -221,37 +376,124 @@
       text-decoration: none;
     }
 
+    .research-nav a:hover {
+      color: var(--accent-hover);
+    }
+
+    /* Reader section */
+    .reader-section {
+      margin-bottom: 1rem;
+    }
+
+    .reader-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .reader-header h2 {
+      margin-bottom: 0;
+    }
+
+    .reader-tabs {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.38rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-strong);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .tab-btn:hover {
+      color: var(--accent-hover);
+      border-color: var(--accent);
+    }
+
+    .tab-btn[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .tab-btn.tab-magazine[aria-selected="true"] {
+      border-color: var(--magazine-border);
+      color: var(--magazine);
+      background: var(--magazine-dim);
+    }
+
+    .pdf-panel {
+      display: block;
+    }
+
+    .pdf-panel[hidden] {
+      display: none;
+    }
+
     .pdf-frame {
-      margin-top: 0.75rem;
+      margin-top: 0;
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
-      background: #11161d;
-      min-height: 70vh;
+      background: #0f1318;
     }
 
     .pdf-frame iframe {
       width: 100%;
-      min-height: 70vh;
+      height: 75vh;
+      min-height: 600px;
       border: 0;
+      display: block;
+    }
+
+    .reader-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
     }
 
     .mobile-note {
       display: none;
-      margin-top: 0.65rem;
       color: var(--text-muted);
-      font-size: 0.88rem;
+      font-size: 0.86rem;
     }
 
+    .reader-note {
+      color: var(--text-faint);
+      font-size: 0.82rem;
+    }
+
+    /* Footer */
     footer {
       margin-top: 1rem;
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 0.95rem 1rem;
+      padding: 1rem 1.2rem;
       color: var(--text-muted);
-      font-size: 0.84rem;
+      font-size: 0.83rem;
       text-align: center;
       background: rgba(22, 27, 34, 0.75);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: center;
     }
 
     footer a {
@@ -259,19 +501,41 @@
       text-decoration: none;
     }
 
+    footer a:hover {
+      color: var(--accent-hover);
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-sep {
+      color: var(--text-faint);
+    }
+
+    /* Responsive */
     @media (max-width: 900px) {
       .content-grid {
         grid-template-columns: 1fr;
+      }
+
+      .magazine-callout {
+        grid-template-columns: 1fr;
+      }
+
+      .magazine-callout-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
       }
     }
 
     @media (max-width: 760px) {
       .wrap {
-        padding: 1rem;
-      }
-
-      .pdf-frame {
-        min-height: auto;
+        padding: 0.9rem;
       }
 
       .pdf-frame iframe {
@@ -281,6 +545,16 @@
       .mobile-note {
         display: block;
       }
+
+      .reader-note {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .magazine-callout-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -288,12 +562,18 @@
   <div class="wrap">
     <header>
       <p class="repo-line">
-        <a href="https://github.com/egohygiene/reflector">egohygiene/reflector</a> · publication landing page
+        <a href="https://github.com/egohygiene/reflector">egohygiene/reflector</a>
+        <span class="sep">·</span>
+        <a href="https://github.com/egohygiene/reflector/releases">releases</a>
+        <span class="sep">·</span>
+        <a href="https://doi.org/10.5281/zenodo.20477044">DOI</a>
+        <span class="sep">·</span>
+        publication landing page
       </p>
       <h1 class="title-line">reflector: Reflective Synchronization Systems for Recursive AI-Assisted Software Engineering</h1>
       <p class="subtitle">
-        Publication-oriented research preview with synchronization-aware metadata, canonical PDF routes,
-        and architecture navigation for reflective AI engineering workflows.
+        A recursive synchronization framework for AI-assisted software engineering.
+        Governance contracts, milestone orchestration, and reflective audits for deterministic AI development systems.
       </p>
 
       <dl class="meta-grid" aria-label="Publication metadata">
@@ -303,20 +583,48 @@
         </div>
         <div class="meta-item">
           <dt>Version</dt>
-          <dd>v0.1.1, canonical route <code>reflector.pdf</code></dd>
+          <dd id="version-display">v0.1.2, canonical route <code>reflector.pdf</code></dd>
         </div>
         <div class="meta-item">
-          <dt>Identifiers</dt>
-          <dd>DOI: <a href="https://doi.org/10.5281/zenodo.20477044">10.5281/zenodo.20477044</a>, arXiv: pending, <a href="https://orcid.org/0009-0008-5291-9795">Author ORCID profile</a></dd>
+          <dt>DOI</dt>
+          <dd><a href="https://doi.org/10.5281/zenodo.20477044">10.5281/zenodo.20477044</a></dd>
         </div>
         <div class="meta-item">
-          <dt>Publication artifacts</dt>
-          <dd>PDF + metadata manifest + source + figures</dd>
+          <dt>Author</dt>
+          <dd><a href="https://orcid.org/0009-0008-5291-9795">Alan Szmyt (ORCID)</a></dd>
+        </div>
+        <div class="meta-item">
+          <dt>Zenodo archive</dt>
+          <dd><a href="https://zenodo.org/records/20477044">zenodo.org/records/20477044</a></dd>
+        </div>
+        <div class="meta-item">
+          <dt>Artifacts</dt>
+          <dd>Paper · Magazine · Print Edition · Manifest</dd>
         </div>
       </dl>
     </header>
 
     <main>
+      <!-- Visual Companion Magazine featured callout -->
+      <div class="magazine-callout" aria-label="Visual companion magazine">
+        <div class="magazine-callout-info">
+          <p class="callout-eyebrow">🎨 Visual Companion</p>
+          <p class="callout-title">reflector Magazine</p>
+          <p class="callout-desc">
+            A visual companion artifact that translates Reflector concepts into editorial layouts,
+            infographics, and full-bleed visual storytelling. Designed to be read alongside the
+            technical paper as a first-class publication artifact.
+          </p>
+        </div>
+        <div class="magazine-callout-actions">
+          <a href="./reflector-magazine.pdf" class="btn-primary">🎨 Read Magazine</a>
+          <a href="./reflector-magazine-print.pdf" class="btn-secondary">🖨️ Print Edition</a>
+          <button type="button" class="btn-secondary" id="view-magazine-inline">
+            View Inline ↓
+          </button>
+        </div>
+      </div>
+
       <div class="content-grid">
         <section class="card" aria-label="Visual summary and links">
           <figure class="hero-figure">
@@ -327,14 +635,18 @@
               height="1536"
             />
             <figcaption>
-              Canonical publication hero asset used for landing-page previews and publication surfaces.
+              Canonical hero asset for landing-page previews and publication surfaces.
             </figcaption>
           </figure>
 
           <div class="actions">
-            <a href="./reflector.pdf">📄 Download PDF</a>
-            <a href="./reflector.pdf">📚 Canonical PDF route (reflector.pdf)</a>
-            <a href="./publication.json">🧾 Publication manifest</a>
+            <a href="./reflector.pdf">📄 Paper PDF</a>
+            <a href="./reflector-magazine.pdf">🎨 Magazine</a>
+            <a href="./reflector-magazine-print.pdf">🖨️ Print</a>
+            <a href="./publication.json">🧾 Manifest</a>
+            <a href="https://doi.org/10.5281/zenodo.20477044" class="action-doi">🔗 DOI</a>
+            <a href="https://zenodo.org/records/20477044">🗄️ Zenodo</a>
+            <a href="https://github.com/egohygiene/reflector/releases">📦 Releases</a>
             <a href="https://github.com/egohygiene/reflector/tree/main/paper">💻 Source</a>
             <a href="https://github.com/egohygiene/reflector">↩ Repository</a>
           </div>
@@ -348,21 +660,27 @@
             orchestration, and recursive audits to stabilize quality, governance, and research traceability
             in reflective development systems.
           </p>
-
-          <h3>Visual Companion Magazine</h3>
-          <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.65rem;">
-            A visually compressed companion artifact designed to communicate Reflector concepts through
-            editorial layouts, infographics, and visual storytelling.
+          <p style="margin-top: 0.65rem; color: var(--text-muted); font-size: 0.9rem;">
+            Four core mechanisms structure the governance model: (1) scoped autonomous agents with bounded
+            execution contexts, (2) human-in-the-loop alignment checkpoints, (3) recursive auditing systems
+            validating system state against defined invariants, and (4) milestone synchronization protocols
+            gating autonomous progression.
           </p>
-          <div class="actions">
-            <a href="./reflector-magazine.pdf">🎨 Read Visual Companion</a>
-            <a href="./reflector-magazine-print.pdf">🖨️ Print Edition</a>
-          </div>
+
+          <h3>Publication navigation</h3>
+          <ul class="research-nav">
+            <li><a href="./reflector.pdf">📄 Read the paper (PDF)</a></li>
+            <li><a href="./reflector-magazine.pdf">🎨 Read the magazine (PDF)</a></li>
+            <li><a href="https://doi.org/10.5281/zenodo.20477044">🔗 Cite via DOI</a></li>
+            <li><a href="https://zenodo.org/records/20477044">🗄️ Zenodo archive record</a></li>
+            <li><a href="https://github.com/egohygiene/reflector/releases">📦 GitHub release assets</a></li>
+            <li><a href="./publication.json">🧾 Machine-readable publication manifest</a></li>
+          </ul>
 
           <h3>Publication timeline</h3>
           <ul class="timeline">
-            <li>Current stage: Draft publication landing + synchronized pages artifacts</li>
-            <li>Near-term: arXiv compatibility routing and DOI metadata synchronization hardening</li>
+            <li>Current stage: Draft publication · synchronized Pages artifacts</li>
+            <li>Near-term: arXiv submission · DOI metadata synchronization hardening</li>
             <li>Future: ORCID-aware and feed-driven publication dashboards</li>
           </ul>
 
@@ -375,30 +693,156 @@
         </section>
       </div>
 
-      <section class="card" aria-label="PDF reader">
-        <h2>Read online</h2>
-        <p>
-          Embedded canonical publication route for desktop reading. On smaller screens,
-          use the download links for full-screen PDF viewing.
-        </p>
-        <div class="pdf-frame">
-          <iframe
-            title="reflector publication PDF"
-            src="./reflector.pdf#view=FitH"
-            width="100%"
-            height="960"
-            loading="lazy"
-          ></iframe>
+      <section class="card reader-section" aria-label="PDF reader" id="reader">
+        <div class="reader-header">
+          <h2>Read online</h2>
+          <nav class="reader-tabs" role="tablist" aria-label="Publication reader">
+            <button
+              type="button"
+              class="tab-btn"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-paper"
+              id="tab-paper"
+              data-panel="panel-paper"
+            >📄 Paper</button>
+            <button
+              type="button"
+              class="tab-btn tab-magazine"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-magazine"
+              id="tab-magazine"
+              data-panel="panel-magazine"
+            >🎨 Magazine</button>
+            <button
+              type="button"
+              class="tab-btn"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-print"
+              id="tab-print"
+              data-panel="panel-print"
+            >🖨️ Print Edition</button>
+          </nav>
         </div>
-        <p class="mobile-note">Open <a href="./reflector.pdf">the publication PDF</a> directly for full-screen viewing.</p>
+
+        <div id="panel-paper" class="pdf-panel" role="tabpanel" aria-labelledby="tab-paper">
+          <div class="pdf-frame">
+            <iframe
+              title="reflector paper PDF"
+              src="./reflector.pdf"
+              width="100%"
+              loading="lazy"
+              allow="fullscreen"
+            ></iframe>
+          </div>
+          <div class="reader-footer">
+            <p class="mobile-note">Open <a href="./reflector.pdf">the paper PDF</a> for full-screen viewing.</p>
+            <p class="reader-note">Embedded view · desktop recommended · <a href="./reflector.pdf">open in new tab</a></p>
+          </div>
+        </div>
+
+        <div id="panel-magazine" class="pdf-panel" role="tabpanel" aria-labelledby="tab-magazine" hidden>
+          <div class="pdf-frame">
+            <iframe
+              title="reflector magazine PDF"
+              src="./reflector-magazine.pdf"
+              width="100%"
+              loading="lazy"
+              allow="fullscreen"
+            ></iframe>
+          </div>
+          <div class="reader-footer">
+            <p class="mobile-note">Open <a href="./reflector-magazine.pdf">the magazine PDF</a> for full-screen viewing.</p>
+            <p class="reader-note">Visual companion edition · <a href="./reflector-magazine.pdf">open in new tab</a></p>
+          </div>
+        </div>
+
+        <div id="panel-print" class="pdf-panel" role="tabpanel" aria-labelledby="tab-print" hidden>
+          <div class="pdf-frame">
+            <iframe
+              title="reflector print edition PDF"
+              src="./reflector-magazine-print.pdf"
+              width="100%"
+              loading="lazy"
+              allow="fullscreen"
+            ></iframe>
+          </div>
+          <div class="reader-footer">
+            <p class="mobile-note">Open <a href="./reflector-magazine-print.pdf">the print edition PDF</a> for full-screen viewing.</p>
+            <p class="reader-note">Print-optimized edition · <a href="./reflector-magazine-print.pdf">open in new tab</a></p>
+          </div>
+        </div>
       </section>
     </main>
 
     <footer>
-      By <a href="https://github.com/egohygiene">Alan Szmyt</a> ·
-      <a href="https://github.com/egohygiene/reflector">GitHub repository</a> ·
-      Canonical publication route: <a href="./">/reflector/</a>
+      <div class="footer-row">
+        By <a href="https://orcid.org/0009-0008-5291-9795">Alan Szmyt</a>
+        <span class="footer-sep">·</span>
+        <a href="https://github.com/egohygiene/reflector">GitHub repository</a>
+        <span class="footer-sep">·</span>
+        DOI: <a href="https://doi.org/10.5281/zenodo.20477044">10.5281/zenodo.20477044</a>
+        <span class="footer-sep">·</span>
+        <a href="https://zenodo.org/records/20477044">Zenodo archive</a>
+      </div>
+      <div class="footer-row">
+        <span>License: <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a></span>
+        <span class="footer-sep">·</span>
+        Canonical publication route: <a href="./">/reflector/</a>
+      </div>
     </footer>
   </div>
+
+  <script>
+    // Tabbed reader
+    (function () {
+      var tabs = document.querySelectorAll('.tab-btn[role="tab"]');
+      tabs.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          switchTab(this.dataset.panel.replace('panel-', ''));
+        });
+      });
+
+      // "View Inline" callout button — switch to magazine tab and scroll to reader
+      var viewInlineBtn = document.getElementById('view-magazine-inline');
+      if (viewInlineBtn) {
+        viewInlineBtn.addEventListener('click', function () {
+          switchTab('magazine');
+          var reader = document.getElementById('reader');
+          if (reader) {
+            reader.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+    }());
+
+    function switchTab(name) {
+      var panelId = 'panel-' + name;
+      var tabId = 'tab-' + name;
+      var tabs = document.querySelectorAll('.tab-btn[role="tab"]');
+      var panels = document.querySelectorAll('.pdf-panel');
+      tabs.forEach(function (b) {
+        b.setAttribute('aria-selected', b.id === tabId ? 'true' : 'false');
+      });
+      panels.forEach(function (p) {
+        p.hidden = p.id !== panelId;
+      });
+    }
+
+    // Dynamic version from publication.json
+    (function () {
+      fetch('./publication.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var el = document.getElementById('version-display');
+          if (el && data.version) {
+            el.textContent = 'v' + data.version + ', canonical route reflector.pdf';
+          }
+        })
+        .catch(function () { /* fall back to static value */ });
+    }());
+  </script>
 </body>
 </html>
