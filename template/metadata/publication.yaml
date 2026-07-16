@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: 2026 Publication Template Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+# ============================================================
+# Canonical Publication Metadata
+#
+# Single source of truth for all publication-level metadata.
+# Edit this file to configure your publication. Downstream
+# surfaces (CITATION.cff, .zenodo.json, codemeta.json,
+# publication.json, LaTeX macros) are synchronized from here.
+#
+# After editing, run: python scripts/sync-version.py
+# ============================================================
+
+# ---------------------------------------------------------------------------
+# Publication slug — used for artifact file naming
+# Change this to your publication's short identifier.
+# e.g. slug: my-paper  →  artifacts named my-paper.pdf
+# ---------------------------------------------------------------------------
+slug: example-publication
+
+# ---------------------------------------------------------------------------
+# Title
+# Must match paper/config/title.tex definitions.
+# ---------------------------------------------------------------------------
+title:
+  main: "An Example Research Publication"
+  subtitle: "A Generic Template for Research Papers"
+  full: "An Example Research Publication: A Generic Template for Research Papers"
+
+# ---------------------------------------------------------------------------
+# Abstract
+# ---------------------------------------------------------------------------
+abstract: >-
+  This is a placeholder abstract for the example publication template.
+  Replace this text with a concise summary of your research problem,
+  approach, key findings, and contributions. The abstract should be
+  self-contained and suitable for academic indexing services.
+
+# ---------------------------------------------------------------------------
+# Keywords
+# ---------------------------------------------------------------------------
+keywords:
+  - research publication
+  - template
+  - example
+
+# ---------------------------------------------------------------------------
+# Version and status
+# ---------------------------------------------------------------------------
+version: "0.1.0"
+status: draft
+date_released: "2026-01-01"
+license: Apache-2.0
+
+# ---------------------------------------------------------------------------
+# Publication identifiers
+# Leave null until formally assigned.
+# ---------------------------------------------------------------------------
+identifiers:
+  doi: null                    # e.g. "10.5281/zenodo.1234567"
+  doi_url: null
+  arxiv_id: null               # e.g. "2506.00001"
+  zenodo_doi: null
+  zenodo_concept_doi: null
+  zenodo_concept_doi_url: null
+
+# ---------------------------------------------------------------------------
+# Repository and Pages URLs
+# ---------------------------------------------------------------------------
+repository_url: "https://github.com/your-org/your-repo"
+pages_url: "https://your-org.github.io/your-repo/"
+
+# ---------------------------------------------------------------------------
+# Preferred citation metadata
+# ---------------------------------------------------------------------------
+preferred_citation:
+  type: article
+  year: 2026
+
+# ---------------------------------------------------------------------------
+# Companion publications (optional modules)
+# ---------------------------------------------------------------------------
+companion_publications:
+  magazine:
+    enabled: false
+    title: null
+    description: null
+    artifacts:
+      pdf: null
+      print_pdf: null
+    source_directory: "magazine/"

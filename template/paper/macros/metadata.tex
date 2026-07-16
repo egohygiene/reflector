@@ -1,0 +1,44 @@
+% SPDX-FileCopyrightText: 2026 Publication Template Contributors
+% SPDX-License-Identifier: Apache-2.0
+
+% ============================================================
+% Paper Metadata
+%
+% Defines paper-specific metadata commands used throughout
+% the document and publication pipeline.
+%
+% Load this file before the publication style so that metadata
+% commands are available for hyperref, headers, and other
+% style-level configuration.
+%
+% The canonical title is sourced from config/title.tex, which
+% is the single source of truth for title formatting.
+% ============================================================
+
+\input{config/title}
+
+\newcommand{\papertitle}{\papertitlefull}
+
+\newcommand{\paperauthor}{%
+  Author Name%
+}
+
+\newcommand{\paperdate}{%
+  2026%
+}
+
+\newcommand{\paperstatus}{%
+  Draft%
+}
+
+\newcommand{\paperrepository}{%
+  https://github.com/your-org/your-repo%
+}
+
+\newcommand{\paperorcid}{%
+  0000-0000-0000-0000%
+}
+
+\newcommand{\paperorcidurl}{%
+  https://orcid.org/\paperorcid%
+}

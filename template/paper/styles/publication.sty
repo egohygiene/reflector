@@ -1,0 +1,244 @@
+% SPDX-FileCopyrightText: 2026 Publication Template Contributors
+% SPDX-License-Identifier: Apache-2.0
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{publication}[2026/01/01 Publication Style]
+
+% ============================================================
+% Encoding and Typography
+% ============================================================
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+
+\RequirePackage[english]{babel}
+
+\RequirePackage{lmodern}
+\RequirePackage{microtype}
+
+% ============================================================
+% Page Layout
+% ============================================================
+
+\RequirePackage[
+margin=1in,
+includeheadfoot,
+headheight=14pt
+]{geometry}
+
+\RequirePackage{setspace}
+\onehalfspacing%
+
+\RequirePackage{parskip}
+
+% ============================================================
+% Colors
+% ============================================================
+
+\RequirePackage[dvipsnames]{xcolor}
+
+\definecolor{pubblue}{HTML}{3B82F6}
+\definecolor{pubpurple}{HTML}{8B5CF6}
+\definecolor{pubgray}{HTML}{6B7280}
+\definecolor{pubborder}{HTML}{D1D5DB}
+\definecolor{pubbg}{HTML}{F8FAFC}
+
+% ============================================================
+% PDF Subject and Keywords
+%
+% Override these commands before \usepackage{publication}
+% to customize the PDF metadata for your publication.
+% ============================================================
+
+\newcommand{\papersubject}{Research Publication}
+\newcommand{\paperkeywords}{}
+
+% ============================================================
+% Hyperlinks and PDF Metadata
+%
+% Metadata commands (\papertitle, \paperauthor, etc.) must be
+% defined in macros/metadata.tex before this style is loaded.
+% ============================================================
+
+\RequirePackage[
+unicode=true,
+colorlinks=true,
+linkcolor=pubblue,
+citecolor=pubpurple,
+urlcolor=pubblue,
+pdftitle={\papertitle},
+pdfauthor={\paperauthor},
+pdfsubject={\papersubject},
+pdfkeywords={\paperkeywords},
+pdfcreator={LaTeX},
+pdfproducer={publication pipeline}
+]{hyperref}
+
+\RequirePackage{bookmark}
+
+% ============================================================
+% Bibliography
+% ============================================================
+
+\RequirePackage[
+backend=biber,
+style=ieee,
+sorting=nyt,
+giveninits=true,
+maxbibnames=99,
+doi=true,
+url=true,
+isbn=false,
+eprint=true
+]{biblatex}
+
+% ============================================================
+% Graphics and Figures
+% ============================================================
+
+\RequirePackage{graphicx}
+
+\graphicspath{
+{figures/}
+{assets/}
+{diagrams/}
+}
+
+\DeclareGraphicsExtensions{
+.pdf,
+.png,
+.jpg,
+.jpeg
+}
+
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+
+\captionsetup{
+font=small,
+labelfont=bf,
+labelsep=period
+}
+
+% ============================================================
+% Tables
+% ============================================================
+
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{longtable}
+\RequirePackage{tabularx}
+
+% ============================================================
+% Code Listings
+% ============================================================
+
+\RequirePackage{listings}
+
+\lstdefinestyle{publication}{
+backgroundcolor=\color{pubbg},
+basicstyle=\ttfamily\small,
+breaklines=true,
+frame=single,
+rulecolor=\color{pubborder},
+numbers=left,
+numberstyle=\tiny\color{pubgray},
+commentstyle=\color{pubgray},
+keywordstyle=\color{pubblue},
+stringstyle=\color{ForestGreen},
+showstringspaces=false,
+tabsize=2,
+columns=fullflexible
+}
+
+\lstset{
+style=publication
+}
+
+% ============================================================
+% Math and Formal Notation
+% ============================================================
+
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{amsthm}
+\RequirePackage{mathtools}
+\RequirePackage{bm}
+
+% ============================================================
+% Utilities
+% ============================================================
+
+\RequirePackage{enumitem}
+\RequirePackage{csquotes}
+\RequirePackage{multirow}
+\RequirePackage{makecell}
+
+% ============================================================
+% Intelligent References
+% ============================================================
+
+\RequirePackage[nameinlink,noabbrev]{cleveref}
+
+% ============================================================
+% Callouts and Boxes
+% ============================================================
+
+\RequirePackage[most]{tcolorbox}
+
+\tcbset{
+colback=pubbg,
+colframe=pubborder,
+arc=3pt,
+boxrule=0.5pt
+}
+
+\newtcolorbox{publicationcallout}{
+colback=pubbg,
+colframe=pubblue,
+enhanced,
+breakable,
+left=6pt,
+right=6pt,
+top=6pt,
+bottom=6pt
+}
+
+% ============================================================
+% Header and Footer
+% ============================================================
+
+\RequirePackage{fancyhdr}
+
+\pagestyle{fancy}
+
+\fancyhf{}
+
+\fancyhead[L]{\papertitlemain}
+\fancyhead[R]{\paperauthor}
+
+\fancyfoot[C]{\thepage}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ============================================================
+% Section Styling
+% ============================================================
+
+\RequirePackage{titlesec}
+
+\titleformat{\section}
+{\large\bfseries}
+{\thesection}
+{1em}
+{}
+
+\titleformat{\subsection}
+{\normalsize\bfseries}
+{\thesubsection}
+{1em}
+{}
+
+\endinput

@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2026 Publication Template Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Paper Quality
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "paper/**"
+      - ".chktexrc"
+      - "scripts/lint-paper.sh"
+      - ".github/workflows/paper-quality.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "paper/**"
+      - ".chktexrc"
+      - "scripts/lint-paper.sh"
+  workflow_dispatch:
+    inputs:
+      fail_on_warnings:
+        description: "Fail if any ChkTeX warnings are found (true/false)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  chktex:
+    name: ChkTeX lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ChkTeX
+        run: sudo apt-get install -y chktex
+
+      - name: Run ChkTeX
+        run: bash scripts/lint-paper.sh paper

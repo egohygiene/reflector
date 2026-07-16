@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: 2026 Publication Template Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "VERSION"
+      - "metadata/**"
+      - "paper/**"
+      - "CITATION.cff"
+      - ".zenodo.json"
+      - "codemeta.json"
+      - "scripts/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate metadata synchronization
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Check version synchronization
+        run: python scripts/sync-version.py --check
+
+      - name: Validate metadata
+        run: python scripts/validate-metadata.py
+
+  build-paper:
+    name: Build paper PDF
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build LaTeX paper
+        uses: xu-cheng/latex-action@v4
+        with:
+          working_directory: paper
+          root_file: paper.tex
+          latexmk_use_lualatex: false
+          latexmk_shell_escape: true
+          extra_fonts: ""
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -f
+            -gg
+            -cd
+            -r ../.latexmkrc
+
+      - name: Upload paper artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: paper-pdf
+          path: paper/.cache/out/paper.pdf
+          retention-days: 7

@@ -1,0 +1,24 @@
+{
+  "title": "An Example Research Publication: A Generic Template for Research Papers",
+  "description": "Placeholder description. Replace with your abstract.",
+  "upload_type": "publication",
+  "publication_type": "article",
+  "access_right": "open",
+  "license": "apache-2.0",
+  "language": "eng",
+  "version": "0.1.0",
+  "doi": null,
+  "conceptdoi": null,
+  "publication_date": "2026-01-01",
+  "creators": [
+    {
+      "name": "Author, First",
+      "orcid": "0000-0000-0000-0000"
+    }
+  ],
+  "keywords": [
+    "research publication",
+    "template",
+    "example"
+  ]
+}

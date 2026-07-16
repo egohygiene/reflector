@@ -1,0 +1,100 @@
+# SPDX-FileCopyrightText: 2026 Publication Template Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "paper/**"
+      - "metadata/publication.yaml"
+      - "publication.json"
+      - ".github/workflows/pages.yml"
+      - "scripts/build-paper.sh"
+      - "scripts/print-latex-diagnostics.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build paper PDF
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: paper.tex
+          working_directory: paper
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -recorder
+            -synctex=1
+            -file-line-error
+            -shell-escape
+            -f
+            -gg
+            -cd
+            -r
+            ../.latexmkrc
+
+      - name: Print LaTeX diagnostics on failure
+        if: failure()
+        run: bash scripts/print-latex-diagnostics.sh paper
+
+      - name: Prepare published site
+        run: |
+          set -euo pipefail
+          SLUG="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('publication.json').read_text(encoding='utf-8'))
+          print(manifest['slug'])
+          PY
+          )"
+
+          if [[ ! -f "paper/.cache/out/paper.pdf" ]]; then
+            echo "Error: expected built paper PDF at paper/.cache/out/paper.pdf" >&2
+            exit 1
+          fi
+
+          mkdir -p docs _site
+          cp paper/.cache/out/paper.pdf "docs/${SLUG}.pdf"
+          cp publication.json docs/publication.json
+          cp -R docs/. _site/
+
+          test -f "_site/index.html"
+          test -f "_site/publication.json"
+          test -f "_site/${SLUG}.pdf"
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
