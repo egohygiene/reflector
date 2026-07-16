@@ -1,0 +1,264 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+
+name: Bump Version
+
+# Manual semantic-version bump workflow.
+#
+# Updates the canonical VERSION file, synchronizes all downstream metadata
+# surfaces via sync-version.py, validates the result, and commits the changes
+# to the default branch.  Tag creation and GitHub Release publication are owned
+# by release-tag.yml and publication.yml respectively — this workflow only
+# advances the canonical version so those pipelines can trigger once.
+#
+# Concurrency is set to cancel-in-progress: false so that a running bump
+# cannot be raced by a second dispatch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: "Version bump type (major / minor / patch)"
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+      dry_run:
+        description: "Dry run — validate and compute the next version without committing"
+        required: false
+        type: choice
+        default: "false"
+        options:
+          - "false"
+          - "true"
+
+concurrency:
+  group: publication-version-bump
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: Bump version (${{ inputs.bump_type }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Confirm default branch
+        run: |
+          set -euo pipefail
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          CURRENT_REF="${{ github.ref_name }}"
+          if [ "${CURRENT_REF}" != "${DEFAULT_BRANCH}" ]; then
+            echo "::error::This workflow must run on the default branch (${DEFAULT_BRANCH}). Current ref: ${CURRENT_REF}."
+            exit 1
+          fi
+          echo "Branch confirmed: ${CURRENT_REF}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install --quiet "pyyaml>=6.0"
+
+      - name: Validate bump type
+        run: |
+          set -euo pipefail
+          BUMP="${{ inputs.bump_type }}"
+          case "${BUMP}" in
+            major|minor|patch)
+              echo "Bump type confirmed: ${BUMP}"
+              ;;
+            *)
+              echo "::error::Invalid bump type '${BUMP}'. Must be major, minor, or patch."
+              exit 1
+              ;;
+          esac
+
+      - name: Confirm required publication files exist
+        run: |
+          set -euo pipefail
+          MISSING=0
+          for f in \
+            VERSION \
+            metadata/publication.yaml \
+            publication.json \
+            release-manifest.json \
+            CITATION.cff \
+            .zenodo.json \
+            codemeta.json \
+            .release-please-manifest.json \
+            scripts/sync-version.py \
+            scripts/validate-metadata.py \
+            scripts/validate-release-lifecycle.py; do
+            if [ ! -f "${f}" ]; then
+              echo "::error::Required file '${f}' is missing."
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          if [ "${MISSING}" -gt 0 ]; then
+            exit 1
+          fi
+          echo "All required publication files present."
+
+      - name: Read and validate current version
+        id: current
+        run: |
+          set -euo pipefail
+          CURRENT="$(tr -d '[:space:]' < VERSION)"
+          if ! echo "${CURRENT}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Current VERSION '${CURRENT}' is not valid semantic versioning (MAJOR.MINOR.PATCH)."
+            exit 1
+          fi
+          echo "version=${CURRENT}" >> "$GITHUB_OUTPUT"
+          echo "Current version: ${CURRENT}"
+
+      - name: Compute next version
+        id: next
+        run: |
+          set -euo pipefail
+          python - <<'PYEOF'
+          import os
+          import sys
+
+          current = "${{ steps.current.outputs.version }}"
+          bump = "${{ inputs.bump_type }}"
+          parts = list(map(int, current.split(".")))
+
+          if bump == "major":
+              parts = [parts[0] + 1, 0, 0]
+          elif bump == "minor":
+              parts = [parts[0], parts[1] + 1, 0]
+          elif bump == "patch":
+              parts = [parts[0], parts[1], parts[2] + 1]
+          else:
+              print(f"::error::Unknown bump type: {bump}", file=sys.stderr)
+              sys.exit(1)
+
+          new_version = ".".join(str(p) for p in parts)
+          new_tag = f"v{new_version}"
+
+          github_output = os.environ["GITHUB_OUTPUT"]
+          with open(github_output, "a") as fh:
+              fh.write(f"version={new_version}\n")
+              fh.write(f"tag={new_tag}\n")
+
+          print(f"Next version: {new_version}")
+          print(f"Next tag:     {new_tag}")
+          PYEOF
+
+      - name: Check target tag does not already exist
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.next.outputs.tag }}"
+          if git rev-parse --verify --quiet "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Tag ${TAG} already exists. Aborting to prevent a duplicate release."
+            exit 1
+          fi
+          echo "Tag ${TAG} does not exist — safe to proceed."
+
+      - name: Dry run — show computed versions only
+        if: ${{ inputs.dry_run == 'true' }}
+        run: |
+          echo ""
+          echo "DRY RUN — no changes will be committed or pushed."
+          echo ""
+          echo "  Current version : ${{ steps.current.outputs.version }}"
+          echo "  Next version    : ${{ steps.next.outputs.version }}"
+          echo "  Next tag        : ${{ steps.next.outputs.tag }}"
+          echo "  Bump type       : ${{ inputs.bump_type }}"
+          echo ""
+
+      - name: Write new version to VERSION
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          NEW_VERSION="${{ steps.next.outputs.version }}"
+          printf '%s' "${NEW_VERSION}" > VERSION
+          echo "VERSION written: ${NEW_VERSION}"
+
+      - name: Synchronize version surfaces
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          python scripts/sync-version.py
+
+      - name: Validate metadata synchronization
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          python scripts/sync-version.py --check
+          python scripts/validate-metadata.py
+          python scripts/validate-release-lifecycle.py
+
+      - name: Commit version bump
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          PREV="${{ steps.current.outputs.version }}"
+          NEXT="${{ steps.next.outputs.version }}"
+
+          git add \
+            VERSION \
+            metadata/publication.yaml \
+            publication.json \
+            release-manifest.json \
+            .release-please-manifest.json \
+            CITATION.cff \
+            .zenodo.json \
+            codemeta.json
+
+          git commit -m "chore(release): bump version ${PREV} → ${NEXT} [${{ inputs.bump_type }}]"
+
+      - name: Push version bump commit
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:${{ github.ref_name }}"
+
+      - name: Workflow summary
+        if: always()
+        run: |
+          PREV="${{ steps.current.outputs.version }}"
+          NEXT="${{ steps.next.outputs.version }}"
+          TAG="${{ steps.next.outputs.tag }}"
+          DRY="${{ inputs.dry_run }}"
+
+          {
+            echo "## Version Bump Summary"
+            echo ""
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| Bump type | \`${{ inputs.bump_type }}\` |"
+            echo "| Previous version | \`${PREV}\` |"
+            echo "| Next version | \`${NEXT}\` |"
+            echo "| Expected tag | \`${TAG}\` |"
+            echo "| Dry run | \`${DRY}\` |"
+            echo ""
+            if [ "${DRY}" = "true" ]; then
+              echo "> **Dry run** — no changes were committed or pushed."
+            else
+              echo "> Version bump committed and pushed to \`${{ github.ref_name }}\`."
+              echo ">"
+              echo "> The \`release-tag.yml\` workflow will detect the VERSION change and create"
+              echo "> the annotated tag \`${TAG}\` if it does not already exist."
+              echo ">"
+              echo "> The \`publication.yml\` workflow will then build and publish all release"
+              echo "> artifacts when triggered by the push to \`main\`."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
