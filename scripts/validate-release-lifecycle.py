@@ -35,6 +35,17 @@ REQUIRED_PUBLICATION_WORKFLOW_TOKENS = (
     "release-manifest.json",
     "zenodo-readiness.md",
     "reflector-arxiv",
+    "GitHub Pages deployment is asynchronous",
+    "publication.json",
+    "figures/hero.png",
+)
+REQUIRED_PAGES_WORKFLOW_TOKENS = (
+    'ROOT_MANIFEST="publication.json"',
+    'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"',
+    '"docs/publication.json"',
+    '"_site/publication.json"',
+    '"${BASE_URL}publication.json"',
+    '"${BASE_URL}figures/hero.png"',
 )
 
 
@@ -101,6 +112,7 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
     release_workflow_path = repo_root / ".github" / "workflows" / "release-paper.yml"
     tag_workflow_path = repo_root / ".github" / "workflows" / "release-tag.yml"
     publication_workflow_path = repo_root / ".github" / "workflows" / "publication.yml"
+    pages_workflow_path = repo_root / ".github" / "workflows" / "pages.yml"
 
     try:
         release_workflow_text = release_workflow_path.read_text(encoding="utf-8")
@@ -126,6 +138,13 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
             if token not in publication_workflow_text:
                 valid = False
                 log_error(f"publication.yml is missing required token: '{token}'.")
+
+    if pages_workflow_path.exists():
+        pages_workflow_text = pages_workflow_path.read_text(encoding="utf-8")
+        for token in REQUIRED_PAGES_WORKFLOW_TOKENS:
+            if token not in pages_workflow_text:
+                valid = False
+                log_error(f"pages.yml is missing required token: '{token}'.")
 
     return valid
 
