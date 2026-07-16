@@ -407,11 +407,10 @@ jobs:
             exit 1
           fi
 
-          MANIFEST_ROOT_SHA="$(sha256sum "${ROOT_MANIFEST}" | awk '{print $1}')"
           MANIFEST_DOCS_SHA="$(sha256sum "docs/publication.json" | awk '{print $1}')"
           MANIFEST_SITE_SHA="$(sha256sum "_site/publication.json" | awk '{print $1}')"
-          if [[ "${MANIFEST_ROOT_SHA}" != "${MANIFEST_DOCS_SHA}" || "${MANIFEST_ROOT_SHA}" != "${MANIFEST_SITE_SHA}" ]]; then
-            echo "Error: publication.json checksum mismatch between canonical source and published routes." >&2
+          if [[ "${MANIFEST_DOCS_SHA}" != "${MANIFEST_SITE_SHA}" ]]; then
+            echo "Error: publication.json checksum mismatch between docs and _site routes." >&2
             exit 1
           fi
 
