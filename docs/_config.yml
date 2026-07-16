@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+
+# Jekyll configuration for reflector GitHub Pages site.
+#
+# Setting title and description here prevents jekyll-github-metadata from
+# calling the GitHub API as fallbacks, which avoids transient 503 failures
+# during the pages build and deployment workflow.
+
+title: reflector
+description: "Reflective synchronization architectures for recursive AI-assisted software engineering."
