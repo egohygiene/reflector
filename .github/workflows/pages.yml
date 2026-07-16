@@ -370,7 +370,13 @@ jobs:
           import json
           from pathlib import Path
 
-          manifest = json.loads(Path("docs/publication.json").read_text(encoding="utf-8"))
+          manifest_path = Path("docs/publication.json")
+          try:
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          except json.JSONDecodeError as error:
+              raise SystemExit(
+                  f"Error: {manifest_path} is not valid JSON: {error}"
+              ) from error
           required_fields = {
               "version": manifest.get("version"),
               "release_tag": manifest.get("release_tag"),
