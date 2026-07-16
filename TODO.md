@@ -13,6 +13,51 @@ Canonical execution checklist from publication-ready state through release, arch
 
 ---
 
+## Pause state — v0.1.3 checkpoint (issue #230)
+
+Active development is paused after the v0.1.3 checkpoint. The following infrastructure
+milestones are complete. Template extraction is the next major milestone.
+
+### Completed
+
+- [x] Publication UX stabilization (issue #227)
+- [x] Preview generation and artifact routing (issue #227)
+- [x] Metadata synchronization across 7 surfaces (issue #227)
+- [x] Manual semantic-version bump workflow (issue #227)
+- [x] Release workflow ownership clarified — no race conditions (issue #227)
+- [x] Audit organization — historical audits archived with index (issues #204, #227)
+- [x] Reference-implementation readiness documented (issue #227)
+- [x] Repository lifecycle documented (issue #230)
+- [x] Durable audit naming applied — `publication-ux-audit.md` (issue #230)
+- [x] IMPROVE-06 resolved — `audits/README.md` index created (issue #204)
+- [x] IMPROVE-08 resolved — Zenodo deposition checklist in `docs/release-process.md` (issue #204)
+- [x] Version-bump dry-run verified: `0.1.2` + patch = `0.1.3` (issue #230)
+
+### Next milestone
+
+```
+Template extraction readiness audit
+    ↓
+Extract reusable publication platform into template/
+    ↓
+Independent portability validation
+    ↓
+Optional standalone publication-template repository
+```
+
+### Deferred enhancements
+
+The following are intentionally deferred and do not block the v0.1.3 checkpoint:
+
+- arXiv submission
+- Zenodo deposition for v0.1.3
+- ORCID synchronization
+- Hugging Face mirror
+- Manuscript editorial revisions (P0/P1 findings from issue #208)
+- GitHub repository topics configuration (requires repository settings, not file changes)
+
+---
+
 ## Documentation foundation (completed)
 
 Tracks the work from issue #202 — Align repository roadmap and documentation entry points.

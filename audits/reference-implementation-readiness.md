@@ -21,6 +21,37 @@ is a separate future step.
 
 ---
 
+## Repository Lifecycle
+
+The intended lifecycle of this repository is:
+
+```
+Reflector
+    ↓
+Reference Implementation
+    ↓
+Template Extraction
+    ↓
+Reusable Publication Platform
+    ↓
+Future Publications
+```
+
+Once template extraction is complete, future improvements to the generalized
+publication infrastructure should primarily occur within the extracted template
+or its eventual standalone repository.
+
+Reflector should remain the canonical reference implementation demonstrating
+the platform in a real publication rather than continuing to accumulate
+template-specific changes indefinitely.
+
+Reflector is both:
+
+- the published Reflector research project
+- the production reference implementation of the publication system
+
+---
+
 ## Summary Assessment
 
 | Area | Status | Notes |
@@ -131,7 +162,7 @@ No race conditions exist between these workflows because:
 | `repository-reflection-audit.md` | Current (active IMPROVE items) |
 | `publication-artifact-inventory.json` | Current |
 | `publication-artifact-inventory.md` | Current |
-| `final-publication-polish.md` | Current (issue #227) |
+| `publication-ux-audit.md` | Current (issue #227) |
 | `version-bump-workflow-validation.md` | Current (issue #227) |
 | `reference-implementation-readiness.md` | Current (issue #227, this document) |
 
