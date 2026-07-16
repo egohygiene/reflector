@@ -42,6 +42,10 @@
 #              Justification: publication.sty loads hyperref which makes these
 #              commands robust. False positives dominate in section headings.
 #
+# Warning 24 — "Delete this space to maintain correct pagereferences."
+#              Justification: False positive when \label appears on its own line
+#              after \section{...}, which is a standard source formatting convention.
+#
 # Warning 25 — "You should remove spaces before punctuation."
 #              Justification: False positives from display-math endings before
 #              external punctuation. The compiled output is typographically correct.

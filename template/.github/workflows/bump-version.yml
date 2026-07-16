@@ -88,7 +88,16 @@ jobs:
         run: |
           set -euo pipefail
           MISSING=0
-          for f in             VERSION             metadata/publication.yaml             publication.json             release-manifest.json             CITATION.cff             .zenodo.json             codemeta.json             scripts/sync-version.py             scripts/validate-metadata.py; do
+          for f in \
+            VERSION \
+            metadata/publication.yaml \
+            publication.json \
+            release-manifest.json \
+            CITATION.cff \
+            .zenodo.json \
+            codemeta.json \
+            scripts/sync-version.py \
+            scripts/validate-metadata.py; do
             if [ ! -f "${f}" ]; then
               echo "::error::Required file '${f}' is missing."
               MISSING=$((MISSING + 1))
