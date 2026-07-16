@@ -337,24 +337,51 @@
       font-weight: 600;
     }
 
-    .hero-figure {
-      margin: 0;
-      overflow: hidden;
+    /* Magazine cover preview — primary left-column visual */
+    .magazine-cover-preview {
+      margin-bottom: 1rem;
     }
 
-    .hero-figure img {
+    .magazine-cover-preview a {
+      display: block;
+      text-decoration: none;
+    }
+
+    .magazine-cover-preview img {
+      display: block;
       width: 100%;
       height: auto;
+      max-height: 48rem;
+      aspect-ratio: 3 / 4;
+      object-fit: contain;
       border-radius: 10px;
-      border: 1px solid var(--border);
-      margin-bottom: 0.6rem;
-      display: block;
+      border: 1px solid var(--magazine-border);
+      background: #0f1318;
+      margin-bottom: 0.75rem;
     }
 
-    .hero-figure figcaption {
-      color: var(--text-faint);
-      font-size: 0.8rem;
-      line-height: 1.4;
+    .magazine-cover-meta {
+      display: grid;
+      gap: 0.3rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .magazine-cover-title {
+      font-size: 0.95rem;
+      font-weight: 650;
+    }
+
+    .magazine-cover-desc {
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .magazine-cover-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
     }
 
     .actions {
@@ -393,60 +420,6 @@
     .actions a.action-doi:hover {
       background: rgba(38, 79, 120, 0.3);
       border-color: #58a6ff;
-    }
-
-    .edition-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .edition-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      background: rgba(13, 17, 23, 0.55);
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .edition-card img {
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      object-fit: cover;
-      display: block;
-      background: #0f1318;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .edition-card-body {
-      padding: 0.75rem;
-      display: grid;
-      gap: 0.35rem;
-    }
-
-    .edition-card-title {
-      font-size: 0.92rem;
-      font-weight: 650;
-    }
-
-    .edition-card-desc {
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      line-height: 1.45;
-    }
-
-    .edition-card-link {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 0.84rem;
-      font-weight: 600;
-    }
-
-    .edition-card-link:hover {
-      color: var(--accent-hover);
     }
 
     .timeline,
@@ -627,10 +600,6 @@
         flex-direction: row;
         flex-wrap: wrap;
       }
-
-      .edition-grid {
-        grid-template-columns: 1fr;
-      }
     }
 
     @media (max-width: 760px) {
@@ -734,17 +703,29 @@
 
       <div class="content-grid">
         <section class="card" aria-label="Visual summary and links">
-          <figure class="hero-figure">
-            <img
-              src="./figures/hero.png"
-              alt="reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures."
-              width="1024"
-              height="1536"
-            />
-            <figcaption>
-              Canonical hero asset for landing-page previews and publication surfaces.
-            </figcaption>
-          </figure>
+          <!-- Magazine cover preview — primary left-column visual -->
+          <div class="magazine-cover-preview" aria-label="Magazine cover preview">
+            <a href="./reflector-magazine.pdf" aria-label="Open the reflector visual companion magazine PDF">
+              <img
+                src="./previews/magazine-cover.webp"
+                alt="First-page preview of the reflector visual companion magazine."
+                width="1200"
+                height="1600"
+                decoding="async"
+                fetchpriority="high"
+                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
+              />
+            </a>
+            <div class="magazine-cover-meta">
+              <p class="magazine-cover-title">Visual Companion Magazine</p>
+              <p class="magazine-cover-desc">Visual companion format for guided reading, editorial pacing, and layout-first browsing.</p>
+            </div>
+            <div class="magazine-cover-actions">
+              <a href="./reflector-magazine.pdf" class="btn-primary">🎨 Read magazine</a>
+              <button type="button" class="btn-secondary" id="view-magazine-inline-left">View inline ↓</button>
+              <a href="./reflector-magazine-print.pdf" class="btn-secondary">🖨️ Print edition</a>
+            </div>
+          </div>
 
           <div class="actions">
             <a href="./reflector.pdf">📄 Paper PDF</a>
@@ -758,56 +739,6 @@
             <a href="https://github.com/egohygiene/reflector">↩ Repository</a>
           </div>
 
-          <div class="edition-grid" aria-label="Publication editions">
-            <article class="edition-card">
-              <img
-                src="./previews/paper-cover.webp"
-                alt="Preview thumbnail of the first page of the reflector paper PDF."
-                width="1200"
-                height="1600"
-                decoding="async"
-                fetchpriority="high"
-                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
-              />
-              <div class="edition-card-body">
-                <p class="edition-card-title">Paper edition</p>
-                <p class="edition-card-desc">Canonical research manuscript with synchronized publication metadata.</p>
-                <a class="edition-card-link" href="./reflector.pdf">Open paper PDF →</a>
-              </div>
-            </article>
-            <article class="edition-card">
-              <img
-                src="./previews/magazine-cover.webp"
-                alt="Preview thumbnail of the first page of the reflector magazine PDF."
-                width="1200"
-                height="1600"
-                loading="lazy"
-                decoding="async"
-                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
-              />
-              <div class="edition-card-body">
-                <p class="edition-card-title">Magazine edition</p>
-                <p class="edition-card-desc">Visual companion format for guided reading, editorial pacing, and layout-first browsing.</p>
-                <a class="edition-card-link" href="./reflector-magazine.pdf">Open magazine PDF →</a>
-              </div>
-            </article>
-            <article class="edition-card">
-              <img
-                src="./previews/print-cover.webp"
-                alt="Preview thumbnail of the first page of the reflector print edition PDF."
-                width="1200"
-                height="1600"
-                loading="lazy"
-                decoding="async"
-                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
-              />
-              <div class="edition-card-body">
-                <p class="edition-card-title">Print edition</p>
-                <p class="edition-card-desc">Print-optimized magazine layout for offline review and archival circulation.</p>
-                <a class="edition-card-link" href="./reflector-magazine-print.pdf">Open print edition PDF →</a>
-              </div>
-            </article>
-          </div>
         </section>
 
         <section class="card" aria-label="Abstract and research navigation">
@@ -971,6 +902,18 @@
       var viewInlineBtn = document.getElementById('view-magazine-inline');
       if (viewInlineBtn) {
         viewInlineBtn.addEventListener('click', function () {
+          switchTab('magazine');
+          var reader = document.getElementById('reader');
+          if (reader) {
+            reader.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+
+      // "View Inline" left-column magazine cover button
+      var viewInlineBtnLeft = document.getElementById('view-magazine-inline-left');
+      if (viewInlineBtnLeft) {
+        viewInlineBtnLeft.addEventListener('click', function () {
           switchTab('magazine');
           var reader = document.getElementById('reader');
           if (reader) {

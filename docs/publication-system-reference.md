@@ -3,8 +3,8 @@
 
 # Publication System Reference
 
-Generated: 2026-06-03
-Version: 0.1.1
+Generated: 2026-07-16
+Version: 0.1.2
 
 ---
 
@@ -179,6 +179,7 @@ The publication system has five architectural layers:
 | REUSE compliance | `.github/workflows/reuse.yml` | License compliance |
 | Release Please | `.github/workflows/release-please.yml` | Release PR automation |
 | Commit lint | `.github/workflows/commitlint.yml` | Commit style gate |
+| Version bump | `.github/workflows/bump-version.yml` | Manual semantic-version bump |
 
 ---
 

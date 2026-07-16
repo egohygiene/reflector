@@ -244,6 +244,82 @@ For the canonical staging layout, checksum contract, and manifest generation rul
 
 ---
 
+## Manual Semantic-Version Bump
+
+The `.github/workflows/bump-version.yml` workflow provides a safe, maintainer-controlled path for advancing the canonical version.
+
+### How to use
+
+1. Open **GitHub Actions → Bump Version** in the repository.
+2. Click **Run workflow**.
+3. Select the bump type: `patch`, `minor`, or `major`.
+4. Optionally enable **Dry run** to preview the next version without committing.
+5. Click **Run workflow**.
+
+### What the workflow does
+
+```
+Select bump type (major / minor / patch)
+    ↓
+Validate current branch is default branch
+    ↓
+Validate bump type and current VERSION
+    ↓
+Compute next version (dry run exits here)
+    ↓
+Confirm target tag does not already exist
+    ↓
+Write new version to VERSION
+    ↓
+python scripts/sync-version.py
+    ↓
+python scripts/sync-version.py --check
+python scripts/validate-metadata.py
+python scripts/validate-release-lifecycle.py
+    ↓
+Commit all synchronized surfaces
+    ↓
+Push commit to default branch
+    ↓
+release-tag.yml creates the annotated tag
+    ↓
+publication.yml builds and publishes release artifacts
+```
+
+### Design decision — single tag ownership
+
+The bump workflow **only** advances the VERSION and synchronized surfaces. It does not create the release tag directly. Tag creation remains owned by `release-tag.yml`, which triggers automatically when VERSION changes on `main`. This preserves one unambiguous owner for tag creation and prevents duplicate or racing tag events.
+
+### Safeguards
+
+| Safeguard | Behavior |
+|---|---|
+| Default-branch check | Fails if the workflow is triggered on any branch other than `main` |
+| Bump type validation | Fails on any input other than `major`, `minor`, `patch` |
+| Semver format check | Fails if the current VERSION is not `MAJOR.MINOR.PATCH` |
+| Duplicate tag check | Fails if the target tag already exists |
+| Required files check | Fails if any canonical metadata surface is missing |
+| Validation gate | Fails before committing if `validate-metadata.py` or `validate-release-lifecycle.py` report drift |
+| Concurrency group | Prevents two simultaneous bump workflows from running |
+| Dry run mode | Preview the version bump without modifying any files |
+
+### Version surfaces updated by the workflow
+
+The workflow calls `python scripts/sync-version.py` which updates all downstream surfaces:
+
+| File | Field |
+|---|---|
+| `VERSION` | canonical version (written first) |
+| `metadata/publication.yaml` | `version` |
+| `CITATION.cff` | `version` |
+| `.zenodo.json` | `version` |
+| `codemeta.json` | `version` |
+| `publication.json` | `version`, `release_tag` |
+| `release-manifest.json` | `current_version` |
+| `.release-please-manifest.json` | `"."` (root package) |
+
+---
+
 ## arXiv Workflow
 
 When a GitHub Release is published:
