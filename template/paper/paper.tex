@@ -1,0 +1,123 @@
+% SPDX-FileCopyrightText: 2026 Publication Template Contributors
+% SPDX-License-Identifier: Apache-2.0
+
+\documentclass[11pt,letterpaper]{article}
+
+% ============================================================
+% Paper Metadata
+%
+% Defines paper-specific commands (\papertitle, \paperauthor,
+% etc.) consumed by the publication style and document body.
+% Must be loaded before the style.
+% ============================================================
+
+\input{macros/metadata}
+
+% ============================================================
+% Publication Style
+%
+% Loads the publication style — packages, colors, layout,
+% typography, listings, math, callouts, and headers.
+% Swap this line to target a different publisher format.
+% ============================================================
+
+\usepackage{publication}
+
+% ============================================================
+% Bibliography Resource
+% ============================================================
+
+\addbibresource{references/references.bib}
+
+% ============================================================
+% Title Metadata
+% ============================================================
+
+\title{%
+\vspace{-1.25cm}%
+\textbf{\Huge\papertitlemain}\\[0.35cm]%
+\Large\papertitlesubtitle%
+}
+
+\author{
+\paperauthor\\
+\small\href{\paperorcidurl}{ORCID: \paperorcid}\\
+\small\href{\paperrepository}{\paperrepository}
+}
+
+\date{\paperdate}
+
+% ============================================================
+% Document
+% ============================================================
+
+\begin{document}
+
+% ============================================================
+% Title Page
+% ============================================================
+
+\maketitle
+
+\thispagestyle{empty}
+
+\vspace{0.35cm}
+
+\begin{center}
+	\small Version: \paperstatus
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{abstract}
+	\input{sections/abstract}
+\end{abstract}
+
+\newpage
+
+% ============================================================
+% Navigation
+% ============================================================
+
+\tableofcontents
+
+\newpage
+
+% ============================================================
+% Main Sections
+% ============================================================
+
+\input{sections/introduction}
+
+\input{sections/related-work}
+
+\input{sections/methodology}
+
+\input{sections/results}
+
+\input{sections/discussion}
+
+\input{sections/limitations}
+
+\input{sections/conclusion}
+
+% ============================================================
+% Bibliography
+% ============================================================
+
+\newpage
+
+\printbibliography
+
+% ============================================================
+% Appendix
+% ============================================================
+
+\appendix
+\input{sections/appendix}
+
+% ============================================================
+% End Document
+% ============================================================
+
+\end{document}

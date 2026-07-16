@@ -203,3 +203,15 @@ implementation demonstrating the platform in a real publication.
 
 See [`audits/reference-implementation-readiness.md`](./audits/reference-implementation-readiness.md)
 and [`ROADMAP.md`](./ROADMAP.md) for the current development status.
+
+## Publication Platform Template
+
+Reflector now includes an extracted reusable publication platform in
+[`template/`](./template/). The template packages the generalized paper,
+metadata, CI, and Pages infrastructure so it can be copied into a new repository
+as a bootstrap for a research publication.
+
+Reflector remains the reference implementation for this platform. Future reuse
+should start from `template/`, while Reflector continues to demonstrate the full
+system in a live publication repository.
+

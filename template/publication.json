@@ -1,0 +1,52 @@
+{
+  "project": "publication-template",
+  "slug": "example-publication",
+  "status": "draft",
+  "version": "0.1.0",
+  "release_tag": "v0.1.0",
+  "repository_url": "https://github.com/your-org/your-repo",
+  "pages_url": "https://your-org.github.io/your-repo/",
+  "title": {
+    "main": "An Example Research Publication",
+    "subtitle": "A Generic Template for Research Papers",
+    "full": "An Example Research Publication: A Generic Template for Research Papers"
+  },
+  "abstract": "This is a placeholder abstract for the example publication template. Replace this text with a concise summary of your research problem, approach, key findings, and contributions.",
+  "keywords": [
+    "research publication",
+    "template",
+    "example"
+  ],
+  "orcid": "https://orcid.org/0000-0000-0000-0000",
+  "authors": [
+    {
+      "given_name": "First",
+      "family_name": "Author",
+      "orcid": "https://orcid.org/0000-0000-0000-0000"
+    }
+  ],
+  "release_channel": "github-releases",
+  "version_source": "VERSION",
+  "citation_source": "CITATION.cff",
+  "artifacts": {
+    "paper": {
+      "pdf": "example-publication.pdf",
+      "pages_url": "https://your-org.github.io/your-repo/example-publication.pdf"
+    }
+  },
+  "optional_modules": {
+    "magazine": false,
+    "zenodo": false,
+    "arxiv": false
+  },
+  "future": {
+    "doi_generation": {
+      "enabled": false,
+      "provider": "zenodo",
+      "doi": null,
+      "doi_url": null,
+      "concept_doi": null,
+      "concept_doi_url": null
+    }
+  }
+}

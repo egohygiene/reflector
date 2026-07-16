@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Generic publication landing page template for a research paper, metadata, and PDF access." />
+  <meta property="og:title" content="Research Publication Template" />
+  <meta property="og:description" content="Reusable publication landing page with metadata loading, PDF access, and responsive dark-mode layout." />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://your-org.github.io/your-repo/preview.png" />
+  <meta property="og:image:alt" content="Preview image for the example publication template." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Research Publication Template" />
+  <meta name="twitter:description" content="Reusable publication landing page template with embedded PDF access." />
+  <meta name="twitter:image" content="https://your-org.github.io/your-repo/preview.png" />
+  <meta name="twitter:image:alt" content="Preview image for the example publication template." />
+  <title>Research Publication Template</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "An Example Research Publication: A Generic Template for Research Papers",
+    "author": {
+      "@type": "Person",
+      "name": "First Author",
+      "identifier": "https://orcid.org/0000-0000-0000-0000"
+    },
+    "url": "https://your-org.github.io/your-repo/",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0"
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --text-faint: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --accent-soft: rgba(88, 166, 255, 0.12);
+      --ok-bg: #12261b;
+      --ok-border: #2b5f41;
+      --ok-text: #8ddb9d;
+      --warn-bg: #2d1f0b;
+      --warn-border: #7d5c12;
+      --warn-text: #f2cc60;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(88, 166, 255, 0.08), transparent 55%), var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+    .panel {
+      background: rgba(22, 27, 34, 0.84);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(6px);
+    }
+    .eyebrow {
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.78rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(1.5rem, 2.6vw, 2.25rem); line-height: 1.2; margin: 0 0 0.45rem; }
+    .subtitle { color: var(--text-muted); max-width: 75ch; margin: 0 0 1rem; }
+    .status {
+      display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem;
+      border-radius: 999px; border: 1px solid var(--ok-border); background: var(--ok-bg); color: var(--ok-text);
+      font-size: 0.82rem; font-weight: 600;
+    }
+    .alert {
+      border-radius: 12px; padding: 0.85rem 1rem; border: 1px solid var(--warn-border);
+      background: var(--warn-bg); color: var(--warn-text); margin-top: 1rem;
+    }
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+    .meta-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem; }
+    .meta-card dt { font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem; font-weight: 700; }
+    .meta-card dd { margin: 0; word-break: break-word; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0.7rem 1rem;
+      border-radius: 10px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--accent);
+      text-decoration: none; font-weight: 600;
+    }
+    .button:hover { color: var(--accent-hover); border-color: var(--accent); }
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 1rem; }
+    .viewer { width: 100%; min-height: 720px; border: 1px solid var(--border); border-radius: 12px; background: #0b1016; }
+    .muted { color: var(--text-muted); }
+    code { background: rgba(110, 118, 129, 0.15); border-radius: 6px; padding: 0.1rem 0.35rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+      .viewer { min-height: 540px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="panel">
+      <div class="eyebrow">Publication landing page template</div>
+      <h1 id="title">An Example Research Publication</h1>
+      <p class="subtitle" id="subtitle">A Generic Template for Research Papers</p>
+      <span class="status" id="status">Draft</span>
+      <div id="load-warning" class="alert">
+        Publication metadata has not been loaded yet. This page will display placeholder
+        content until <code>publication.json</code> is available.
+      </div>
+      <dl class="meta-grid">
+        <div class="meta-card"><dt>Version</dt><dd id="version">0.1.0</dd></div>
+        <div class="meta-card"><dt>Release Tag</dt><dd id="release-tag">v0.1.0</dd></div>
+        <div class="meta-card"><dt>Author</dt><dd id="author">First Author</dd></div>
+        <div class="meta-card"><dt>Repository</dt><dd id="repository">https://github.com/your-org/your-repo</dd></div>
+        <div class="meta-card"><dt>Pages</dt><dd id="pages">https://your-org.github.io/your-repo/</dd></div>
+        <div class="meta-card"><dt>DOI</dt><dd id="doi">Not assigned</dd></div>
+      </dl>
+      <div class="actions">
+        <a class="button" id="download-link" href="#">Download PDF</a>
+        <a class="button" id="manifest-link" href="./publication.json">View Manifest</a>
+        <a class="button" id="repo-link" href="https://github.com/your-org/your-repo">Repository</a>
+      </div>
+    </section>
+    <section class="two-col">
+      <article class="panel">
+        <div class="eyebrow">Abstract</div>
+        <p id="abstract" class="muted">
+          Placeholder abstract for the template. Configure metadata/publication.yaml and
+          publication.json to populate this surface with your publication metadata.
+        </p>
+        <div class="eyebrow" style="margin-top: 1.25rem;">Template workflow</div>
+        <ul>
+          <li>Copy the template into a new repository.</li>
+          <li>Configure metadata, title macros, and author identity.</li>
+          <li>Validate synchronization and build the PDF.</li>
+          <li>Publish the artifact through GitHub Pages or release workflows.</li>
+        </ul>
+        <!-- Optional companion-publication modules can be added here. -->
+      </article>
+      <section class="panel">
+        <div class="eyebrow">Embedded PDF</div>
+        <iframe id="pdf-frame" class="viewer" title="publication PDF" src="about:blank"></iframe>
+        <p class="muted" id="viewer-note" style="margin-top: 0.75rem;">
+          The embedded PDF will appear after publication metadata loads.
+        </p>
+      </section>
+    </section>
+  </div>
+  <script>
+    function setText(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = value;
+    }
+    function setHTML(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.innerHTML = value;
+    }
+    function setHref(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.href = value;
+    }
+    function applyManifest(manifest) {
+      const title = manifest.title?.full || 'Research Publication';
+      const main = manifest.title?.main || title;
+      const subtitle = manifest.title?.subtitle || 'Reusable publication landing page';
+      const version = manifest.version || '0.1.0';
+      const releaseTag = manifest.release_tag || `v${version}`;
+      const status = manifest.status || 'Draft';
+      const repositoryUrl = manifest.repository_url || 'https://github.com/your-org/your-repo';
+      const pagesUrl = manifest.pages_url || 'https://your-org.github.io/your-repo/';
+      const slug = manifest.slug || 'example-publication';
+      const pdfFile = manifest.artifacts?.paper?.pdf || `${slug}.pdf`;
+      const pdfUrl = `./${pdfFile}`;
+      const author = manifest.authors?.[0]
+        ? `${manifest.authors[0].given_name || ''} ${manifest.authors[0].family_name || ''}`.trim()
+        : 'First Author';
+      const doi = manifest.future?.doi_generation?.doi || 'Not assigned';
+
+      document.title = `${title} — publication landing`;
+      setText('title', main);
+      setText('subtitle', subtitle);
+      setText('status', status.charAt(0).toUpperCase() + status.slice(1));
+      setText('version', version);
+      setText('release-tag', releaseTag);
+      setText('author', author || 'First Author');
+      setText('abstract', manifest.abstract || 'No abstract available.');
+      setHref('download-link', pdfUrl);
+      setHref('repo-link', repositoryUrl);
+      setHref('manifest-link', './publication.json');
+      setHTML('repository', `<a href="${repositoryUrl}">${repositoryUrl}</a>`);
+      setHTML('pages', `<a href="${pagesUrl}">${pagesUrl}</a>`);
+      if (doi !== 'Not assigned') {
+        setHTML('doi', `<a href="https://doi.org/${doi}">${doi}</a>`);
+      }
+      document.getElementById('pdf-frame').src = pdfUrl;
+      setText('viewer-note', `Showing ${pdfFile}`);
+      const warning = document.getElementById('load-warning');
+      if (warning) warning.remove();
+    }
+
+    fetch('./publication.json')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((manifest) => applyManifest(manifest))
+      .catch((error) => {
+        console.warn('Could not load publication.json:', error);
+        setText('viewer-note', 'Unable to load publication metadata. Keep publication.json beside this page when deploying.');
+      });
+  </script>
+</body>
+</html>

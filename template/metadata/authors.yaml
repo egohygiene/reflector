@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Publication Template Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+# ============================================================
+# Canonical Author Metadata
+#
+# Single source of truth for all author information used
+# across the publication pipeline: LaTeX metadata, CITATION.cff,
+# Zenodo records, and any future renderer targets.
+# ============================================================
+
+authors:
+  - family-names: Author
+    given-names: First
+    alias: author1
+    orcid: "0000-0000-0000-0000"
+    orcid_url: "https://orcid.org/0000-0000-0000-0000"
+    # github: "https://github.com/username"
+    # affiliation: "Your Institution"
+    # email: "author@example.com"

@@ -1,0 +1,46 @@
+# LaTeX build artifacts
+**/.cache/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.lot
+*.lof
+*.run.xml
+
+# Generated PDFs (keep docs/ PDFs committed when published)
+*.pdf
+!docs/**/*.pdf
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.uv/
+
+# Node / site
+node_modules/
+_site/
+.next/
+
+# Editor
+.DS_Store
+*.swp
+*.swo
+.vscode/settings.json
+
+# Release staging
+release/

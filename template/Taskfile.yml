@@ -1,0 +1,78 @@
+# SPDX-FileCopyrightText: 2026 Publication Template Contributors
+# SPDX-License-Identifier: Apache-2.0
+
+version: "3"
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  setup:
+    desc: Verify local environment prerequisites
+    cmds:
+      - |
+        echo "Checking prerequisites..."
+        if command -v latexmk >/dev/null 2>&1; then
+          echo "✅ latexmk: $(latexmk --version 2>&1 | head -1)"
+        else
+          echo "⚠️  latexmk not found — required for paper builds"
+        fi
+        if command -v biber >/dev/null 2>&1; then
+          echo "✅ biber available"
+        else
+          echo "⚠️  biber not found — required for bibliography"
+        fi
+        if command -v python3 >/dev/null 2>&1; then
+          echo "✅ python3: $(python3 --version)"
+        else
+          echo "⚠️  python3 not found — required for scripts"
+        fi
+        if command -v chktex >/dev/null 2>&1; then
+          echo "✅ chktex available"
+        else
+          echo "⚠️  chktex not found — required for paper linting"
+        fi
+
+  validate:
+    desc: Run all validation checks
+    cmds:
+      - task: metadata:check
+      - task: paper:lint
+
+  paper:build:
+    desc: Build the paper PDF
+    cmds:
+      - bash scripts/build-paper.sh paper
+
+  paper:watch:
+    desc: Watch paper directory and rebuild on changes
+    cmds:
+      - bash scripts/watch-paper.sh paper
+
+  paper:lint:
+    desc: Lint LaTeX source with ChkTeX
+    cmds:
+      - bash scripts/lint-paper.sh paper
+
+  paper:format:
+    desc: Format LaTeX source with latexindent
+    cmds:
+      - bash scripts/format-latex.sh paper/**/*.tex paper/**/*.sty
+
+  paper:clean:
+    desc: Remove paper build artifacts
+    cmds:
+      - rm -rf paper/.cache
+
+  metadata:sync:
+    desc: Synchronize VERSION to all metadata surfaces
+    cmds:
+      - python3 scripts/sync-version.py
+
+  metadata:check:
+    desc: Check metadata synchronization without modifying files
+    cmds:
+      - python3 scripts/sync-version.py --check
+      - python3 scripts/validate-metadata.py
