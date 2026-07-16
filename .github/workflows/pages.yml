@@ -360,6 +360,7 @@ jobs:
           grep -q 'href="./reflector.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing paper download route.' >&2; exit 1; }
           grep -q 'href="./reflector-magazine.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing magazine download route.' >&2; exit 1; }
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing print edition download route.' >&2; exit 1; }
+          # Both publication.json references are required: the link is user-facing, while the fetch call powers dynamic metadata in the landing page UI.
           grep -q 'href="./publication.json"' docs/index.html || { echo 'Error: docs/index.html is missing publication manifest link.' >&2; exit 1; }
           grep -q "fetch('./publication.json')" docs/index.html || { echo 'Error: docs/index.html is missing publication manifest fetch call.' >&2; exit 1; }
 
@@ -373,7 +374,7 @@ jobs:
               index_html = index_path.read_text(encoding="utf-8")
           except FileNotFoundError as error:
               raise SystemExit(
-                  f"Error: expected Pages entrypoint is missing: {index_path}"
+                  f"Error: expected Pages entrypoint is missing: {index_path.as_posix()}"
               ) from error
           iframe_checks = {
               "reflector.pdf": r'<iframe[^>]+title="reflector paper PDF"[^>]+src="./reflector\.pdf"',
@@ -457,7 +458,7 @@ jobs:
           for path in docs _site paper/.cache/out magazine/dist magazine/.cache/out; do
             if [[ -e "${path}" ]]; then
               echo "::group::${path}"
-              find "${path}" -maxdepth 3 \( -type f -o -type d \) | sort
+              find "${path}" -maxdepth 2 \( -type f -o -type d \) | sort
               echo "::endgroup::"
             else
               echo "Missing diagnostic path: ${path}"
