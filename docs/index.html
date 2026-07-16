@@ -4,16 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="reflector publication landing page: reflective synchronization systems for recursive AI-assisted software engineering." />
+  <link rel="preconnect" href="https://github.com" crossorigin>
+  <link rel="preconnect" href="https://zenodo.org" crossorigin>
+  <link rel="preconnect" href="https://doi.org" crossorigin>
+  <link rel="preconnect" href="https://orcid.org" crossorigin>
+  <link rel="dns-prefetch" href="//github.com">
+  <link rel="dns-prefetch" href="//zenodo.org">
+  <link rel="dns-prefetch" href="//doi.org">
+  <link rel="dns-prefetch" href="//orcid.org">
+  <link rel="preload" as="image" href="./figures/hero.png">
   <meta property="og:title" content="reflector — research publication landing" />
   <meta property="og:description" content="Publication-oriented landing page for reflector with abstract, metadata, PDF access, and research navigation." />
   <meta property="og:type" content="article" />
-  <meta property="og:image" content="https://egohygiene.github.io/reflector/figures/hero.png" />
-  <meta property="og:image:alt" content="reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures." />
+  <meta property="og:image" content="https://egohygiene.github.io/reflector/previews/paper-cover.webp" />
+  <meta property="og:image:alt" content="Preview thumbnail of the first page of the reflector publication PDF." />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="reflector — research publication landing" />
   <meta name="twitter:description" content="reflector publication landing page with PDF access, metadata, and synchronization-oriented research navigation." />
-  <meta name="twitter:image" content="https://egohygiene.github.io/reflector/figures/hero.png" />
-  <meta name="twitter:image:alt" content="reflector hero infographic depicting recursive synchronization, reflective orchestration, cognition-aware recursive systems, and semantic stabilization architectures." />
+  <meta name="twitter:image" content="https://egohygiene.github.io/reflector/previews/paper-cover.webp" />
+  <meta name="twitter:image:alt" content="Preview thumbnail of the first page of the reflector publication PDF." />
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="icon" href="./favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
@@ -105,6 +114,39 @@
 
     .repo-line .sep {
       color: var(--text-faint);
+    }
+
+    .breadcrumbs {
+      margin-bottom: 0.75rem;
+    }
+
+    .breadcrumbs ol {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      color: var(--text-faint);
+      font-size: 0.82rem;
+    }
+
+    .breadcrumbs li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .breadcrumbs li + li::before {
+      content: "›";
+      color: var(--text-faint);
+    }
+
+    .breadcrumbs a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+      color: var(--accent-hover);
     }
 
     .title-line {
@@ -353,6 +395,60 @@
       border-color: #58a6ff;
     }
 
+    .edition-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .edition-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(13, 17, 23, 0.55);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .edition-card img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+      background: #0f1318;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .edition-card-body {
+      padding: 0.75rem;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .edition-card-title {
+      font-size: 0.92rem;
+      font-weight: 650;
+    }
+
+    .edition-card-desc {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .edition-card-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .edition-card-link:hover {
+      color: var(--accent-hover);
+    }
+
     .timeline,
     .research-nav {
       list-style: none;
@@ -531,6 +627,10 @@
         flex-direction: row;
         flex-wrap: wrap;
       }
+
+      .edition-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 760px) {
@@ -561,6 +661,13 @@
 <body>
   <div class="wrap">
     <header>
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="https://github.com/egohygiene/reflector">Repository</a></li>
+          <li><a href="https://github.com/egohygiene/reflector/releases">Publications</a></li>
+          <li><span aria-current="page">reflector landing page</span></li>
+        </ol>
+      </nav>
       <p class="repo-line">
         <a href="https://github.com/egohygiene/reflector">egohygiene/reflector</a>
         <span class="sep">·</span>
@@ -579,11 +686,11 @@
       <dl class="meta-grid" aria-label="Publication metadata">
         <div class="meta-item">
           <dt>Publication status</dt>
-          <dd><span class="status">● Draft publication</span></dd>
+          <dd><span class="status" id="status-display">● Publication status from manifest</span></dd>
         </div>
         <div class="meta-item">
           <dt>Version</dt>
-          <dd id="version-display">v0.1.2, canonical route <code>reflector.pdf</code></dd>
+          <dd id="version-display">Version from publication manifest, canonical route <code>reflector.pdf</code></dd>
         </div>
         <div class="meta-item">
           <dt>DOI</dt>
@@ -650,6 +757,57 @@
             <a href="https://github.com/egohygiene/reflector/tree/main/paper">💻 Source</a>
             <a href="https://github.com/egohygiene/reflector">↩ Repository</a>
           </div>
+
+          <div class="edition-grid" aria-label="Publication editions">
+            <article class="edition-card">
+              <img
+                src="./previews/paper-cover.webp"
+                alt="Preview thumbnail of the first page of the reflector paper PDF."
+                width="1200"
+                height="1600"
+                decoding="async"
+                fetchpriority="high"
+                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
+              />
+              <div class="edition-card-body">
+                <p class="edition-card-title">Paper edition</p>
+                <p class="edition-card-desc">Canonical research manuscript with synchronized publication metadata.</p>
+                <a class="edition-card-link" href="./reflector.pdf">Open paper PDF →</a>
+              </div>
+            </article>
+            <article class="edition-card">
+              <img
+                src="./previews/magazine-cover.webp"
+                alt="Preview thumbnail of the first page of the reflector magazine PDF."
+                width="1200"
+                height="1600"
+                loading="lazy"
+                decoding="async"
+                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
+              />
+              <div class="edition-card-body">
+                <p class="edition-card-title">Magazine edition</p>
+                <p class="edition-card-desc">Visual companion format for guided reading, editorial pacing, and layout-first browsing.</p>
+                <a class="edition-card-link" href="./reflector-magazine.pdf">Open magazine PDF →</a>
+              </div>
+            </article>
+            <article class="edition-card">
+              <img
+                src="./previews/print-cover.webp"
+                alt="Preview thumbnail of the first page of the reflector print edition PDF."
+                width="1200"
+                height="1600"
+                loading="lazy"
+                decoding="async"
+                onerror="this.src='./figures/hero.png'; this.alt='reflector hero infographic fallback image'"
+              />
+              <div class="edition-card-body">
+                <p class="edition-card-title">Print edition</p>
+                <p class="edition-card-desc">Print-optimized magazine layout for offline review and archival circulation.</p>
+                <a class="edition-card-link" href="./reflector-magazine-print.pdf">Open print edition PDF →</a>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section class="card" aria-label="Abstract and research navigation">
@@ -671,17 +829,18 @@
           <ul class="research-nav">
             <li><a href="./reflector.pdf">📄 Read the paper (PDF)</a></li>
             <li><a href="./reflector-magazine.pdf">🎨 Read the magazine (PDF)</a></li>
+            <li><a href="./reflector-magazine-print.pdf">🖨️ Read the print edition (PDF)</a></li>
             <li><a href="https://doi.org/10.5281/zenodo.20477044">🔗 Cite via DOI</a></li>
             <li><a href="https://zenodo.org/records/20477044">🗄️ Zenodo archive record</a></li>
             <li><a href="https://github.com/egohygiene/reflector/releases">📦 GitHub release assets</a></li>
             <li><a href="./publication.json">🧾 Machine-readable publication manifest</a></li>
           </ul>
 
-          <h3>Publication timeline</h3>
+          <h3>Publication history</h3>
           <ul class="timeline">
-            <li>Current stage: Draft publication · synchronized Pages artifacts</li>
-            <li>Near-term: arXiv submission · DOI metadata synchronization hardening</li>
-            <li>Future: ORCID-aware and feed-driven publication dashboards</li>
+            <li><a id="release-history-link" href="https://github.com/egohygiene/reflector/releases/tag/v0.1.2">Current release tag · v0.1.2</a></li>
+            <li><a href="https://github.com/egohygiene/reflector/releases">Release archive for previous and future publication assets</a></li>
+            <li>Current stage: manifest-driven draft publication with synchronized Pages artifacts</li>
           </ul>
 
           <h3>Research navigation</h3>
@@ -792,6 +951,9 @@
         <span class="footer-sep">·</span>
         Canonical publication route: <a href="./">/reflector/</a>
       </div>
+      <div class="footer-row">
+        <span id="build-display">Build metadata loads from the published manifest when available.</span>
+      </div>
     </footer>
   </div>
 
@@ -836,9 +998,33 @@
       fetch('./publication.json')
         .then(function (r) { return r.json(); })
         .then(function (data) {
-          var el = document.getElementById('version-display');
-          if (el && data.version) {
-            el.textContent = 'v' + data.version + ', canonical route reflector.pdf';
+          var versionEl = document.getElementById('version-display');
+          if (versionEl && data.version) {
+            versionEl.textContent = 'v' + data.version + ', canonical route reflector.pdf';
+          }
+
+          var statusEl = document.getElementById('status-display');
+          var status = data.build && data.build.publication_status ? data.build.publication_status : data.status;
+          if (statusEl && status) {
+            statusEl.textContent = '● ' + status.charAt(0).toUpperCase() + status.slice(1) + ' publication';
+          }
+
+          var historyEl = document.getElementById('release-history-link');
+          if (historyEl && data.release_tag) {
+            historyEl.href = 'https://github.com/egohygiene/reflector/releases/tag/' + data.release_tag;
+            historyEl.textContent = 'Current release tag · ' + data.release_tag;
+          }
+
+          var buildEl = document.getElementById('build-display');
+          if (buildEl && data.build) {
+            var parts = [];
+            if (data.build.generated_at) {
+              parts.push('Published manifest built ' + data.build.generated_at);
+            }
+            if (data.build.commit_short_sha) {
+              parts.push('commit ' + data.build.commit_short_sha);
+            }
+            buildEl.textContent = parts.length ? parts.join(' · ') : buildEl.textContent;
           }
         })
         .catch(function () { /* fall back to static value */ });

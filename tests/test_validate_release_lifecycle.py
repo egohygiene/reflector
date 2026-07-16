@@ -38,7 +38,22 @@ def test_pages_workflow_publishes_canonical_manifest_and_required_routes() -> No
 
     assert 'ROOT_MANIFEST="publication.json"' in workflow
     assert 'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"' in workflow
+    assert "scripts/generate_pdf_previews.py" in workflow
+    assert '"docs/previews/paper-cover.webp"' in workflow
+    assert '"docs/previews/magazine-cover.webp"' in workflow
+    assert '"docs/previews/print-cover.webp"' in workflow
     assert '"docs/publication.json"' in workflow
     assert '"_site/publication.json"' in workflow
     assert '"${BASE_URL}publication.json"' in workflow
     assert '"${BASE_URL}figures/hero.png"' in workflow
+
+
+def test_pages_workflow_enriches_published_manifest_with_build_metadata() -> None:
+    repo_root = Path(__file__).resolve().parent.parent
+    workflow = (repo_root / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+
+    assert "Inject build metadata into published manifest" in workflow
+    assert '"commit_sha"' in workflow
+    assert '"generated_at"' in workflow
+    assert '"previews"' in workflow
+    assert '"publication_status"' in workflow

@@ -80,6 +80,12 @@ jobs:
           echo "build_paper=${BUILD_PAPER}" >> "$GITHUB_OUTPUT"
           echo "build_magazine=${BUILD_MAGAZINE}" >> "$GITHUB_OUTPUT"
 
+      - name: Install preview tooling
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils webp
+
       - name: Build reflector PDF
         if: steps.scope.outputs.build_paper == 'true'
         uses: xu-cheng/latex-action@v4
@@ -242,6 +248,61 @@ jobs:
           echo "docs/ file inventory:"
           find docs -type f | sort
 
+      - name: Generate publication previews
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_pdf_previews.py \
+            --output-dir docs/previews \
+            --preview paper-cover=docs/reflector.pdf \
+            --preview magazine-cover=docs/reflector-magazine.pdf \
+            --preview print-cover=docs/reflector-magazine-print.pdf
+
+      - name: Inject build metadata into published manifest
+        env:
+          GITHUB_SHA_VALUE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          manifest_path = Path("docs/publication.json")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          pages_url = manifest["pages_url"].rstrip("/") + "/"
+          preview_base = pages_url + "previews/"
+          commit_sha = os.environ["GITHUB_SHA_VALUE"]
+
+          manifest["build"] = {
+              "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+              "commit_sha": commit_sha,
+              "commit_short_sha": commit_sha[:7],
+              "publication_status": manifest.get("status", "draft"),
+              "source_workflow": "pages.yml",
+          }
+          manifest["previews"] = {
+              "paper": {
+                  "path": "previews/paper-cover.webp",
+                  "pages_url": preview_base + "paper-cover.webp",
+                  "alt": "Preview thumbnail of reflector paper first page",
+              },
+              "magazine": {
+                  "path": "previews/magazine-cover.webp",
+                  "pages_url": preview_base + "magazine-cover.webp",
+                  "alt": "Preview thumbnail of reflector magazine first page",
+              },
+              "print": {
+                  "path": "previews/print-cover.webp",
+                  "pages_url": preview_base + "print-cover.webp",
+                  "alt": "Preview thumbnail of reflector print edition first page",
+              },
+          }
+
+          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          print(f"Enriched {manifest_path} with build metadata and previews.")
+          PY
+
       - name: Verify publication synchronization
         run: |
           set -euo pipefail
@@ -274,6 +335,9 @@ jobs:
             "docs/reflector-magazine.pdf" \
             "docs/reflector-magazine-print.pdf" \
             "docs/figures/hero.png" \
+            "docs/previews/paper-cover.webp" \
+            "docs/previews/magazine-cover.webp" \
+            "docs/previews/print-cover.webp" \
             "docs/index.html" \
             "docs/publication.json" \
             "_site/reflector.pdf" \
@@ -281,6 +345,9 @@ jobs:
             "_site/reflector-magazine-print.pdf" \
             "_site/index.html" \
             "_site/figures/hero.png" \
+            "_site/previews/paper-cover.webp" \
+            "_site/previews/magazine-cover.webp" \
+            "_site/previews/print-cover.webp" \
             "_site/publication.json"
           do
             if [[ ! -f "${required_path}" ]]; then
@@ -355,8 +422,14 @@ jobs:
           echo "- /reflector/reflector-magazine-print.pdf"
           echo "- /reflector/publication.json"
           echo "- /reflector/figures/hero.png"
+          echo "- /reflector/previews/paper-cover.webp"
+          echo "- /reflector/previews/magazine-cover.webp"
+          echo "- /reflector/previews/print-cover.webp"
 
           grep -q 'src="./figures/hero.png"' docs/index.html || { echo 'Error: docs/index.html is missing hero image route.' >&2; exit 1; }
+          grep -q 'src="./previews/paper-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing paper preview route.' >&2; exit 1; }
+          grep -q 'src="./previews/magazine-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing magazine preview route.' >&2; exit 1; }
+          grep -q 'src="./previews/print-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing print preview route.' >&2; exit 1; }
           grep -q 'href="./reflector.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing paper download route.' >&2; exit 1; }
           grep -q 'href="./reflector-magazine.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing magazine download route.' >&2; exit 1; }
           grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing print edition download route.' >&2; exit 1; }
@@ -404,6 +477,12 @@ jobs:
               "version": manifest.get("version"),
               "release_tag": manifest.get("release_tag"),
               "pages_url": manifest.get("pages_url"),
+              "preview_paper_path": manifest.get("previews", {}).get("paper", {}).get("path"),
+              "preview_magazine_path": manifest.get("previews", {}).get("magazine", {}).get("path"),
+              "preview_print_path": manifest.get("previews", {}).get("print", {}).get("path"),
+              "generated_at": manifest.get("build", {}).get("generated_at"),
+              "commit_sha": manifest.get("build", {}).get("commit_sha"),
+              "publication_status": manifest.get("build", {}).get("publication_status"),
               "paper_pages_url": manifest.get("artifacts", {}).get("paper", {}).get("pages_url"),
               "magazine_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("pages_url"),
               "magazine_print_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("print_pages_url"),
@@ -480,6 +559,9 @@ jobs:
             "${BASE_URL}reflector-magazine-print.pdf"
             "${BASE_URL}publication.json"
             "${BASE_URL}figures/hero.png"
+            "${BASE_URL}previews/paper-cover.webp"
+            "${BASE_URL}previews/magazine-cover.webp"
+            "${BASE_URL}previews/print-cover.webp"
           )
 
           for url in "${URLS[@]}"; do
@@ -509,3 +591,6 @@ jobs:
           echo "- ${{ steps.deployment.outputs.page_url }}reflector.pdf"
           echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine.pdf"
           echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine-print.pdf"
+          echo "- ${{ steps.deployment.outputs.page_url }}previews/paper-cover.webp"
+          echo "- ${{ steps.deployment.outputs.page_url }}previews/magazine-cover.webp"
+          echo "- ${{ steps.deployment.outputs.page_url }}previews/print-cover.webp"
