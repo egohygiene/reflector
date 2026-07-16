@@ -356,19 +356,25 @@ jobs:
           echo "- /reflector/publication.json"
           echo "- /reflector/figures/hero.png"
 
-          grep -q 'src="./figures/hero.png"' docs/index.html
-          grep -q 'href="./reflector.pdf"' docs/index.html
-          grep -q 'href="./reflector-magazine.pdf"' docs/index.html
-          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
-          grep -q 'href="./publication.json"' docs/index.html
-          grep -q "fetch('./publication.json')" docs/index.html
+          grep -q 'src="./figures/hero.png"' docs/index.html || { echo 'Error: docs/index.html is missing hero image route.' >&2; exit 1; }
+          grep -q 'href="./reflector.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing paper download route.' >&2; exit 1; }
+          grep -q 'href="./reflector-magazine.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing magazine download route.' >&2; exit 1; }
+          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing print edition download route.' >&2; exit 1; }
+          grep -q 'href="./publication.json"' docs/index.html || { echo 'Error: docs/index.html is missing publication manifest link.' >&2; exit 1; }
+          grep -q "fetch('./publication.json')" docs/index.html || { echo 'Error: docs/index.html is missing publication manifest fetch call.' >&2; exit 1; }
 
           python - <<'PY'
           import json
           import re
           from pathlib import Path
 
-          index_html = Path("docs/index.html").read_text(encoding="utf-8")
+          index_path = Path("docs/index.html")
+          try:
+              index_html = index_path.read_text(encoding="utf-8")
+          except FileNotFoundError as error:
+              raise SystemExit(
+                  f"Error: expected Pages entrypoint is missing: {index_path}"
+              ) from error
           iframe_checks = {
               "reflector.pdf": r'<iframe[^>]+title="reflector paper PDF"[^>]+src="./reflector\.pdf"',
               "reflector-magazine.pdf": r'<iframe[^>]+title="reflector magazine PDF"[^>]+src="./reflector-magazine\.pdf"',
