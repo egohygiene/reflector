@@ -39,24 +39,27 @@ REQUIRED_PUBLICATION_WORKFLOW_TOKENS = (
     "publication.json",
     "figures/hero.png",
 )
+COMMON_PAGES_VALIDATION_TOKENS = (
+    'ROUTES=(',
+    'printf \'Checking <%s>\\n\' "${url}"',
+    'printf \'Shell-escaped URL: %q\\n\' "${url}"',
+)
+COMMON_PAGES_VALIDATION_ERROR_TOKENS = (
+    'echo "::error::Malformed validation base URL: $(printf \'%q\' "${BASE_URL}")"',
+    'echo "::error::Malformed validation URL: $(printf \'%q\' "${url}")"',
+)
 REQUIRED_PAGES_WORKFLOW_TOKENS = (
     'ROOT_MANIFEST="publication.json"',
     'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"',
     '"docs/publication.json"',
     '"_site/publication.json"',
-    'ROUTES=(',
-    'printf \'Checking <%s>\\n\' "${url}"',
-    "printf 'Shell-escaped URL: %q\\n' \"${url}\"",
-    'echo "::error::Malformed validation base URL: $(printf \'%q\' "${BASE_URL}")"',
-    'echo "::error::Malformed validation URL: $(printf \'%q\' "${url}")"',
+    *COMMON_PAGES_VALIDATION_TOKENS,
+    *COMMON_PAGES_VALIDATION_ERROR_TOKENS,
 )
 REQUIRED_TEMPLATE_PAGES_WORKFLOW_TOKENS = (
     'print(manifest[\'slug\'])',
-    'ROUTES=(',
-    'printf \'Checking <%s>\\n\' "${url}"',
-    "printf 'Shell-escaped URL: %q\\n' \"${url}\"",
-    'echo "::error::Malformed validation base URL: $(printf \'%q\' "${BASE_URL}")"',
-    'echo "::error::Malformed validation URL: $(printf \'%q\' "${url}")"',
+    *COMMON_PAGES_VALIDATION_TOKENS,
+    *COMMON_PAGES_VALIDATION_ERROR_TOKENS,
 )
 
 
