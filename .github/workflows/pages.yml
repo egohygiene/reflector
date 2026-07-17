@@ -559,7 +559,8 @@ jobs:
               echo "::error::Malformed validation ${label} (must not contain control characters): $(printf '%q' "${value}")"
               exit 1
             fi
-            if [[ "${value}" =~ ^[[:space:]] || "${value}" =~ [[:space:];,]$ ]]; then
+            local trailing_re='[[:space:];,]$'
+            if [[ "${value}" =~ ^[[:space:]] ]] || [[ "${value}" =~ ${trailing_re} ]]; then
               echo "::error::Malformed validation ${label} (must not start with whitespace or end with trailing whitespace, ';', or ','): $(printf '%q' "${value}")"
               exit 1
             fi
