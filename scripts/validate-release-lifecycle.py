@@ -44,8 +44,19 @@ REQUIRED_PAGES_WORKFLOW_TOKENS = (
     'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"',
     '"docs/publication.json"',
     '"_site/publication.json"',
-    '"${BASE_URL}publication.json"',
-    '"${BASE_URL}figures/hero.png"',
+    'ROUTES=(',
+    'printf \'Checking <%s>\\n\' "${url}"',
+    "printf 'Shell-escaped URL: %q\\n' \"${url}\"",
+    'echo "::error::Malformed validation base URL: $(printf \'%q\' "${BASE_URL}")"',
+    'echo "::error::Malformed validation URL: $(printf \'%q\' "${url}")"',
+)
+REQUIRED_TEMPLATE_PAGES_WORKFLOW_TOKENS = (
+    'print(manifest[\'slug\'])',
+    'ROUTES=(',
+    'printf \'Checking <%s>\\n\' "${url}"',
+    "printf 'Shell-escaped URL: %q\\n' \"${url}\"",
+    'echo "::error::Malformed validation base URL: $(printf \'%q\' "${BASE_URL}")"',
+    'echo "::error::Malformed validation URL: $(printf \'%q\' "${url}")"',
 )
 
 
@@ -113,6 +124,7 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
     tag_workflow_path = repo_root / ".github" / "workflows" / "release-tag.yml"
     publication_workflow_path = repo_root / ".github" / "workflows" / "publication.yml"
     pages_workflow_path = repo_root / ".github" / "workflows" / "pages.yml"
+    template_pages_workflow_path = repo_root / "template" / ".github" / "workflows" / "pages.yml"
 
     try:
         release_workflow_text = release_workflow_path.read_text(encoding="utf-8")
@@ -145,6 +157,13 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
             if token not in pages_workflow_text:
                 valid = False
                 log_error(f"pages.yml is missing required token: '{token}'.")
+
+    if template_pages_workflow_path.exists():
+        template_pages_workflow_text = template_pages_workflow_path.read_text(encoding="utf-8")
+        for token in REQUIRED_TEMPLATE_PAGES_WORKFLOW_TOKENS:
+            if token not in template_pages_workflow_text:
+                valid = False
+                log_error(f"template/.github/workflows/pages.yml is missing required token: '{token}'.")
 
     return valid
 
