@@ -11,6 +11,31 @@
           "type": "yaml",
           "path": "CITATION.cff",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "yaml",
+          "path": "metadata/publication.yaml",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": ".zenodo.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "codemeta.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "publication.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "release-manifest.json",
+          "jsonpath": "$.current_version"
         }
       ]
     }

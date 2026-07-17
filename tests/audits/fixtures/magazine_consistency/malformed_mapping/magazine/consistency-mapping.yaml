@@ -1,0 +1,5 @@
+spec_version: 1.0
+page_mappings:
+  - id: bad
+    - not: valid: yaml: here
+  broken: [unclosed

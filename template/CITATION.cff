@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+type: software
+message: If you use this work, please cite it using the metadata from this file.
+title: "An Example Research Publication: A Generic Template for Research Papers"
+authors:
+  - family-names: Author
+    given-names: First
+    orcid: https://orcid.org/0000-0000-0000-0000
+repository-code: https://github.com/your-org/your-repo
+abstract: >-
+  Placeholder abstract for the example publication template.
+  Replace with your actual abstract.
+keywords:
+  - research publication
+  - template
+  - example
+license: Apache-2.0
+version: 0.1.0
+date-released: '2026-01-01'

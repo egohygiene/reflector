@@ -191,6 +191,21 @@ tasks:
       - '{{.PYTHON}} scripts/validate-metadata.py'
       - '{{.PYTHON}} scripts/audit-publication-readiness.py'
 
+  audit:magazine:
+    desc: Run magazine-to-manuscript consistency audit (audits/magazine-consistency.md)
+    cmds:
+      - '{{.PYTHON}} scripts/audit-magazine-consistency.py'
+
+  sync:version:
+    desc: Propagate VERSION to all downstream metadata files
+    cmds:
+      - '{{.PYTHON}} scripts/sync-version.py'
+
+  sync:version:check:
+    desc: Verify all metadata version surfaces match VERSION (dry run)
+    cmds:
+      - '{{.PYTHON}} scripts/sync-version.py --check'
+
   examples:
     desc: Run lightweight CLI examples for local experimentation
     aliases: [demo, sandbox]

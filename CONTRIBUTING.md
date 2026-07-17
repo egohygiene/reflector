@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to this repository.
 
+For environment setup, see [`docs/getting-started.md`](./docs/getting-started.md).
+
 ## Repository Structure
 
 The paper uses a publisher-agnostic publication architecture that separates
@@ -85,6 +87,11 @@ act pull_request -W .github/workflows/synchronization.yml
 ```
 
 See [`docs/act.md`](./docs/act.md) for canonical `.actrc` defaults, workflow boundaries, and troubleshooting.
+
+For release handoff and audit navigation, use:
+
+- [`docs/release-process.md`](./docs/release-process.md) — canonical release and Zenodo deposition procedure
+- [`audits/README.md`](./audits/README.md) — canonical committed audit archive index
 
 ## Style Guidelines
 

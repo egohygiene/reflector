@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -175,7 +175,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -225,7 +225,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check REUSE compliance
         uses: fsfe/reuse-action@v6
@@ -243,7 +243,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Determine paper directory
         id: vars
@@ -372,7 +372,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Determine paper directory
         id: vars
@@ -459,7 +459,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Determine paper directory and version
         id: vars
@@ -565,7 +565,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build magazine PDF (digital)
         uses: xu-cheng/latex-action@v4
@@ -665,7 +665,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -1167,7 +1167,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -1235,15 +1235,35 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
           PAGES_BASE="https://${OWNER}.github.io/${REPO_NAME}/"
           echo "Validating Pages routes..."
+          pages_missing=0
           for route in \
             "" \
             "reflector.pdf" \
             "reflector-magazine.pdf" \
-            "reflector-magazine-print.pdf"; do
+            "reflector-magazine-print.pdf" \
+            "publication.json" \
+            "figures/hero.png"; do
             url="${PAGES_BASE}${route}"
             echo "Checking ${url}"
-            curl --location --silent --show-error --fail --head "${url}" >/dev/null
+            set +e
+            http_status="$(curl \
+              --location \
+              --silent \
+              --show-error \
+              --output /dev/null \
+              --write-out '%{http_code}' \
+              --head \
+              "${url}")"
+            curl_status=$?
+            set -e
+            if [[ "${curl_status}" -ne 0 || ! "${http_status}" =~ ^[23][0-9][0-9]$ ]]; then
+              echo "::warning::GitHub Pages deployment is asynchronous; '${url}' is not yet available (curl=${curl_status}, http=${http_status}). Continuing with release asset validation."
+              pages_missing=1
+            fi
           done
+          if [[ "${pages_missing}" == "1" ]]; then
+            echo "One or more Pages routes are not yet available; continuing because GitHub Pages publishes from a separate workflow."
+          fi
 
           echo "Validating release assets for ${TAG}..."
           python - <<'PY'

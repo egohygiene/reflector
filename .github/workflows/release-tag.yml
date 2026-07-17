@@ -17,6 +17,7 @@ on:
       - ".github/workflows/release-paper.yml"
       - "scripts/validate-metadata.py"
       - "scripts/validate-release-lifecycle.py"
+      - "scripts/sync-version.py"
 
   workflow_dispatch:
 
@@ -30,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -38,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --quiet pyyaml>=6.0
+          python scripts/sync-version.py --check
           python scripts/validate-metadata.py
           python scripts/validate-release-lifecycle.py
 

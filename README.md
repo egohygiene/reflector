@@ -66,6 +66,9 @@ The repository architecture is intentionally layered:
 
 ## Quick start
 
+See [`docs/getting-started.md`](./docs/getting-started.md) for the complete
+zero-to-working-environment walkthrough.
+
 ### Recommended local workflow
 
 reflector's canonical developer workflow uses [`task`](https://taskfile.dev/) with [`uv`](https://docs.astral.sh/uv/):
@@ -113,6 +116,7 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 
 | Need | Start here |
 | --- | --- |
+| Getting started | [`docs/getting-started.md`](./docs/getting-started.md) |
 | Canonical onboarding | [`00-README.md`](./00-README.md) |
 | Repository architecture | [`docs/architecture-overview.md`](./docs/architecture-overview.md) |
 | Publication architecture | [`docs/publication-architecture.md`](./docs/publication-architecture.md) |
@@ -121,6 +125,7 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 | Paper overview | [`paper/README.md`](./paper/README.md) |
 | Magazine overview | [`magazine/README.md`](./magazine/README.md) |
 | Publication specs | [`specs/publication/`](./specs/publication/) |
+| Audit archive index | [`audits/README.md`](./audits/README.md) |
 | Research notes | [`docs/research/`](./docs/research/) |
 | Roadmap | [`ROADMAP.md`](./ROADMAP.md) |
 
@@ -149,6 +154,7 @@ Use the version DOI when citing a specific archived release:
 - Release metadata and DOI synchronization contract: [`release-manifest.json`](./release-manifest.json)
 - Release workflow and DOI lifecycle: [`docs/release-process.md`](./docs/release-process.md)
 - Publication infrastructure details: [`docs/publication-infrastructure.md`](./docs/publication-infrastructure.md)
+- Committed audit archive index: [`audits/README.md`](./audits/README.md)
 
 ## Hugging Face readiness
 
@@ -170,3 +176,42 @@ reflector is not publishing to Hugging Face yet, but it is now structured to mak
 ## Long-term vision
 
 reflector aims to become a durable reference architecture for recursive engineering systems: publication-aware, specification-driven, synchronization-first, and legible to both humans and automation. The near-term roadmap is to complete the manuscript, harden the audit and release paths, and prepare clean distribution surfaces for arXiv, GitHub Pages, and future Hugging Face publication.
+
+## Repository lifecycle
+
+Reflector serves two roles simultaneously:
+
+- the published **Reflector research project** (the manuscript, magazine, and publication artifacts)
+- the production **reference implementation** of the Reflector publication platform
+
+The intended lifecycle is:
+
+```
+Reflector (reference implementation)
+    ↓
+Template Extraction
+    ↓
+Reusable Publication Platform
+    ↓
+Future Publications
+```
+
+Once template extraction is complete, future improvements to the generalized
+publication infrastructure should occur within the extracted template or its
+eventual standalone repository. Reflector will remain the canonical reference
+implementation demonstrating the platform in a real publication.
+
+See [`audits/reference-implementation-readiness.md`](./audits/reference-implementation-readiness.md)
+and [`ROADMAP.md`](./ROADMAP.md) for the current development status.
+
+## Publication Platform Template
+
+Reflector now includes an extracted reusable publication platform in
+[`template/`](./template/). The template packages the generalized paper,
+metadata, CI, and Pages infrastructure so it can be copied into a new repository
+as a bootstrap for a research publication.
+
+Reflector remains the reference implementation for this platform. Future reuse
+should start from `template/`, while Reflector continues to demonstrate the full
+system in a live publication repository.
+

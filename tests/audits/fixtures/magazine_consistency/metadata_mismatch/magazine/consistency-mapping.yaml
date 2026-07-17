@@ -1,0 +1,40 @@
+spec_version: "1.0"
+
+metadata_sync:
+  - id: meta-publication-version
+    rule: RULE-007
+    manuscript_source: "metadata/publication.yaml"
+    manuscript_field: "version"
+    magazine_target: "magazine/spec.md"
+    magazine_field: "version"
+    relationship: advisory
+    description: "Version advisory check"
+
+page_mappings:
+  - id: page01-cover
+    rule: RULE-004
+    manuscript_source: "paper/macros/metadata.tex"
+    magazine_target: "magazine/pages/page01-cover.png"
+    relationship_type: derived-from
+    relationship: required
+    description: "Cover page"
+
+  - id: page02-intro
+    rule: RULE-004
+    manuscript_source: "paper/sections/introduction.tex"
+    magazine_target: "magazine/pages/page02-intro.png"
+    relationship_type: derived-from
+    relationship: required
+    description: "Introduction page"
+
+figure_mappings:
+  - id: fig-figure1-to-page02
+    rule: RULE-008
+    manuscript_figure_id: "reflector-figure-1"
+    manuscript_source: "paper/figures/figure1.png"
+    magazine_target: "magazine/pages/page02-intro.png"
+    relationship_type: derived-from
+    relationship: advisory
+    description: "Intro figure derived from figure1"
+
+exceptions: []

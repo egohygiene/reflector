@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -79,6 +79,12 @@ jobs:
 
           echo "build_paper=${BUILD_PAPER}" >> "$GITHUB_OUTPUT"
           echo "build_magazine=${BUILD_MAGAZINE}" >> "$GITHUB_OUTPUT"
+
+      - name: Install preview tooling
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils webp
 
       - name: Build reflector PDF
         if: steps.scope.outputs.build_paper == 'true'
@@ -157,6 +163,7 @@ jobs:
 
           PAPER_SLUG="reflector"
           HERO_SOURCE="paper/figures/hero.png"
+          ROOT_MANIFEST="publication.json"
           DOCS_PDF="docs/${PAPER_SLUG}.pdf"
           DOCS_MAGAZINE_PDF="docs/reflector-magazine.pdf"
           DOCS_MAGAZINE_PRINT_PDF="docs/reflector-magazine-print.pdf"
@@ -215,6 +222,11 @@ jobs:
             exit 1
           fi
 
+          if [[ ! -f "${ROOT_MANIFEST}" ]]; then
+            echo "Error: Expected canonical publication manifest not found at '${ROOT_MANIFEST}'" >&2
+            exit 1
+          fi
+
           mkdir --parents "${DOCS_HERO_DIR}"
           if [[ -n "${PDF_SOURCE}" && "${PDF_SOURCE}" != "${DOCS_PDF}" ]]; then
             cp "${PDF_SOURCE}" "${DOCS_PDF}"
@@ -226,25 +238,70 @@ jobs:
             cp "${MAGAZINE_PRINT_PDF_SOURCE}" "${DOCS_MAGAZINE_PRINT_PDF}"
           fi
           cp "${HERO_SOURCE}" "${DOCS_HERO}"
-
-          jq -cn \
-            --arg paper "${PAPER_SLUG}" \
-            --arg sha "${GITHUB_SHA}" \
-            --arg short_sha "${GITHUB_SHA::12}" \
-            --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --arg pdf "${PAPER_SLUG}.pdf" \
-            --arg magazine_pdf "reflector-magazine.pdf" \
-            --arg magazine_print_pdf "reflector-magazine-print.pdf" \
-            '{paper: $paper, sha: $sha, short_sha: $short_sha, generated_at: $generated_at, pdf: $pdf, magazine_pdf: $magazine_pdf, magazine_print_pdf: $magazine_print_pdf}' \
-            > "${DOCS_MANIFEST}"
+          cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"
 
           echo "Published PDF: ${DOCS_PDF}"
           echo "Published magazine PDF: ${DOCS_MAGAZINE_PDF}"
           echo "Published magazine print PDF: ${DOCS_MAGAZINE_PRINT_PDF}"
           echo "Published hero image: ${DOCS_HERO}"
-          echo "Publication manifest: ${DOCS_MANIFEST}"
+          echo "Published canonical publication manifest: ${DOCS_MANIFEST}"
           echo "docs/ file inventory:"
           find docs -type f | sort
+
+      - name: Generate publication previews
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_pdf_previews.py \
+            --output-dir docs/previews \
+            --preview paper-cover=docs/reflector.pdf \
+            --preview magazine-cover=docs/reflector-magazine.pdf \
+            --preview print-cover=docs/reflector-magazine-print.pdf
+
+      - name: Inject build metadata into published manifest
+        env:
+          GITHUB_SHA_VALUE: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          manifest_path = Path("docs/publication.json")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          pages_url = manifest["pages_url"].rstrip("/") + "/"
+          preview_base = pages_url + "previews/"
+          commit_sha = os.environ["GITHUB_SHA_VALUE"]
+
+          manifest["build"] = {
+              "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+              "commit_sha": commit_sha,
+              "commit_short_sha": commit_sha[:7],
+              "publication_status": manifest.get("status", "draft"),
+              "source_workflow": "pages.yml",
+          }
+          manifest["previews"] = {
+              "paper": {
+                  "path": "previews/paper-cover.webp",
+                  "pages_url": preview_base + "paper-cover.webp",
+                  "alt": "Preview thumbnail of reflector paper first page",
+              },
+              "magazine": {
+                  "path": "previews/magazine-cover.webp",
+                  "pages_url": preview_base + "magazine-cover.webp",
+                  "alt": "Preview thumbnail of reflector magazine first page",
+              },
+              "print": {
+                  "path": "previews/print-cover.webp",
+                  "pages_url": preview_base + "print-cover.webp",
+                  "alt": "Preview thumbnail of reflector print edition first page",
+              },
+          }
+
+          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          print(f"Enriched {manifest_path} with build metadata and previews.")
+          PY
 
       - name: Verify publication synchronization
         run: |
@@ -264,6 +321,7 @@ jobs:
           DOCS_PDF="docs/reflector.pdf"
           DOCS_MAGAZINE_PDF="docs/reflector-magazine.pdf"
           DOCS_MAGAZINE_PRINT_PDF="docs/reflector-magazine-print.pdf"
+          ROOT_MANIFEST="publication.json"
 
           mkdir --parents _site
           cp --recursive docs/. _site/
@@ -277,6 +335,9 @@ jobs:
             "docs/reflector-magazine.pdf" \
             "docs/reflector-magazine-print.pdf" \
             "docs/figures/hero.png" \
+            "docs/previews/paper-cover.webp" \
+            "docs/previews/magazine-cover.webp" \
+            "docs/previews/print-cover.webp" \
             "docs/index.html" \
             "docs/publication.json" \
             "_site/reflector.pdf" \
@@ -284,6 +345,9 @@ jobs:
             "_site/reflector-magazine-print.pdf" \
             "_site/index.html" \
             "_site/figures/hero.png" \
+            "_site/previews/paper-cover.webp" \
+            "_site/previews/magazine-cover.webp" \
+            "_site/previews/print-cover.webp" \
             "_site/publication.json"
           do
             if [[ ! -f "${required_path}" ]]; then
@@ -298,6 +362,11 @@ jobs:
               exit 1
             fi
           done
+
+          if [[ ! -f "${ROOT_MANIFEST}" ]]; then
+            echo "Error: Expected canonical publication manifest is missing: ${ROOT_MANIFEST}" >&2
+            exit 1
+          fi
 
           PDF_SOURCE_SHA="$(sha256sum "${PDF_SOURCE}" | awk '{print $1}')"
           PDF_DOCS_SHA="$(sha256sum "${DOCS_PDF}" | awk '{print $1}')"
@@ -338,17 +407,92 @@ jobs:
             exit 1
           fi
 
+          MANIFEST_DOCS_SHA="$(sha256sum "docs/publication.json" | awk '{print $1}')"
+          MANIFEST_SITE_SHA="$(sha256sum "_site/publication.json" | awk '{print $1}')"
+          if [[ "${MANIFEST_DOCS_SHA}" != "${MANIFEST_SITE_SHA}" ]]; then
+            echo "Error: publication.json checksum mismatch between docs and _site routes." >&2
+            exit 1
+          fi
+
           echo "Published routes:"
           echo "- /reflector/"
           echo "- /reflector/reflector.pdf"
           echo "- /reflector/reflector-magazine.pdf"
           echo "- /reflector/reflector-magazine-print.pdf"
+          echo "- /reflector/publication.json"
           echo "- /reflector/figures/hero.png"
+          echo "- /reflector/previews/paper-cover.webp"
+          echo "- /reflector/previews/magazine-cover.webp"
+          echo "- /reflector/previews/print-cover.webp"
 
-          grep -q 'src="./figures/hero.png"' docs/index.html
-          grep -q 'href="./reflector.pdf"' docs/index.html
-          grep -q 'href="./reflector-magazine.pdf"' docs/index.html
-          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html
+          grep -q 'src="./figures/hero.png"' docs/index.html || { echo 'Error: docs/index.html is missing hero image route.' >&2; exit 1; }
+          grep -q 'src="./previews/paper-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing paper preview route.' >&2; exit 1; }
+          grep -q 'src="./previews/magazine-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing magazine preview route.' >&2; exit 1; }
+          grep -q 'href="./reflector.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing paper download route.' >&2; exit 1; }
+          grep -q 'href="./reflector-magazine.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing magazine download route.' >&2; exit 1; }
+          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing print edition download route.' >&2; exit 1; }
+          # Both publication.json references are required: the link is user-facing, while the fetch call powers dynamic metadata in the landing page UI.
+          grep -q 'href="./publication.json"' docs/index.html || { echo 'Error: docs/index.html is missing publication manifest link.' >&2; exit 1; }
+          grep -q "fetch('./publication.json')" docs/index.html || { echo 'Error: docs/index.html is missing publication manifest fetch call.' >&2; exit 1; }
+
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          index_path = Path("docs/index.html")
+          try:
+              index_html = index_path.read_text(encoding="utf-8")
+          except FileNotFoundError as error:
+              raise SystemExit(
+                  f"Error: expected Pages entrypoint is missing: {index_path.as_posix()}"
+              ) from error
+          iframe_checks = {
+              "reflector.pdf": r'<iframe[^>]+title="reflector paper PDF"[^>]+src="./reflector\.pdf"',
+              "reflector-magazine.pdf": r'<iframe[^>]+title="reflector magazine PDF"[^>]+src="./reflector-magazine\.pdf"',
+              "reflector-magazine-print.pdf": r'<iframe[^>]+title="reflector print edition PDF"[^>]+src="./reflector-magazine-print\.pdf"',
+          }
+          missing_iframes = [
+              filename
+              for filename, pattern in iframe_checks.items()
+              if not re.search(pattern, index_html, flags=re.DOTALL)
+          ]
+          if missing_iframes:
+              raise SystemExit(
+                  "Error: docs/index.html is missing embedded publication iframe routes for: "
+                  + ", ".join(missing_iframes)
+              )
+
+          manifest_path = Path("docs/publication.json")
+          try:
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          except json.JSONDecodeError as error:
+              raise SystemExit(
+                  f"Error: {manifest_path} is not valid JSON at line {error.lineno}, "
+                  f"column {error.colno}: {error.msg}"
+              ) from error
+          required_fields = {
+              "version": manifest.get("version"),
+              "release_tag": manifest.get("release_tag"),
+              "pages_url": manifest.get("pages_url"),
+              "preview_paper_path": manifest.get("previews", {}).get("paper", {}).get("path"),
+              "preview_magazine_path": manifest.get("previews", {}).get("magazine", {}).get("path"),
+              "preview_print_path": manifest.get("previews", {}).get("print", {}).get("path"),
+              "generated_at": manifest.get("build", {}).get("generated_at"),
+              "commit_sha": manifest.get("build", {}).get("commit_sha"),
+              "publication_status": manifest.get("build", {}).get("publication_status"),
+              "paper_pages_url": manifest.get("artifacts", {}).get("paper", {}).get("pages_url"),
+              "magazine_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("pages_url"),
+              "magazine_print_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("print_pages_url"),
+          }
+          missing = [name for name, value in required_fields.items() if not value]
+          if missing:
+              raise SystemExit(
+                  "Error: docs/publication.json is missing required publication fields: "
+                  + ", ".join(missing)
+              )
+          print("publication.json contains required publication metadata fields.")
+          PY
 
           VERSION="$(tr -d '[:space:]' < VERSION)"
           PDF_SIZE="$(wc -c < "${DOCS_PDF}" | tr -d '[:space:]')"
@@ -384,6 +528,20 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: Print Pages staging diagnostics on failure
+        if: failure()
+        run: |
+          set +e
+          for path in docs _site paper/.cache/out magazine/dist magazine/.cache/out; do
+            if [[ -e "${path}" ]]; then
+              echo "::group::${path}"
+              find "${path}" -maxdepth 2 \( -type f -o -type d \) | sort
+              echo "::endgroup::"
+            else
+              echo "Missing diagnostic path: ${path}"
+            fi
+          done
+
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
@@ -397,7 +555,11 @@ jobs:
             "${BASE_URL}reflector.pdf"
             "${BASE_URL}reflector-magazine.pdf"
             "${BASE_URL}reflector-magazine-print.pdf"
+            "${BASE_URL}publication.json"
             "${BASE_URL}figures/hero.png"
+            "${BASE_URL}previews/paper-cover.webp"
+            "${BASE_URL}previews/magazine-cover.webp"
+            "${BASE_URL}previews/print-cover.webp"
           )
 
           for url in "${URLS[@]}"; do
@@ -427,3 +589,6 @@ jobs:
           echo "- ${{ steps.deployment.outputs.page_url }}reflector.pdf"
           echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine.pdf"
           echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine-print.pdf"
+          echo "- ${{ steps.deployment.outputs.page_url }}previews/paper-cover.webp"
+          echo "- ${{ steps.deployment.outputs.page_url }}previews/magazine-cover.webp"
+          echo "- ${{ steps.deployment.outputs.page_url }}previews/print-cover.webp"
