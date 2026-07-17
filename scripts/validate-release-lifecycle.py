@@ -40,14 +40,16 @@ REQUIRED_PUBLICATION_WORKFLOW_TOKENS = (
     "figures/hero.png",
 )
 COMMON_PAGES_VALIDATION_TOKENS = (
-    'ROUTES=(',
-    'printf \'Checking <%s>\\n\' "${url}"',
-    'printf \'Shell-escaped URL: %q\\n\' "${url}"',
+    "ROUTES=(",
+    "validate_clean_value() {",
+    "printf 'Checking <%s>\\n' \"${url}\"",
+    "printf 'Shell-escaped URL: %q\\n' \"${url}\"",
 )
 COMMON_PAGES_VALIDATION_ERROR_TOKENS = (
-    'echo "::error::Malformed validation base URL (must not end with trailing whitespace, \';\', or \',\'): $(printf \'%q\' "${BASE_URL}")"',
-    'echo "::error::Malformed validation route (must not end with trailing whitespace, \';\', or \',\'): $(printf \'%q\' "${route}")"',
-    'echo "::error::Malformed validation URL (must not end with trailing whitespace, \';\', or \',\'): $(printf \'%q\' "${url}")"',
+    "Malformed validation base URL",
+    "Malformed validation URL",
+    "must start with https://",
+    'validate_clean_value "route" "${route}"',
 )
 REQUIRED_PAGES_WORKFLOW_TOKENS = (
     'ROOT_MANIFEST="publication.json"',

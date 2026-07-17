@@ -1236,9 +1236,22 @@ jobs:
           PAGES_BASE="https://${OWNER}.github.io/${REPO_NAME}/"
           PAGES_BASE="${PAGES_BASE//$'\r'/}"
           PAGES_BASE="${PAGES_BASE//$'\n'/}"
+          validate_clean_value() {
+            local label="$1"
+            local value="$2"
+            if [[ "${value}" =~ [[:cntrl:]] ]]; then
+              echo "::error::Malformed validation ${label} (must not contain control characters): $(printf '%q' "${value}")"
+              exit 1
+            fi
+            if [[ "${value}" =~ ^[[:space:]] || "${value}" =~ [[:space:];,]$ ]]; then
+              echo "::error::Malformed validation ${label} (must not start with whitespace or end with trailing whitespace, ';', or ','): $(printf '%q' "${value}")"
+              exit 1
+            fi
+          }
           PAGES_BASE="${PAGES_BASE%/}"
-          if [[ "${PAGES_BASE}" =~ [[:space:];,]$ ]]; then
-            echo "::error::Malformed validation base URL (must not end with trailing whitespace, ';', or ','): $(printf '%q' "${PAGES_BASE}")"
+          validate_clean_value "base URL" "${PAGES_BASE}"
+          if [[ ! "${PAGES_BASE}" =~ ^https://[^[:space:]]+$ ]]; then
+            echo "::error::Malformed validation base URL (must start with https://): $(printf '%q' "${PAGES_BASE}")"
             exit 1
           fi
           PAGES_BASE="${PAGES_BASE}/"
@@ -1255,13 +1268,11 @@ jobs:
           for route in "${ROUTES[@]}"; do
             route="${route//$'\r'/}"
             route="${route//$'\n'/}"
-            if [[ "${route}" =~ [[:space:];,]$ ]]; then
-              echo "::error::Malformed validation route (must not end with trailing whitespace, ';', or ','): $(printf '%q' "${route}")"
-              exit 1
-            fi
+            validate_clean_value "route" "${route}"
             url="${PAGES_BASE}${route}"
-            if [[ "${url}" =~ [[:space:];,]$ ]]; then
-              echo "::error::Malformed validation URL (must not end with trailing whitespace, ';', or ','): $(printf '%q' "${url}")"
+            validate_clean_value "URL" "${url}"
+            if [[ ! "${url}" =~ ^https://[^[:space:]]+$ ]]; then
+              echo "::error::Malformed validation URL (must start with https://): $(printf '%q' "${url}")"
               exit 1
             fi
             printf 'Checking <%s>\n' "${url}"
