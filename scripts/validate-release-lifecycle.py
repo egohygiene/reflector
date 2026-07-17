@@ -45,8 +45,9 @@ COMMON_PAGES_VALIDATION_TOKENS = (
     'printf \'Shell-escaped URL: %q\\n\' "${url}"',
 )
 COMMON_PAGES_VALIDATION_ERROR_TOKENS = (
-    'echo "::error::Malformed validation base URL: $(printf \'%q\' "${BASE_URL}")"',
-    'echo "::error::Malformed validation URL: $(printf \'%q\' "${url}")"',
+    'echo "::error::Malformed validation base URL (must not end with trailing whitespace, \';\', or \',\'): $(printf \'%q\' "${BASE_URL}")"',
+    'echo "::error::Malformed validation route (must not end with trailing whitespace, \';\', or \',\'): $(printf \'%q\' "${route}")"',
+    'echo "::error::Malformed validation URL (must not end with trailing whitespace, \';\', or \',\'): $(printf \'%q\' "${url}")"',
 )
 REQUIRED_PAGES_WORKFLOW_TOKENS = (
     'ROOT_MANIFEST="publication.json"',

@@ -1238,7 +1238,7 @@ jobs:
           PAGES_BASE="${PAGES_BASE//$'\n'/}"
           PAGES_BASE="${PAGES_BASE%/}"
           if [[ "${PAGES_BASE}" =~ [[:space:];,]$ ]]; then
-            echo "::error::Malformed validation base URL: $(printf '%q' "${PAGES_BASE}")"
+            echo "::error::Malformed validation base URL (must not end with trailing whitespace, ';', or ','): $(printf '%q' "${PAGES_BASE}")"
             exit 1
           fi
           PAGES_BASE="${PAGES_BASE}/"
@@ -1256,12 +1256,12 @@ jobs:
             route="${route//$'\r'/}"
             route="${route//$'\n'/}"
             if [[ "${route}" =~ [[:space:];,]$ ]]; then
-              echo "::error::Malformed validation route: $(printf '%q' "${route}")"
+              echo "::error::Malformed validation route (must not end with trailing whitespace, ';', or ','): $(printf '%q' "${route}")"
               exit 1
             fi
             url="${PAGES_BASE}${route}"
             if [[ "${url}" =~ [[:space:];,]$ ]]; then
-              echo "::error::Malformed validation URL: $(printf '%q' "${url}")"
+              echo "::error::Malformed validation URL (must not end with trailing whitespace, ';', or ','): $(printf '%q' "${url}")"
               exit 1
             fi
             printf 'Checking <%s>\n' "${url}"
