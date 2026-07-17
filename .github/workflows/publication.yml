@@ -1234,17 +1234,49 @@ jobs:
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
           PAGES_BASE="https://${OWNER}.github.io/${REPO_NAME}/"
+          PAGES_BASE="${PAGES_BASE//$'\r'/}"
+          PAGES_BASE="${PAGES_BASE//$'\n'/}"
+          validate_clean_value() {
+            local label="$1"
+            local value="$2"
+            if [[ "${value}" =~ [[:cntrl:]] ]]; then
+              echo "::error::Malformed validation ${label} (must not contain control characters): $(printf '%q' "${value}")"
+              exit 1
+            fi
+            if [[ "${value}" =~ ^[[:space:]] || "${value}" =~ [[:space:];,]$ ]]; then
+              echo "::error::Malformed validation ${label} (must not start with whitespace or end with trailing whitespace, ';', or ','): $(printf '%q' "${value}")"
+              exit 1
+            fi
+          }
+          PAGES_BASE="${PAGES_BASE%/}"
+          validate_clean_value "base URL" "${PAGES_BASE}"
+          if [[ ! "${PAGES_BASE}" =~ ^https://[^[:space:]]+$ ]]; then
+            echo "::error::Malformed validation base URL (must start with https://): $(printf '%q' "${PAGES_BASE}")"
+            exit 1
+          fi
+          PAGES_BASE="${PAGES_BASE}/"
+          ROUTES=(
+            ""
+            "reflector.pdf"
+            "reflector-magazine.pdf"
+            "reflector-magazine-print.pdf"
+            "publication.json"
+            "figures/hero.png"
+          )
           echo "Validating Pages routes..."
           pages_missing=0
-          for route in \
-            "" \
-            "reflector.pdf" \
-            "reflector-magazine.pdf" \
-            "reflector-magazine-print.pdf" \
-            "publication.json" \
-            "figures/hero.png"; do
+          for route in "${ROUTES[@]}"; do
+            route="${route//$'\r'/}"
+            route="${route//$'\n'/}"
+            validate_clean_value "route" "${route}"
             url="${PAGES_BASE}${route}"
-            echo "Checking ${url}"
+            validate_clean_value "URL" "${url}"
+            if [[ ! "${url}" =~ ^https://[^[:space:]]+$ ]]; then
+              echo "::error::Malformed validation URL (must start with https://): $(printf '%q' "${url}")"
+              exit 1
+            fi
+            printf 'Checking <%s>\n' "${url}"
+            printf 'Shell-escaped URL: %q\n' "${url}"
             set +e
             http_status="$(curl \
               --location \
@@ -1257,7 +1289,7 @@ jobs:
             curl_status=$?
             set -e
             if [[ "${curl_status}" -ne 0 || ! "${http_status}" =~ ^[23][0-9][0-9]$ ]]; then
-              echo "::warning::GitHub Pages deployment is asynchronous; '${url}' is not yet available (curl=${curl_status}, http=${http_status}). Continuing with release asset validation."
+              echo "::warning::GitHub Pages deployment is asynchronous; '<${url}>' is not yet available (curl=${curl_status}, http=${http_status}). Continuing with release asset validation."
               pages_missing=1
             fi
           done

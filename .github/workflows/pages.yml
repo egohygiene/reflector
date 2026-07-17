@@ -550,32 +550,65 @@ jobs:
         run: |
           set -euo pipefail
           BASE_URL="${{ steps.deployment.outputs.page_url }}"
-          URLS=(
-            "${BASE_URL}"
-            "${BASE_URL}reflector.pdf"
-            "${BASE_URL}reflector-magazine.pdf"
-            "${BASE_URL}reflector-magazine-print.pdf"
-            "${BASE_URL}publication.json"
-            "${BASE_URL}figures/hero.png"
-            "${BASE_URL}previews/paper-cover.webp"
-            "${BASE_URL}previews/magazine-cover.webp"
-            "${BASE_URL}previews/print-cover.webp"
+          BASE_URL="${BASE_URL//$'\r'/}"
+          BASE_URL="${BASE_URL//$'\n'/}"
+          validate_clean_value() {
+            local label="$1"
+            local value="$2"
+            if [[ "${value}" =~ [[:cntrl:]] ]]; then
+              echo "::error::Malformed validation ${label} (must not contain control characters): $(printf '%q' "${value}")"
+              exit 1
+            fi
+            if [[ "${value}" =~ ^[[:space:]] || "${value}" =~ [[:space:];,]$ ]]; then
+              echo "::error::Malformed validation ${label} (must not start with whitespace or end with trailing whitespace, ';', or ','): $(printf '%q' "${value}")"
+              exit 1
+            fi
+          }
+          BASE_URL="${BASE_URL%/}"
+          validate_clean_value "base URL" "${BASE_URL}"
+          if [[ ! "${BASE_URL}" =~ ^https://[^[:space:]]+$ ]]; then
+            echo "::error::Malformed validation base URL (must start with https://): $(printf '%q' "${BASE_URL}")"
+            exit 1
+          fi
+          BASE_URL="${BASE_URL}/"
+          ROUTES=(
+            ""
+            "reflector.pdf"
+            "reflector-magazine.pdf"
+            "reflector-magazine-print.pdf"
+            "publication.json"
+            "figures/hero.png"
+            "previews/paper-cover.webp"
+            "previews/magazine-cover.webp"
+            "previews/print-cover.webp"
           )
 
-          for url in "${URLS[@]}"; do
-            echo "Checking ${url}"
+          for route in "${ROUTES[@]}"; do
+            route="${route//$'\r'/}"
+            route="${route//$'\n'/}"
+            validate_clean_value "route" "${route}"
+
+            url="${BASE_URL}${route}"
+            validate_clean_value "URL" "${url}"
+            if [[ ! "${url}" =~ ^https://[^[:space:]]+$ ]]; then
+              echo "::error::Malformed validation URL (must start with https://): $(printf '%q' "${url}")"
+              exit 1
+            fi
+
+            printf 'Checking <%s>\n' "${url}"
+            printf 'Shell-escaped URL: %q\n' "${url}"
             success="false"
             for attempt in 1 2 3 4 5; do
               if curl --silent --show-error --location --fail --head "${url}" >/dev/null; then
                 success="true"
                 break
               fi
-              echo "Attempt ${attempt} failed for ${url}; retrying..."
+              printf 'Attempt %s failed for <%s>; retrying...\n' "${attempt}" "${url}"
               sleep 10
             done
 
             if [[ "${success}" != "true" ]]; then
-              echo "Error: published URL check failed for ${url}" >&2
+              printf 'Error: published URL check failed for <%s>\n' "${url}" >&2
               exit 1
             fi
           done

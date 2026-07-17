@@ -98,3 +98,71 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Validate published publication URLs
+        run: |
+          set -euo pipefail
+          BASE_URL="${{ steps.deployment.outputs.page_url }}"
+          BASE_URL="${BASE_URL//$'\r'/}"
+          BASE_URL="${BASE_URL//$'\n'/}"
+          validate_clean_value() {
+            local label="$1"
+            local value="$2"
+            if [[ "${value}" =~ [[:cntrl:]] ]]; then
+              echo "::error::Malformed validation ${label} (must not contain control characters): $(printf '%q' "${value}")"
+              exit 1
+            fi
+            if [[ "${value}" =~ ^[[:space:]] || "${value}" =~ [[:space:];,]$ ]]; then
+              echo "::error::Malformed validation ${label} (must not start with whitespace or end with trailing whitespace, ';', or ','): $(printf '%q' "${value}")"
+              exit 1
+            fi
+          }
+          BASE_URL="${BASE_URL%/}"
+          validate_clean_value "base URL" "${BASE_URL}"
+          if [[ ! "${BASE_URL}" =~ ^https://[^[:space:]]+$ ]]; then
+            echo "::error::Malformed validation base URL (must start with https://): $(printf '%q' "${BASE_URL}")"
+            exit 1
+          fi
+          BASE_URL="${BASE_URL}/"
+          SLUG="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('publication.json').read_text(encoding='utf-8'))
+          print(manifest['slug'])
+          PY
+          )"
+          ROUTES=(
+            ""
+            "${SLUG}.pdf"
+            "publication.json"
+          )
+
+          for route in "${ROUTES[@]}"; do
+            route="${route//$'\r'/}"
+            route="${route//$'\n'/}"
+            validate_clean_value "route" "${route}"
+
+            url="${BASE_URL}${route}"
+            validate_clean_value "URL" "${url}"
+            if [[ ! "${url}" =~ ^https://[^[:space:]]+$ ]]; then
+              echo "::error::Malformed validation URL (must start with https://): $(printf '%q' "${url}")"
+              exit 1
+            fi
+
+            printf 'Checking <%s>\n' "${url}"
+            printf 'Shell-escaped URL: %q\n' "${url}"
+            success="false"
+            for attempt in 1 2 3 4 5; do
+              if curl --silent --show-error --location --fail --head "${url}" >/dev/null; then
+                success="true"
+                break
+              fi
+              printf 'Attempt %s failed for <%s>; retrying...\n' "${attempt}" "${url}"
+              sleep 10
+            done
+
+            if [[ "${success}" != "true" ]]; then
+              printf 'Error: published URL check failed for <%s>\n' "${url}" >&2
+              exit 1
+            fi
+          done
