@@ -1,3 +1,29 @@
+---
+schema: aether.architecture-document/v1
+id: reflector-roadmap
+title: Reflector Roadmap
+kind: architecture-document
+version: 0.1.0
+status: draft
+owners:
+  - egohygiene
+created: 2026-08-19
+updated: 2026-08-19
+governed_by:
+  - architecture-roadmap
+depends_on:
+  - reflector-vision
+  - reflector-pillars
+  - reflector-architecture
+  - reflector-decisions
+related:
+  - reflector-purpose
+  - reflector-principles
+  - reflector-manifesto
+  - reflector-epistemology
+supersedes: []
+---
+
 # Roadmap
 
 This document tracks the high-level development roadmap for reflector.
