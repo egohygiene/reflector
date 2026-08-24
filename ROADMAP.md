@@ -8,7 +8,7 @@ status: draft
 owners:
   - egohygiene
 created: 2026-08-19
-updated: 2026-08-19
+updated: 2026-08-24
 governed_by:
   - architecture-roadmap
 depends_on:
@@ -25,6 +25,156 @@ supersedes: []
 ---
 
 # Roadmap
+
+<!-- BEGIN ROADMAP EXECUTION SNAPSHOT -->
+<!-- roadmap-manifest
+schema: hygiene.roadmap/v1alpha1
+repository: egohygiene/reflector
+visibility: public
+publication: composed
+route: /roadmap/
+updated: 2026-08-24
+-->
+## 2026-08-24 execution snapshot
+
+> This evidence-reconciled snapshot is the issue-generation and visual-roadmap handoff. The longer-horizon strategy below remains canonical context; generated HTML, JSON, progress, issue plans, and commit lists are projections.
+
+**Lifecycle:** public research preview  
+**Current gate:** Reconcile the roadmap with completed template extraction and restore commit-policy consistency before the next manuscript checkpoint.  
+**North-star outcome:** A reproducible research and publication platform whose manuscripts, evidence, templates, and public outputs remain traceable.
+
+### Visual roadmap publication
+
+**Mode:** `composed`  
+**Route:** `/roadmap/`  
+**Current publication evidence:** Live GitHub Pages research site plus GitHub Releases; v0.1.2 observed.
+
+Compose dist/roadmap/ into the repository's existing final site artifact at /roadmap/. The current Pages workflow remains the only deployer.
+
+### Quest line
+
+<!-- roadmap-step
+id: REF-Q01
+status: complete
+depends_on: []
+issues: []
+-->
+#### REF-Q01 — Publish the research preview
+
+**State:** `complete`  
+**Depends on:** None
+
+**Outcome:** A versioned public research preview and live Pages surface are available.
+
+**Exit criteria:**
+
+- [x] The release and site are publicly accessible.
+- [x] REUSE and Pages checks pass.
+
+**Current evidence:**
+
+- Release v0.1.2 was published on 2026-07-15.
+- Pages and REUSE workflows were observed green.
+
+<!-- roadmap-step
+id: REF-Q02
+status: active
+depends_on: [REF-Q01]
+issues: []
+-->
+#### REF-Q02 — Reconcile roadmap and commit policy
+
+**State:** `active`  
+**Depends on:** `REF-Q01`
+
+**Outcome:** Roadmap status matches shipped work and contribution checks accept the documented convention.
+
+**Exit criteria:**
+
+- [ ] Template extraction is marked complete with evidence.
+- [ ] The architecture-corpus commit pattern either conforms or the policy is deliberately updated.
+
+**Current evidence:**
+
+- Template extraction completed in PR #232 on 2026-07-16 but remains listed as next work.
+- Commitlint rejected the non-conventional architecture-corpus message.
+
+<!-- roadmap-step
+id: REF-Q03
+status: ready
+depends_on: [REF-Q02]
+issues: []
+-->
+#### REF-Q03 — Complete the manuscript revision
+
+**State:** `ready`  
+**Depends on:** `REF-Q02`
+
+**Outcome:** The next manuscript checkpoint incorporates review evidence and reproducible figures.
+
+**Exit criteria:**
+
+- [ ] Claims link to source data and generation steps.
+- [ ] The published preview identifies its manuscript and evidence versions.
+
+**Current evidence:**
+
+- The repository is a v0.1.2 research preview rather than a final publication.
+
+<!-- roadmap-step
+id: REF-Q04
+status: planned
+depends_on: [REF-Q03]
+issues: [244]
+-->
+#### REF-Q04 — Execute the research loop
+
+**State:** `planned`  
+**Depends on:** `REF-Q03`
+
+**Outcome:** Issue #244 turns research questions, evidence, synthesis, and publication into a repeatable loop.
+
+**Exit criteria:**
+
+- [ ] Issue #244 closes with an end-to-end documented run.
+- [ ] Every stage emits reviewable evidence and supports reruns.
+
+**Current evidence:**
+
+- Issue #244 opened on 2026-08-19.
+
+<!-- roadmap-step
+id: REF-Q05
+status: planned
+depends_on: [REF-Q03, REF-Q04]
+issues: []
+-->
+#### REF-Q05 — Harden publication and transfer Beacon assets
+
+**State:** `planned`  
+**Depends on:** `REF-Q03`, `REF-Q04`
+
+**Outcome:** Publication is durable and reusable publication tooling moves to Beacon with clear ownership.
+
+**Exit criteria:**
+
+- [ ] Release, archival, citation, and accessibility checks pass.
+- [ ] Transferred templates or tooling have one authoritative home and a versioned consumer path.
+
+**Current evidence:**
+
+- Architecture PR #245 merged at d1bc53ee59c9186717b0e626072d45c8fd1cc224 on 2026-08-20.
+- The Beacon transfer remains future work.
+
+### Roadmap-to-issue handoff
+
+- A step is complete only when its exit criteria and required evidence are satisfied; commit count never determines progress.
+- Ready or planned steps without an issue are candidates for the private, duplicate-aware roadmap.issue-plan.json dry run.
+- Issue creation or reconciliation requires human approval or an explicitly authorized Pace operation and returns issue references through a reviewable roadmap pull request.
+- Pull requests and commits should include Roadmap-Step: <ID>; historical evidence may be linked through existing issue and pull-request relationships.
+- Public rendering uses only allowlisted build-time evidence and never places a GitHub token or private issue plan in the browser artifact.
+
+<!-- END ROADMAP EXECUTION SNAPSHOT -->
 
 This document tracks the high-level development roadmap for reflector.
 
