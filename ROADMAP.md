@@ -8,7 +8,7 @@ status: draft
 owners:
   - egohygiene
 created: 2026-08-19
-updated: 2026-08-24
+updated: 2026-08-26
 governed_by:
   - architecture-roadmap
 depends_on:
@@ -33,20 +33,20 @@ repository: egohygiene/reflector
 visibility: public
 publication: composed
 route: /roadmap/
-updated: 2026-08-24
+updated: 2026-08-26
 -->
-## 2026-08-24 execution snapshot
+## 2026-08-26 execution snapshot
 
 > This evidence-reconciled snapshot is the issue-generation and visual-roadmap handoff. The longer-horizon strategy below remains canonical context; generated HTML, JSON, progress, issue plans, and commit lists are projections.
 
-**Lifecycle:** public research preview  
-**Current gate:** Reconcile the roadmap with completed template extraction and restore commit-policy consistency before the next manuscript checkpoint.  
+**Lifecycle:** public research preview
+**Current gate:** Prove non-disruptive Beacon compatibility while preserving the native publication system and keeping manuscript revision unblocked.
 **North-star outcome:** A reproducible research and publication platform whose manuscripts, evidence, templates, and public outputs remain traceable.
 
 ### Visual roadmap publication
 
-**Mode:** `composed`  
-**Route:** `/roadmap/`  
+**Mode:** `composed`
+**Route:** `/roadmap/`
 **Current publication evidence:** Live GitHub Pages research site plus GitHub Releases; v0.1.2 observed.
 
 Compose dist/roadmap/ into the repository's existing final site artifact at /roadmap/. The current Pages workflow remains the only deployer.
@@ -61,7 +61,7 @@ issues: []
 -->
 #### REF-Q01 — Publish the research preview
 
-**State:** `complete`  
+**State:** `complete`
 **Depends on:** None
 
 **Outcome:** A versioned public research preview and live Pages surface are available.
@@ -84,7 +84,7 @@ issues: []
 -->
 #### REF-Q02 — Reconcile roadmap and commit policy
 
-**State:** `active`  
+**State:** `active`
 **Depends on:** `REF-Q01`
 
 **Outcome:** Roadmap status matches shipped work and contribution checks accept the documented convention.
@@ -107,7 +107,7 @@ issues: []
 -->
 #### REF-Q03 — Complete the manuscript revision
 
-**State:** `ready`  
+**State:** `ready`
 **Depends on:** `REF-Q02`
 
 **Outcome:** The next manuscript checkpoint incorporates review evidence and reproducible figures.
@@ -129,7 +129,7 @@ issues: [244]
 -->
 #### REF-Q04 — Execute the research loop
 
-**State:** `planned`  
+**State:** `planned`
 **Depends on:** `REF-Q03`
 
 **Outcome:** Issue #244 turns research questions, evidence, synthesis, and publication into a repeatable loop.
@@ -145,14 +145,14 @@ issues: [244]
 
 <!-- roadmap-step
 id: REF-Q05
-status: planned
-depends_on: [REF-Q03, REF-Q04]
-issues: []
+status: active
+depends_on: [REF-Q01]
+issues: [247, 249]
 -->
 #### REF-Q05 — Harden publication and transfer Beacon assets
 
-**State:** `planned`  
-**Depends on:** `REF-Q03`, `REF-Q04`
+**State:** `active`
+**Depends on:** `REF-Q01`
 
 **Outcome:** Publication is durable and reusable publication tooling moves to Beacon with clear ownership.
 
@@ -160,11 +160,14 @@ issues: []
 
 - [ ] Release, archival, citation, and accessibility checks pass.
 - [ ] Transferred templates or tooling have one authoritative home and a versioned consumer path.
+- [ ] The pinned Beacon compatibility canary packages the native paper, magazine, and metadata artifacts without deploying or changing public contracts.
 
 **Current evidence:**
 
 - Architecture PR #245 merged at d1bc53ee59c9186717b0e626072d45c8fd1cc224 on 2026-08-20.
-- The Beacon transfer remains future work.
+- Issue #247 scopes a compatibility-first transfer boundary that can proceed independently of manuscript revision and the research loop.
+- Issue #249 tracks the pre-existing 86 MB arXiv bundle against the 50 MB upload limit surfaced by the compatibility validation pass.
+- Reflector remains authoritative for paper, magazine, Pages, DOI, Zenodo, arXiv, and release behavior while the Beacon adapter is proven.
 
 ### Roadmap-to-issue handoff
 

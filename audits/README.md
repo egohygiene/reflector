@@ -41,6 +41,7 @@ Status guidance used below:
 |---|---|---|---|---|---|
 | [`archival-strategy-audit.md`](./archival-strategy-audit.md) | 2026-06-03 | archival strategy and preservation decisions | Reference | Manual review | Point-in-time archival strategy snapshot. |
 | [`arxiv-validation.md`](./arxiv-validation.md) | Recurring | arXiv packaging validation | Recurring | `.github/workflows/publication.yml` (`scripts/validate-arxiv-packaging.py`) | Workflow-generated validation report. |
+| [`beacon-compatibility-2026-08-26.md`](./beacon-compatibility-2026-08-26.md) | 2026-08-26 | non-disruptive Beacon compatibility across paper, magazine, metadata, and packaging | Current | Issue [#247](https://github.com/egohygiene/reflector/issues/247) | Pins Beacon, records exceptions and ownership, and defines the clean non-deploying canary. |
 | [`build-reproducibility.md`](./build-reproducibility.md) | Recurring | reproducible build contract checks | Recurring | `.github/workflows/publication.yml` (`scripts/validate-build-reproducibility.py`) | Workflow-generated validation report. |
 | [`chktex-audit.md`](./chktex-audit.md) | Recurring | LaTeX linting and warning severity | Recurring | `.github/workflows/publication.yml` (`scripts/audit-chktex.py`) | Updated 2026-07-15 post-remediation: 0 HIGH, 0 MEDIUM, 26 LOW (false positives). |
 | [`doi-metadata-audit.md`](./doi-metadata-audit.md) | 2026-06-03 | DOI metadata consistency | Reference | Manual review | DOI-focused synchronization audit. |
