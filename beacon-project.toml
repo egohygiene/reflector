@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+
+[beacon]
+schema_version = 1
+profile = "reflector-compatibility"
+profile_version = "0.1.0"
+
+[provenance]
+source_repository = "https://github.com/egohygiene/reflector"

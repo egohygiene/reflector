@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/egohygiene/beacon.git",
+  "revision": "eba8415f440e0eb403a2431828cb5191d78ba4fd",
+  "cli_version": "0.1.0-alpha.1",
+  "rust_toolchain": "1.97.1",
+  "compatibility_profile": "reflector-compatibility",
+  "compatibility_profile_version": "0.1.0"
+}

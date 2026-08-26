@@ -9,6 +9,7 @@
 [![Research](https://img.shields.io/badge/Research-Recursive%20Systems-6E40C9?style=for-the-badge)](./paper/README.md)
 
 [![Build Paper](https://img.shields.io/github/actions/workflow/status/egohygiene/reflector/build-paper.yml?branch=main&style=for-the-badge&label=Build%20Paper)](https://github.com/egohygiene/reflector/actions/workflows/build-paper.yml)
+[![Beacon Compatibility](https://img.shields.io/github/actions/workflow/status/egohygiene/reflector/beacon-compatibility.yml?branch=main&style=for-the-badge&label=Beacon%20Compatibility)](https://github.com/egohygiene/reflector/actions/workflows/beacon-compatibility.yml)
 [![GitHub Pages](https://img.shields.io/github/actions/workflow/status/egohygiene/reflector/pages.yml?branch=main&style=for-the-badge&label=GitHub%20Pages)](https://github.com/egohygiene/reflector/actions/workflows/pages.yml)
 [![REUSE Compliance](https://img.shields.io/github/actions/workflow/status/egohygiene/reflector/reuse.yml?branch=main&style=for-the-badge&label=REUSE%20Compliance)](https://github.com/egohygiene/reflector/actions/workflows/reuse.yml)
 [![arXiv Ready](https://img.shields.io/badge/arXiv-Ready-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white)](./specs/publication/arxiv-publication.spec.md)
@@ -124,6 +125,7 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 | Toolchain requirements | [`docs/toolchain.md`](./docs/toolchain.md) |
 | Paper overview | [`paper/README.md`](./paper/README.md) |
 | Magazine overview | [`magazine/README.md`](./magazine/README.md) |
+| Beacon compatibility | [`docs/beacon-compatibility.md`](./docs/beacon-compatibility.md) |
 | Publication specs | [`specs/publication/`](./specs/publication/) |
 | Audit archive index | [`audits/README.md`](./audits/README.md) |
 | Research notes | [`docs/research/`](./docs/research/) |
@@ -214,4 +216,3 @@ as a bootstrap for a research publication.
 Reflector remains the reference implementation for this platform. Future reuse
 should start from `template/`, while Reflector continues to demonstrate the full
 system in a live publication repository.
-

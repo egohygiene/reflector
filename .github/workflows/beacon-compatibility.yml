@@ -1,0 +1,161 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+
+name: Beacon Compatibility
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".beacon/**"
+      - "beacon-project.toml"
+      - "dependencies/beacon.lock.json"
+      - "paper/**"
+      - "magazine/**"
+      - "metadata/**"
+      - "publication.json"
+      - "release-manifest.json"
+      - "scripts/beacon-compatibility.sh"
+      - "scripts/build-magazine.sh"
+      - "scripts/build-paper.sh"
+      - "scripts/validate-metadata.py"
+      - ".github/workflows/beacon-compatibility.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".beacon/**"
+      - "beacon-project.toml"
+      - "dependencies/beacon.lock.json"
+      - "paper/**"
+      - "magazine/**"
+      - "metadata/**"
+      - "publication.json"
+      - "release-manifest.json"
+      - "scripts/beacon-compatibility.sh"
+      - "scripts/build-magazine.sh"
+      - "scripts/build-paper.sh"
+      - "scripts/validate-metadata.py"
+      - ".github/workflows/beacon-compatibility.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "beacon-compatibility-${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Validate and package native artifacts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out Reflector
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read the Beacon dependency pin
+        id: beacon
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          lock = json.loads(Path("dependencies/beacon.lock.json").read_text(encoding="utf-8"))
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+              output.write(f"revision={lock['revision']}\n")
+              output.write(f"rust_toolchain={lock['rust_toolchain']}\n")
+          PY
+
+      - name: Check out pinned Beacon
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: egohygiene/beacon
+          ref: ${{ steps.beacon.outputs.revision }}
+          path: .cache/beacon
+          persist-credentials: false
+
+      - name: Install the pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "${{ steps.beacon.outputs.rust_toolchain }}" \
+            --profile "minimal"
+
+      - name: Install native publication dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes \
+            biber \
+            latexmk \
+            lmodern \
+            poppler-utils \
+            python3-yaml \
+            texlive-bibtex-extra \
+            texlive-fonts-recommended \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-latex-recommended \
+            texlive-pictures
+
+      - name: Run compatibility unit tests
+        run: >-
+          python3 -m unittest discover
+          --start-directory ".beacon/tests"
+          --pattern "test_*.py"
+
+      - name: Inspect the compatibility contract
+        env:
+          BEACON_ROOT: ${{ github.workspace }}/.cache/beacon
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/beacon-compatibility.sh validate
+          ./scripts/beacon-compatibility.sh inspect
+          ./scripts/beacon-compatibility.sh doctor
+          ./scripts/beacon-compatibility.sh plan
+
+      - name: Build and package native artifacts through Beacon
+        env:
+          BEACON_ROOT: ${{ github.workspace }}/.cache/beacon
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/beacon-compatibility.sh package \
+            --package-directory "dist/beacon-reflector-canary"
+
+      - name: Verify the non-deploying package
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE_DIRECTORY="dist/beacon-reflector-canary"
+          test -f "${PACKAGE_DIRECTORY}/artifacts/reflector.pdf"
+          test -f "${PACKAGE_DIRECTORY}/artifacts/reflector-magazine.pdf"
+          test -f "${PACKAGE_DIRECTORY}/artifacts/reflector-magazine-print.pdf"
+          test -f "${PACKAGE_DIRECTORY}/artifacts/publication.json"
+          test -f "${PACKAGE_DIRECTORY}/artifacts/release-manifest.json"
+          test -f "${PACKAGE_DIRECTORY}/artifacts/compatibility-report.json"
+          test -f "${PACKAGE_DIRECTORY}/beacon-package.json"
+          test -f "${PACKAGE_DIRECTORY}/SHA256SUMS"
+          python3 -m json.tool "${PACKAGE_DIRECTORY}/beacon-package.json" >/dev/null
+          python3 -m json.tool \
+            "${PACKAGE_DIRECTORY}/artifacts/compatibility-report.json" >/dev/null
+          (cd "${PACKAGE_DIRECTORY}" && sha256sum --check "SHA256SUMS")
+
+      - name: Upload the compatibility canary
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reflector-beacon-compatibility
+          path: dist/beacon-reflector-canary/
+          if-no-files-found: error
+          retention-days: 14

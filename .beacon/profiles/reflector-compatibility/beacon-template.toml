@@ -1,0 +1,114 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+
+schema_version = 1
+id = "reflector-compatibility"
+name = "Reflector Compatibility"
+version = "0.1.0"
+description = "A non-disruptive Beacon adapter over Reflector's authoritative paper, magazine, metadata, and publication contracts."
+category = "compatibility"
+license = "Apache-2.0"
+source = "Reflector-native compatibility profile; no publication sources or release routes are replaced."
+
+[[outputs]]
+format = "pdf"
+variant = "research-paper"
+renderer = "reflector-native"
+entrypoint = "paper/paper.tex"
+artifact = "reflector.pdf"
+
+[[outputs]]
+format = "pdf"
+variant = "magazine-digital"
+renderer = "reflector-native"
+entrypoint = "magazine/tex/magazine.tex"
+artifact = "reflector-magazine.pdf"
+
+[[outputs]]
+format = "pdf"
+variant = "magazine-print"
+renderer = "reflector-native"
+entrypoint = "magazine/tex/magazine-print.tex"
+artifact = "reflector-magazine-print.pdf"
+
+[[outputs]]
+format = "json"
+variant = "publication-metadata"
+renderer = "reflector-native"
+artifact = "publication.json"
+
+[[outputs]]
+format = "json"
+variant = "release-metadata"
+renderer = "reflector-native"
+artifact = "release-manifest.json"
+
+[[outputs]]
+format = "json"
+variant = "compatibility-evidence"
+renderer = "reflector-compatibility"
+artifact = "compatibility-report.json"
+
+[metadata]
+required = ["title", "authors", "version", "source_repository", "doi"]
+optional = ["orcid", "arxiv_category", "release_tag", "pages_url"]
+
+[initializer]
+runtime = "python3"
+script = "scripts/initialize.py"
+required = ["destination", "title", "author"]
+optional = []
+
+[execution]
+program = "python3"
+arguments = [
+  "{{profile}}/scripts/build.py",
+  "--project={{project}}",
+  "--output={{output}}",
+]
+default_output = "build/beacon-compatibility"
+artifacts = [
+  "reflector.pdf",
+  "reflector-magazine.pdf",
+  "reflector-magazine-print.pdf",
+  "publication.json",
+  "release-manifest.json",
+  "compatibility-report.json",
+]
+
+[[execution.requirements]]
+command = "python3"
+
+[[execution.requirements]]
+command = "bash"
+
+[[execution.requirements]]
+command = "git"
+
+[[execution.requirements]]
+command = "latexmk"
+
+[[execution.requirements]]
+command = "pdflatex"
+
+[[execution.requirements]]
+command = "biber"
+
+[[execution.requirements]]
+command = "pdfinfo"
+version_arguments = ["-v"]
+
+[[execution.requirements]]
+command = "pdffonts"
+version_arguments = ["-v"]
+
+[capabilities]
+compatibility_evidence = true
+magazine_digital = true
+magazine_print = true
+metadata_validation = true
+native_build_contracts = true
+non_deploying = true
+pdf = true
+publication_packaging = true
+research_paper = true
