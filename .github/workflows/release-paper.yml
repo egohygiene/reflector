@@ -215,6 +215,7 @@ jobs:
           RELEASE_DIR="${{ steps.vars.outputs.release_dir }}"
           SOURCE_DIR="${RELEASE_DIR}/source"
           ARXIV_DIR="${RELEASE_DIR}/arxiv"
+          ARXIV_BUNDLE="${{ steps.vars.outputs.arxiv_bundle }}"
           PDF_PATH="${{ steps.vars.outputs.pdf_path }}"
           PDF_ASSET="${{ steps.vars.outputs.pdf_asset }}"
           MAGAZINE_PDF_SOURCE="${{ steps.vars.outputs.magazine_pdf_source }}"
@@ -224,7 +225,7 @@ jobs:
           RELEASE_MANIFEST_ASSET="${{ steps.vars.outputs.release_manifest_asset }}"
           PUBLICATION_METADATA_ASSET="${{ steps.vars.outputs.publication_metadata_asset }}"
 
-          mkdir --parents "${SOURCE_DIR}" "${ARXIV_DIR}"
+          mkdir --parents "${SOURCE_DIR}"
 
           cp "${PDF_PATH}" "${PDF_ASSET}"
           cp "${MAGAZINE_PDF_SOURCE}" "${MAGAZINE_PDF_ASSET}"
@@ -235,21 +236,54 @@ jobs:
           for file in "paper.tex" "references.bib"; do
             if [[ -f "${PAPER_DIR}/${file}" ]]; then
               cp "${PAPER_DIR}/${file}" "${SOURCE_DIR}/${file}"
-              cp "${PAPER_DIR}/${file}" "${ARXIV_DIR}/${file}"
             fi
           done
 
           if [[ -f ".latexmkrc" ]]; then
             cp ".latexmkrc" "${SOURCE_DIR}/.latexmkrc"
-            cp ".latexmkrc" "${ARXIV_DIR}/.latexmkrc"
           fi
 
           for directory in "sections" "figures" "diagrams" "assets" "references"; do
             if [[ -d "${PAPER_DIR}/${directory}" ]]; then
               cp --recursive "${PAPER_DIR}/${directory}" "${SOURCE_DIR}/${directory}"
-              cp --recursive "${PAPER_DIR}/${directory}" "${ARXIV_DIR}/${directory}"
             fi
           done
+
+          python scripts/stage_arxiv_submission.py \
+            --source-dir "${PAPER_DIR}" \
+            --output-dir "${ARXIV_DIR}" \
+            --zip-output "${ARXIV_BUNDLE}"
+
+          python scripts/validate-arxiv-packaging.py \
+            --bundle-dir "${ARXIV_DIR}" \
+            --audit-output "${RELEASE_DIR}/arxiv-validation.md"
+
+          mkdir --parents "dist"
+          cp --archive "${ARXIV_DIR}" "dist/arxiv-compile"
+
+      - name: Compile staged arXiv source
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: paper.tex
+          working_directory: dist/arxiv-compile
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -file-line-error
+
+      - name: Upload staged arXiv preflight artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.vars.outputs.paper_name }}-arxiv-submission-preflight-${{ steps.vars.outputs.tag }}
+          path: |
+            ${{ steps.vars.outputs.release_dir }}/arxiv/
+            ${{ steps.vars.outputs.release_dir }}/arxiv-validation.md
+            dist/arxiv-compile/paper.pdf
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Generate release notes from changelog
         run: |
@@ -269,24 +303,16 @@ jobs:
             ' CHANGELOG.md
           } > "${RELEASE_NOTES_PATH}"
 
-      - name: Package release and arXiv bundles
+      - name: Package release bundle
         run: |
           set -euo pipefail
 
           RELEASE_DIR="${{ steps.vars.outputs.release_dir }}"
-          PAPER_NAME="${{ steps.vars.outputs.paper_name }}"
-          TAG="${{ steps.vars.outputs.tag }}"
           RELEASE_BUNDLE="${{ steps.vars.outputs.release_bundle }}"
-          ARXIV_BUNDLE="${{ steps.vars.outputs.arxiv_bundle }}"
 
           (
             cd "$(dirname "${RELEASE_DIR}")"
             zip -X -r "$(basename "${RELEASE_BUNDLE}")" "$(basename "${RELEASE_DIR}")"
-          )
-
-          (
-            cd "${RELEASE_DIR}"
-            zip -X -r "../$(basename "${ARXIV_BUNDLE}")" "arxiv"
           )
 
       - name: Generate release manifest

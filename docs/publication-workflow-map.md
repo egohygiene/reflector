@@ -155,7 +155,7 @@ Stage 1 — Validate (parallel)
         │
         ▼
 Stage 2 — Build (parallel, after validate)
-        ├─ build-paper:      paper PDF + arXiv source bundles
+        ├─ build-paper:      paper PDF + staged arXiv-source preflight
         └─ build-magazine:   magazine PDF (digital + print)
         │
         ▼

@@ -72,7 +72,15 @@
             "usage": "include"
         },
         {
+            "path": "sections/cognitive_load_recursive_coordination.tex",
+            "usage": "include"
+        },
+        {
             "path": "sections/operational_demonstration.tex",
+            "usage": "include"
+        },
+        {
+            "path": "sections/milestone_execution.tex",
             "usage": "include"
         },
         {
@@ -96,17 +104,16 @@
             "usage": "include"
         },
         {
+            "path": "sections/visual_summary.tex",
+            "usage": "include"
+        },
+        {
             "path": "sections/conclusion.tex",
             "usage": "include"
         },
         {
             "path": "sections/appendix.tex",
             "usage": "include"
-        },
-        {
-            "path": "figures/hero.png",
-            "usage": "include",
-            "description": "Hero figure: reflector system architecture overview."
         },
         {
             "path": "figures/figure1.png",
@@ -147,22 +154,54 @@
         {
             "path": "figures/figure10.png",
             "usage": "include"
+        },
+        {
+            "path": "figures/figure11.png",
+            "usage": "include"
+        },
+        {
+            "path": "figures/figure12.png",
+            "usage": "include"
+        },
+        {
+            "path": "figures/figure13.png",
+            "usage": "include"
+        },
+        {
+            "path": "figures/figure14.png",
+            "usage": "include"
+        },
+        {
+            "path": "figures/figure15.png",
+            "usage": "include"
+        },
+        {
+            "path": "figures/figure16.png",
+            "usage": "include"
+        },
+        {
+            "path": "figures/figure17.png",
+            "usage": "include"
         }
     ],
 
     "build": {
-        "output_dir": ".cache/out",
-        "aux_dir": ".cache/aux",
-        "texinputs": [
-            "./config//",
-            "./styles//",
-            "./macros//",
-            "./sections//",
-            "./figures//",
-            "./diagrams//"
-        ],
-        "orchestration": ".latexmkrc",
-        "script": "scripts/build-paper.sh"
+        "output_dir": ".",
+        "aux_dir": ".",
+        "texinputs": [],
+        "orchestration": "direct pdflatex/biber submission path with no hidden runtime files",
+        "script": "pdflatex paper.tex && biber paper && pdflatex paper.tex && pdflatex paper.tex",
+        "staging": {
+            "script": "../scripts/stage_arxiv_submission.py",
+            "mode": "declared-TeX-dependency-closure",
+            "maximum_submission_bytes": 45000000,
+            "excluded_canonical_directories": [
+                "assets",
+                "references",
+                "examples",
+                "diagrams"
+            ]
+        }
     },
 
     "architecture": {

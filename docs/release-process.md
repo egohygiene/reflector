@@ -128,25 +128,25 @@ release/reflector-vX.Y.Z/
 
 **arXiv Bundle Contents:**
 
-```
+```text
 arxiv/
-├── paper.tex
-├── references.bib
-├── .latexmkrc
-├── sections/
-├── figures/
-├── diagrams/
-├── assets/
-├── references/
-├── styles/
-├── macros/
-├── config/
-└── 00README.json
+├── 00README.json                  # submission manifest and exact source declaration
+├── paper.tex                      # root LaTeX entry point
+├── references.bib                 # bibliography source
+├── config/title.tex               # title metadata
+├── macros/metadata.tex            # paper metadata
+├── styles/reflector.sty           # local publication style
+├── sections/                      # exactly the sections input by paper.tex
+└── figures/figure1.png … figure17.png
 ```
 
-The arXiv bundle is reproducible and deterministic:
-- `tar` uses `--sort=name` and epoch `--mtime`
-- `zip` uses `-X` to strip extended attributes
+The stage deliberately excludes canonical-only materials such as `assets/`,
+`references/` (the retained reference-PDF library), `diagrams/`, `examples/`,
+unused artwork, and `.latexmkrc`. The submitted tree compiles directly through
+the declared `pdflatex → biber → pdflatex → pdflatex` path.
+
+`scripts/stage_arxiv_submission.py` normalizes source metadata and produces
+deterministic ZIP and TAR.GZ archives with stable ordering, modes, and timestamps.
 
 #### Stage 5 — Release (depends on Stage 4)
 
@@ -325,8 +325,13 @@ The workflow calls `python scripts/sync-version.py` which updates all downstream
 When a GitHub Release is published:
 
 1. Download `reflector-arxiv-vX.Y.Z.tar.gz` or `reflector-arxiv-vX.Y.Z.zip` from the release.
-2. Validate the arXiv bundle locally using `python scripts/validate-arxiv-packaging.py`.
-3. Upload to [arxiv.org](https://arxiv.org) via the submission portal.
+2. From a checkout of this repository, validate the extracted submission tree:
+
+   ```bash
+   python scripts/validate-arxiv-packaging.py --bundle-dir path/to/arxiv
+   ```
+
+3. Visually compare the staged-source PDF artifact against the canonical PDF artifact, then upload to [arxiv.org](https://arxiv.org) via the submission portal.
 4. Record the arXiv identifier (`arxiv_id`) in `metadata/publication.yaml`.
 5. Update `CITATION.cff` and `.zenodo.json` with the arXiv ID.
 6. Tag a metadata-update release.

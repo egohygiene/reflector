@@ -233,27 +233,25 @@ zenodo-readiness.md
 
 Contents of `reflector-arxiv-vX.Y.Z.zip` / `.tar.gz`:
 
-```
+```text
 arxiv/
+├── 00README.json           (arXiv manifest and exact source declaration)
 ├── paper.tex               (root LaTeX entry point)
 ├── references.bib          (bibliography)
-├── .latexmkrc              (build configuration)
-├── 00README.json           (arXiv submission manifest)
-├── sections/               (semantic content files)
-├── figures/                (all figure assets)
-├── diagrams/               (diagram files)
-├── assets/                 (additional assets)
-├── references/             (reference files)
-├── styles/                 (style sheets)
-├── macros/                 (macro definitions)
-└── config/                 (configuration files)
+├── config/title.tex        (title metadata)
+├── macros/metadata.tex     (paper metadata)
+├── styles/reflector.sty    (local publication style)
+├── sections/               (compiled semantic content only)
+└── figures/figure1.png … figure17.png
 ```
 
-The arXiv bundle is deterministic and reproducible:
-- `tar` uses `--sort=name` and epoch `--mtime`
-- `zip` uses `-X` to strip extended attributes
+The deterministic staging boundary excludes the canonical reference-PDF library,
+website assets, diagrams, examples, hidden runtime files, and unused figure
+exports. `scripts/stage_arxiv_submission.py` writes stable ZIP and TAR.GZ
+archives, and the declared source tree compiles without `.latexmkrc`.
 
-Validated by `scripts/validate-arxiv-packaging.py` (31 checks).
+Validated by `scripts/validate-arxiv-packaging.py` against the exact staged
+dependency closure rather than the whole `paper/` workspace.
 
 ### Canonical Archival Bundle (Zenodo Target)
 
