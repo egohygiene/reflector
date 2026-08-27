@@ -158,7 +158,8 @@ The publication system has five architectural layers:
 |---|---|---|
 | Metadata validator | `scripts/validate-metadata.py` | Cross-file metadata synchronization |
 | Release lifecycle | `scripts/validate-release-lifecycle.py` | Version surface consistency |
-| arXiv packaging | `scripts/validate-arxiv-packaging.py` | 31-check arXiv bundle validation |
+| arXiv staging | `scripts/stage_arxiv_submission.py` | Deterministic, declared TeX dependency closure |
+| arXiv packaging | `scripts/validate-arxiv-packaging.py` | Exact staged-bundle validation |
 | Build reproducibility | `scripts/validate-build-reproducibility.py` | Deterministic build checks |
 | Publication readiness | `scripts/audit-publication-readiness.py` | Holistic readiness assessment |
 | ChkTeX audit | `scripts/audit-chktex.py` | LaTeX quality audit report |
@@ -350,7 +351,7 @@ See [`audits/zenodo-integration-audit.md`](../audits/zenodo-integration-audit.md
 ```
 GitHub Release published
     └─→ Manual: download reflector-arxiv-vX.Y.Z.tar.gz
-           └─→ Validate: python scripts/validate-arxiv-packaging.py
+           └─→ Validate extracted tree: python scripts/validate-arxiv-packaging.py --bundle-dir path/to/arxiv
                    └─→ Manual: upload to arxiv.org
                            └─→ Record arXiv ID in metadata/publication.yaml
 ```

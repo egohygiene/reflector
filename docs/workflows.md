@@ -80,7 +80,7 @@ This workflow now applies artifact-aware scope detection to support incremental 
 flowchart TD
   A[paper/** change] --> B[Stage 1: Validate + ChkTeX]
   B --> C[Stage 3: Build paper PDF]
-  C --> D[Stage 3: Build arXiv bundles]
+  C --> D[Stage 3: Stage and compile exact arXiv source]
 
   E[VERSION change] --> F[Stage 1: Validate + REUSE + ChkTeX]
   F --> G[Stage 3: Build paper PDF]
@@ -95,7 +95,7 @@ flowchart TD
 
 Scope behavior:
 
-- `paper/**` changes rebuild paper + arXiv publication bundles (without release packaging).
+- `paper/**` changes rebuild the paper and the exact staged arXiv submission bundle (without release packaging).
 - `VERSION` changes trigger full publication packaging and GitHub Release creation.
 - `magazine/**` changes are handled by the magazine and Pages workflows without rebuilding paper artifacts.
 
@@ -120,7 +120,7 @@ flowchart TD
   E --> F
   C --> F
   F --> F1[Assemble release/ directory]
-  F --> F2[Generate arXiv bundles zip + tar.gz]
+  F --> F2[Stage, validate, and compile arXiv source; generate ZIP + TAR.GZ]
   F --> F3[Generate checksums.txt]
   F --> F4[Generate release manifest]
   F --> F5[Generate Zenodo readiness report]

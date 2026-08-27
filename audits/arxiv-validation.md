@@ -1,23 +1,25 @@
 # arXiv Packaging Validation Report
 
-Generated at: `2026-05-28T00:28:58Z`
+Generated at: 2026-08-27T15:30:00Z
 
 ## Executive Summary
 
-- Total checks: **31**
-- Pass: **31**
-- Warn: **0**
+- Validation target: the exact deterministic staged arXiv source tree, not every file retained in the canonical paper workspace.
+- The stage contains only the manifest-declared TeX dependency closure plus 00README.json; reference-library PDFs, website assets, and unused artwork remain canonical-only.
+- Total checks: **26**
+- Pass: **26**
 - Fail: **0**
 
 Overall result: ✅ **arXiv upload-ready**
 
 ## Goal Checklist
 
-- [x] Validate arXiv manifest (00README.json)
-- [x] Validate source declarations
-- [x] Validate upload structure
-- [x] Validate figure format compatibility
-- [x] Validate bibliography compatibility
+- [x] Materialize the exact declared submission tree
+- [x] Validate the arXiv manifest and declared compiler path
+- [x] Verify the full TeX dependency closure is declared
+- [x] Exclude hidden, system, and undeclared files
+- [x] Enforce file and bundle-size boundaries
+- [x] Verify the biber-compatible bibliography path
 
 ## Detailed Checks
 
@@ -25,62 +27,54 @@ Overall result: ✅ **arXiv upload-ready**
 
 | Check | Result | Details |
 | --- | --- | --- |
-| Bibliography file is non-empty | ✅ PASS | references.bib contains 15 bibliography entries. |
-| Compiler/bibliography combination is compatible | ✅ PASS | Compiler 'pdflatex' + bibliography 'biber' is a known-compatible combination. |
-| biblatex uses biber backend | ✅ PASS | biblatex is configured with backend=biber. |
+| Bibliography source is present and non-empty | ✅ PASS | 1 bibliography file(s) contain 15 entries. |
+| biblatex backend matches the declared biber path | ✅ PASS | The bibliography style and manifest agree on biber. |
 
 ### Figure compatibility
 
 | Check | Result | Details |
 | --- | --- | --- |
-| All figure formats are arXiv-safe | ✅ PASS | All 18 figure files use arXiv-safe image formats. |
-| All figure files are within arXiv size limits | ✅ PASS | All figure files are within the 10 MB per-file size limit. |
-| Total paper bundle within arXiv upload limit | ✅ PASS | Total paper bundle size is 378 KB, within the 50 MB arXiv upload limit. |
+| All staged figures use arXiv-safe formats | ✅ PASS | All 17 staged figures use arXiv-safe formats. |
+| No staged source file exceeds the per-file size limit | ✅ PASS | All staged files are at or below 10.00 MB (10000000 bytes). |
+| Exact staged arXiv source tree is within the 45 MB headroom target | ✅ PASS | Exact staged source tree is 18.25 MB (18251667 bytes); limit is 45.00 MB (45000000 bytes). |
 
 ### Manifest
 
 | Check | Result | Details |
 | --- | --- | --- |
-| 00README.json is parseable JSON | ✅ PASS | paper/00README.json is valid JSON. |
-| 00README schema references arXiv | ✅ PASS | 00README $schema references the arXiv 00readme schema. |
-| 00README required root keys present | ✅ PASS | 00README includes all required root keys. |
-| Compiler is declared | ✅ PASS | Compiler declared in process block: 'pdflatex'. |
+| 00README.json is parseable JSON | ✅ PASS | 00README.json is valid JSON in the staged submission. |
+| 00README schema references arXiv | ✅ PASS | 00README schema references the arXiv 00readme schema. |
+| 00README required root keys are present | ✅ PASS | 00README includes all required root keys. |
 | Compiler is arXiv-supported | ✅ PASS | Declared compiler 'pdflatex' is supported by arXiv. |
-| Bibliography tool is declared | ✅ PASS | Bibliography tool declared: 'biber'. |
-| Bibliography tool is supported | ✅ PASS | Declared bibliography tool 'biber' is supported. |
-| Deterministic flag is set | ✅ PASS | process.deterministic is true in 00README. |
-| TeXLive version declared | ✅ PASS | TeXLive version declared in process block: '2025'. |
-| max_repeat declared | ✅ PASS | process.max_repeat declared as 10. |
-| Build script declared | ✅ PASS | build.script declared: 'scripts/build-paper.sh'. |
-| Orchestration config declared | ✅ PASS | build.orchestration declared: '.latexmkrc'. |
+| Bibliography tool is arXiv-supported | ✅ PASS | Declared bibliography tool 'biber' is supported by arXiv. |
+| Deterministic staging is declared | ✅ PASS | process.deterministic is true. |
+| TeX Live version is declared | ✅ PASS | process.texlive declares '2025'. |
+| Maximum compiler repeats are declared | ✅ PASS | process.max_repeat is 10. |
+| Direct pdflatex/biber path is declared | ✅ PASS | The manifest declares pdflatex, biber, then two pdflatex passes. |
+| Submission does not rely on TEXINPUTS overrides | ✅ PASS | build.texinputs is empty; staged compilation resolves declared paths directly. |
+| Declared staging budget matches the enforced headroom target | ✅ PASS | Manifest and validator both enforce 45.00 MB (45000000 bytes). |
 
 ### Source declarations
 
 | Check | Result | Details |
 | --- | --- | --- |
-| All source usage values are valid | ✅ PASS | All declared source usage values are valid. |
-| No absolute source paths | ✅ PASS | All source paths are relative. |
-| No path-escaping source declarations | ✅ PASS | No source paths escape the paper/ bundle directory. |
-| All declared sources exist on disk | ✅ PASS | All declared sources exist under paper/. |
-| All source file types are arXiv-safe | ✅ PASS | All declared source file extensions are arXiv-safe. |
-| Exactly one toplevel source declared | ✅ PASS | Exactly one toplevel source is declared. |
-| Bibliography file declared in sources | ✅ PASS | A .bib bibliography file is declared in sources. |
-| Style file declared in sources | ✅ PASS | A .sty publication style file is declared in sources. |
+| All source usage values are valid | ✅ PASS | All source usage values are valid. |
+| Declared sources are safe, unique, and present | ✅ PASS | Every declared source is relative, arXiv-safe, unique, and present. |
+| All declared source file types are arXiv-safe | ✅ PASS | All declared source types are arXiv-safe. |
+| Every compiled TeX dependency is declared | ✅ PASS | All 40 discovered compilation dependencies are declared. |
+| Manifest declarations are the exact TeX dependency closure | ✅ PASS | All 40 declared sources are required by compilation. |
+
+### Staging
+
+| Check | Result | Details |
+| --- | --- | --- |
+| Exact staged submission directory exists | ✅ PASS | The validator is measuring a materialized arXiv submission directory. |
 
 ### Upload structure
 
 | Check | Result | Details |
 | --- | --- | --- |
-| No symlinks in paper bundle | ✅ PASS | No symlinks found under paper/. |
-| No system files in paper bundle | ✅ PASS | No banned system files found under paper/. |
-| No build artifacts declared as sources | ✅ PASS | No build artifact paths (.cache/, .aux, .log, .fls) appear in source declarations. |
-| Toplevel paper.tex exists | ✅ PASS | paper/paper.tex exists as the toplevel LaTeX entrypoint. |
-| references.bib exists | ✅ PASS | paper/references.bib exists. |
-
-## arXiv Upload Checklist
-
-- [x] 00README.json is valid and complete
-- [x] All sources declared, present, and arXiv-safe
-- [x] Upload bundle is clean (no symlinks, no artifacts, no system files)
-- [x] All figures are in arXiv-compatible formats and within size limits
-- [x] Bibliography compilation path is arXiv-compatible
+| Staged tree contains exactly the manifest-declared source set | ✅ PASS | The staged tree contains exactly 41 declared source files. |
+| No symlinks are present | ✅ PASS | No symlinks are present in the staged submission. |
+| No banned system files are present | ✅ PASS | No banned system files are present. |
+| No hidden runtime files are present | ✅ PASS | The staged submission does not rely on hidden files. |

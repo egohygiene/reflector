@@ -11,6 +11,7 @@ on:
       - "paper/**/*.tex"
       - "paper/**/*.bib"
       - "paper/**/*.sty"
+      - "paper/00README.json"
       - "paper/**/sections/**"
       - "paper/**/macros/**"
       - "paper/**/styles/**"
@@ -22,6 +23,9 @@ on:
       - "scripts/build-paper.sh"
       - "scripts/print-latex-diagnostics.sh"
       - "scripts/watch-paper.sh"
+      - "scripts/stage_arxiv_submission.py"
+      - "scripts/validate_arxiv_packaging.py"
+      - "scripts/validate-arxiv-packaging.py"
       - ".latexmkrc"
       - ".latexindent.yml"
       - ".github/workflows/build-paper.yml"
@@ -35,6 +39,7 @@ on:
       - "paper/**/*.tex"
       - "paper/**/*.bib"
       - "paper/**/*.sty"
+      - "paper/00README.json"
       - "paper/**/sections/**"
       - "paper/**/macros/**"
       - "paper/**/styles/**"
@@ -46,6 +51,9 @@ on:
       - "scripts/build-paper.sh"
       - "scripts/print-latex-diagnostics.sh"
       - "scripts/watch-paper.sh"
+      - "scripts/stage_arxiv_submission.py"
+      - "scripts/validate_arxiv_packaging.py"
+      - "scripts/validate-arxiv-packaging.py"
       - ".latexmkrc"
       - ".latexindent.yml"
       - ".github/workflows/build-paper.yml"
@@ -110,6 +118,29 @@ jobs:
         if: failure()
         run: ./scripts/print-latex-diagnostics.sh "${{ matrix.paper }}"
 
+      - name: Stage and validate exact arXiv submission source
+        run: |
+          set -euo pipefail
+          python scripts/stage_arxiv_submission.py \
+            --source-dir "${{ matrix.paper }}" \
+            --output-dir "dist/arxiv"
+          python scripts/validate-arxiv-packaging.py \
+            --bundle-dir "dist/arxiv" \
+            --audit-output "dist/arxiv-validation.md"
+          cp --archive "dist/arxiv" "dist/arxiv-compile"
+
+      - name: Compile staged arXiv source
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: paper.tex
+          working_directory: dist/arxiv-compile
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -file-line-error
+
       - name: Upload PDF artifact
         if: always()
         uses: actions/upload-artifact@v7
@@ -117,6 +148,18 @@ jobs:
           name: ${{ steps.vars.outputs.pdf_artifact }}
           path: ${{ matrix.paper }}/.cache/out/paper.pdf
           if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload arXiv submission preflight artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: "${{ steps.vars.outputs.paper_name }}-arxiv-submission-preflight"
+          path: |
+            dist/arxiv/
+            dist/arxiv-validation.md
+            dist/arxiv-compile/paper.pdf
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Publish paper build summary

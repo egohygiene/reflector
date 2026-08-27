@@ -13,6 +13,7 @@ on:
       - "paper/**/*.tex"
       - "paper/**/*.bib"
       - "paper/**/*.sty"
+      - "paper/00README.json"
       - "paper/**/sections/**"
       - "paper/**/macros/**"
       - "paper/**/styles/**"
@@ -28,6 +29,8 @@ on:
       - "scripts/validate-metadata.py"
       - "scripts/validate-release-lifecycle.py"
       - "scripts/validate-arxiv-packaging.py"
+      - "scripts/validate_arxiv_packaging.py"
+      - "scripts/stage_arxiv_submission.py"
       - "scripts/validate-build-reproducibility.py"
       - "scripts/audit-publication-readiness.py"
       - "scripts/audit-chktex.py"
@@ -133,6 +136,8 @@ jobs:
               '^scripts/validate-metadata\.py$'
               '^scripts/validate-release-lifecycle\.py$'
               '^scripts/validate-arxiv-packaging\.py$'
+              '^scripts/validate_arxiv_packaging\.py$'
+              '^scripts/stage_arxiv_submission\.py$'
               '^scripts/validate-build-reproducibility\.py$'
               '^scripts/audit-publication-readiness\.py$'
               '^scripts/audit-chktex\.py$'
@@ -472,54 +477,42 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
-      - name: Assemble arXiv source bundle
+      - name: Stage, validate, and package the arXiv source bundle
         run: |
           set -euo pipefail
 
           PAPER_DIR="${{ steps.vars.outputs.paper }}"
           ARXIV_DIR="dist/arxiv"
-          mkdir --parents "${ARXIV_DIR}"
-
-          for file in "paper.tex" "references.bib"; do
-            if [[ -f "${PAPER_DIR}/${file}" ]]; then
-              cp "${PAPER_DIR}/${file}" "${ARXIV_DIR}/${file}"
-            fi
-          done
-
-          if [[ -f ".latexmkrc" ]]; then
-            cp ".latexmkrc" "${ARXIV_DIR}/.latexmkrc"
-          fi
-
-          for directory in "sections" "figures" "diagrams" "assets" "references" "styles" "macros" "config"; do
-            if [[ -d "${PAPER_DIR}/${directory}" ]]; then
-              cp --recursive "${PAPER_DIR}/${directory}" "${ARXIV_DIR}/${directory}"
-            fi
-          done
-
-          if [[ -f "${PAPER_DIR}/00README.json" ]]; then
-            cp "${PAPER_DIR}/00README.json" "${ARXIV_DIR}/00README.json"
-          fi
-
-      - name: Package arXiv bundles
-        run: |
-          set -euo pipefail
-
           TAG="${{ steps.vars.outputs.tag }}"
-          ARXIV_DIR="dist/arxiv"
           ZIP_PATH="dist/reflector-arxiv-${TAG}.zip"
           TARGZ_PATH="dist/reflector-arxiv-${TAG}.tar.gz"
-          ZIP_ABS_PATH="${GITHUB_WORKSPACE}/${ZIP_PATH}"
 
-          (
-            cd "${ARXIV_DIR}"
-            zip -X -r "${ZIP_ABS_PATH}" .
-          )
+          python scripts/stage_arxiv_submission.py \
+            --source-dir "${PAPER_DIR}" \
+            --output-dir "${ARXIV_DIR}" \
+            --zip-output "${ZIP_PATH}" \
+            --tar-output "${TARGZ_PATH}"
 
-          tar --sort=name \
-              --mtime="1970-01-01 00:00:00 UTC" \
-              --owner=0 --group=0 --numeric-owner \
-              -czf "${TARGZ_PATH}" \
-              -C "${ARXIV_DIR}" .
+          python scripts/validate-arxiv-packaging.py \
+            --bundle-dir "${ARXIV_DIR}" \
+            --audit-output "dist/arxiv-validation.md"
+
+      - name: Prepare isolated arXiv compilation workspace
+        run: |
+          set -euo pipefail
+          cp --archive "dist/arxiv" "dist/arxiv-compile"
+
+      - name: Compile staged arXiv source
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: paper.tex
+          working_directory: dist/arxiv-compile
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -file-line-error
 
       - name: Publish arXiv workflow summary
         run: |
@@ -548,6 +541,8 @@ jobs:
           path: |
             dist/reflector-arxiv-${{ steps.vars.outputs.tag }}.zip
             dist/reflector-arxiv-${{ steps.vars.outputs.tag }}.tar.gz
+            dist/arxiv-validation.md
+            dist/arxiv-compile/paper.pdf
           if-no-files-found: error
           retention-days: 30
 
@@ -762,7 +757,7 @@ jobs:
           echo "Release directory assembled at ${RELEASE_DIR}."
           find "${RELEASE_DIR}" -maxdepth 2 -type f | sort
 
-      - name: Build arXiv source bundle
+      - name: Stage, validate, and package arXiv source bundle
         run: |
           set -euo pipefail
 
@@ -771,35 +766,48 @@ jobs:
           RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
           PAPER_DIR="${{ github.event.inputs.paper || 'paper' }}"
           ARXIV_DIR="${RELEASE_DIR}/arxiv"
+          ARXIV_ZIP="${RELEASE_DIR}/${PAPER_NAME}-arxiv-${TAG}.zip"
+          ARXIV_TARGZ="${RELEASE_DIR}/${PAPER_NAME}-arxiv-${TAG}.tar.gz"
 
-          mkdir --parents "${ARXIV_DIR}"
+          python scripts/stage_arxiv_submission.py \
+            --source-dir "${PAPER_DIR}" \
+            --output-dir "${ARXIV_DIR}" \
+            --zip-output "${ARXIV_ZIP}" \
+            --tar-output "${ARXIV_TARGZ}"
 
-          # ── Copy top-level LaTeX sources ─────────────────────────────────
-          for file in "paper.tex" "references.bib"; do
-            if [[ -f "${PAPER_DIR}/${file}" ]]; then
-              cp "${PAPER_DIR}/${file}" "${ARXIV_DIR}/${file}"
-            fi
-          done
+          python scripts/validate-arxiv-packaging.py \
+            --bundle-dir "${ARXIV_DIR}" \
+            --audit-output "${RELEASE_DIR}/arxiv-validation.md"
 
-          # ── Copy build configuration ─────────────────────────────────────
-          if [[ -f ".latexmkrc" ]]; then
-            cp ".latexmkrc" "${ARXIV_DIR}/.latexmkrc"
-          fi
-
-          # ── Copy source directories ──────────────────────────────────────
-          for directory in "sections" "figures" "diagrams" "assets" "references" "styles" "macros" "config"; do
-            if [[ -d "${PAPER_DIR}/${directory}" ]]; then
-              cp --recursive "${PAPER_DIR}/${directory}" "${ARXIV_DIR}/${directory}"
-            fi
-          done
-
-          # ── Copy arXiv README manifest ───────────────────────────────────
-          if [[ -f "${PAPER_DIR}/00README.json" ]]; then
-            cp "${PAPER_DIR}/00README.json" "${ARXIV_DIR}/00README.json"
-          fi
+          mkdir --parents "dist"
+          cp --archive "${ARXIV_DIR}" "dist/arxiv-compile"
 
           echo "arXiv source bundle assembled at ${ARXIV_DIR}."
           find "${ARXIV_DIR}" -maxdepth 3 -type f | sort
+
+      - name: Compile staged arXiv source
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: paper.tex
+          working_directory: dist/arxiv-compile
+          extra_system_packages: "biber"
+          args: >-
+            -pdf
+            -halt-on-error
+            -interaction=nonstopmode
+            -file-line-error
+
+      - name: Upload staged arXiv preflight artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reflector-arxiv-submission-preflight-${{ steps.version.outputs.tag }}
+          path: |
+            ${{ steps.version.outputs.release_dir }}/arxiv/
+            ${{ steps.version.outputs.release_dir }}/arxiv-validation.md
+            dist/arxiv-compile/paper.pdf
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Generate source archive (source.zip)
         run: |
@@ -830,34 +838,6 @@ jobs:
           done
 
           echo "Source archive: ${SOURCE_ARCHIVE}"
-
-      - name: Package arXiv bundles (zip + tar.gz)
-        run: |
-          set -euo pipefail
-
-          TAG="${{ steps.version.outputs.tag }}"
-          PAPER_NAME="${{ steps.version.outputs.paper_name }}"
-          RELEASE_DIR="${{ steps.version.outputs.release_dir }}"
-
-          ARXIV_DIR="${RELEASE_DIR}/arxiv"
-          ARXIV_ZIP="${RELEASE_DIR}/${PAPER_NAME}-arxiv-${TAG}.zip"
-          ARXIV_TARGZ="${RELEASE_DIR}/${PAPER_NAME}-arxiv-${TAG}.tar.gz"
-
-          # arXiv ZIP bundle
-          (
-            cd "${ARXIV_DIR}"
-            zip -X -r "${OLDPWD}/${ARXIV_ZIP}" .
-          )
-
-          # arXiv TAR.GZ bundle (deterministic)
-          tar --sort=name \
-              --mtime="1970-01-01 00:00:00 UTC" \
-              --owner=0 --group=0 --numeric-owner \
-              -czf "${ARXIV_TARGZ}" \
-              -C "${ARXIV_DIR}" .
-
-          echo "arXiv ZIP:    ${ARXIV_ZIP}"
-          echo "arXiv TAR.GZ: ${ARXIV_TARGZ}"
 
       - name: Generate Zenodo readiness report
         run: |

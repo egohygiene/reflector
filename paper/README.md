@@ -53,7 +53,7 @@ Build Layer         → ../.latexmkrc, scripts/  (how it compiles)
 Swapping the publication style is as simple as changing one line in `paper.tex`:
 
 ```latex
-\usepackage{reflector}   % current draft / arXiv style
+\usepackage{styles/reflector}   % current draft / arXiv style
 % \usepackage{ieee}      % future: IEEE format
 % \usepackage{acm}       % future: ACM format
 ```
@@ -88,6 +88,17 @@ reflector/
 ```bash
 # From repository root
 ./scripts/build-paper.sh paper
+```
+
+## arXiv Submission Staging
+
+The arXiv bundle contains only the manifest-declared compilation closure, rather
+than every retained research asset in this directory. It compiles directly with
+`pdflatex → biber → pdflatex → pdflatex` and does not require `.latexmkrc`.
+
+```bash
+python scripts/stage_arxiv_submission.py --source-dir paper --output-dir dist/arxiv
+python scripts/validate-arxiv-packaging.py --bundle-dir dist/arxiv
 ```
 
 ## Roadmap
