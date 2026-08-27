@@ -24,13 +24,33 @@ def test_landing_page_uses_generated_previews_for_social_cards_and_editions() ->
     assert "reflector-magazine-print.pdf" in html
 
 
-def test_landing_page_exposes_breadcrumbs_history_and_manifest_hydration() -> None:
+def test_landing_page_exposes_canonical_accessible_progressive_enhancement() -> None:
     repo_root = Path(__file__).resolve().parent.parent
     html = (repo_root / "docs" / "index.html").read_text(encoding="utf-8")
 
-    assert 'aria-label="Breadcrumb"' in html
-    assert "Publication history" in html
-    assert 'id="status-display"' in html
-    assert 'id="version-display"' in html
-    assert 'id="build-display"' in html
-    assert "fetch('./publication.json')" in html
+    assert '<link rel="canonical" href="https://reflector.egohygiene.io/">' in html
+    assert '<meta property="og:url" content="https://reflector.egohygiene.io/">' in html
+    assert '<a class="skip-link" href="#content">' in html
+    assert '<main id="content" tabindex="-1">' in html
+    assert 'data-publication-manifest="./publication.json"' in html
+    assert 'data-publication-status>Draft<' in html
+    assert 'data-publication-version>v0.1.2<' in html
+    assert '<script src="./assets/site.js" defer></script>' in html
+
+
+def test_publication_routes_are_first_class_surfaces() -> None:
+    repo_root = Path(__file__).resolve().parent.parent
+    expected_routes = {
+        "paper/index.html": "https://reflector.egohygiene.io/paper/",
+        "magazine/index.html": "https://reflector.egohygiene.io/magazine/",
+        "magazine/print/index.html": "https://reflector.egohygiene.io/magazine/print/",
+        "downloads/index.html": "https://reflector.egohygiene.io/downloads/",
+    }
+
+    for relative_path, canonical_url in expected_routes.items():
+        html = (repo_root / "docs" / relative_path).read_text(encoding="utf-8")
+        assert f'<link rel="canonical" href="{canonical_url}">' in html
+        assert f'<meta property="og:url" content="{canonical_url}">' in html
+        assert '<a class="skip-link" href="#content">' in html
+        assert '<main id="content" tabindex="-1">' in html
+        assert "assets/site.js" in html

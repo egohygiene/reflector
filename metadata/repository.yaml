@@ -13,7 +13,9 @@
 name: reflector
 owner: egohygiene
 github_url: "https://github.com/egohygiene/reflector"
-pages_url: "https://egohygiene.github.io/reflector/"
+pages_url: "https://reflector.egohygiene.io/"
+pages_fallback_url: "https://egohygiene.github.io/reflector/"
+pages_custom_domain: "reflector.egohygiene.io"
 
 # ---------------------------------------------------------------------------
 # Publication status and release

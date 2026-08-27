@@ -136,6 +136,7 @@ path = [
     "pyproject.toml",
     ".editorconfig",
     ".gitignore",
+    "docs/CNAME",
     "template/.chktexrc",
     "template/.editorconfig",
     "template/.gitattributes",

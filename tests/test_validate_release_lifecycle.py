@@ -39,30 +39,41 @@ def test_pages_workflow_publishes_canonical_manifest_and_required_routes() -> No
     repo_root = Path(__file__).resolve().parent.parent
     workflow = (repo_root / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
 
-    assert 'ROOT_MANIFEST="publication.json"' in workflow
-    assert 'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"' in workflow
-    assert "scripts/generate_pdf_previews.py" in workflow
-    assert '"docs/previews/paper-cover.webp"' in workflow
-    assert '"docs/previews/magazine-cover.webp"' in workflow
-    assert '"docs/previews/print-cover.webp"' in workflow
-    assert '"docs/publication.json"' in workflow
+    assert "pull_request:" in workflow
+    assert 'python3 "scripts/stage-pages.py"' in workflow
+    assert '"paper-cover=.pages-inputs/reflector.pdf"' in workflow
+    assert '"magazine-cover=.pages-inputs/reflector-magazine.pdf"' in workflow
+    assert '"print-cover=.pages-inputs/reflector-magazine-print.pdf"' in workflow
     assert '"_site/publication.json"' in workflow
-    assert "ROUTES=(" in workflow
-    assert 'printf \'Checking <%s>\\n\' "${url}"' in workflow
-    assert "Shell-escaped URL" in workflow
-    assert "Malformed validation base URL" in workflow
-    assert "Malformed validation URL" in workflow
+    assert "site.json?revision=" in workflow
+    assert '"_site/SHA256SUMS"' in workflow
+    assert 'cmp --silent "publication.json" "_site/publication.json"' in workflow
+    assert 'sha256sum --check --strict "SHA256SUMS"' in workflow
 
 
-def test_pages_workflow_enriches_published_manifest_with_build_metadata() -> None:
+def test_pages_workflow_keeps_build_metadata_out_of_publication_manifest() -> None:
     repo_root = Path(__file__).resolve().parent.parent
     workflow = (repo_root / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
 
-    assert "Inject build metadata into published manifest" in workflow
-    assert '"commit_sha"' in workflow
-    assert '"generated_at"' in workflow
-    assert '"previews"' in workflow
-    assert '"publication_status"' in workflow
+    assert "Inject build metadata into published manifest" not in workflow
+    assert 'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"' not in workflow
+    assert "SOURCE_DATE_EPOCH" in workflow
+    assert "metadata/releases" in workflow
+    assert "checksums_asset" in workflow
+    assert "site.json" in workflow
+    assert 'rm --force "_site/.reflector-pages-owned"' in workflow
+    assert '"_fallback-routes.tsv"' in workflow
+
+
+def test_pages_workflow_deploys_only_from_main_with_job_scoped_permissions() -> None:
+    repo_root = Path(__file__).resolve().parent.parent
+    workflow = (repo_root / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+
+    assert "permissions:\n  contents: read" in workflow
+    assert "if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'" in workflow
+    assert "      id-token: write" in workflow
+    assert "      pages: write" in workflow
+    assert "actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128" in workflow
 
 
 def test_template_pages_workflow_validates_clean_urls_from_slug_routes() -> None:

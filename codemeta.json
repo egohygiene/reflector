@@ -4,7 +4,7 @@
   "name": "reflector",
   "description": "reflector: reflective synchronization systems for recursive AI-assisted software engineering",
   "codeRepository": "https://github.com/egohygiene/reflector",
-  "url": "https://egohygiene.github.io/reflector/",
+  "url": "https://reflector.egohygiene.io/",
   "version": "0.1.2",
   "datePublished": "2026-05-22",
   "license": "https://spdx.org/licenses/Apache-2.0",

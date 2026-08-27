@@ -1,628 +1,741 @@
 # SPDX-FileCopyrightText: 2026 Alan Szmyt
 # SPDX-License-Identifier: Apache-2.0
 
-name: Deploy GitHub Pages
+name: Reflector publication hub
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/pages.yml"
+      - ".latexmkrc"
+      - "Taskfile.yml"
+      - "VERSION"
+      - "docs/**"
+      - "magazine/**"
+      - "metadata/**"
+      - "paper/**"
+      - "publication.json"
+      - "scripts/build-magazine.sh"
+      - "scripts/build-paper.sh"
+      - "scripts/generate_pdf_previews.py"
+      - "scripts/stage-pages.py"
+      - "tests/test_stage_pages.py"
   push:
     branches:
       - main
     paths:
-      - "docs/**"
-      - "paper/**"
-      - "magazine/**"
       - ".github/workflows/pages.yml"
-      - "scripts/build-paper.sh"
+      - ".latexmkrc"
+      - "Taskfile.yml"
+      - "VERSION"
+      - "docs/**"
+      - "magazine/**"
+      - "metadata/**"
+      - "paper/**"
+      - "publication.json"
       - "scripts/build-magazine.sh"
+      - "scripts/build-paper.sh"
+      - "scripts/generate_pdf_previews.py"
+      - "scripts/stage-pages.py"
+      - "tests/test_stage_pages.py"
   workflow_dispatch:
     inputs:
       deploy_scope:
-        description: "Pages scope: auto, paper, magazine, full"
-        required: false
-        default: "auto"
+        description: "Publication artifacts to rebuild before deployment"
+        required: true
+        default: auto
+        type: choice
+        options:
+          - auto
+          - full
+          - paper
+          - magazine
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: github-pages
-  cancel-in-progress: true
+  group: reflector-pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  CANONICAL_URL: "https://reflector.egohygiene.io/"
+  FALLBACK_URL: "https://egohygiene.github.io/reflector/"
 
 jobs:
+  build:
+    name: Build and review publication hub
+    runs-on: ubuntu-24.04
+
+    outputs:
+      review_artifact_name: ${{ steps.context.outputs.review_artifact_name }}
+      source_revision: ${{ steps.context.outputs.source_revision }}
+
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Establish deterministic build context
+        id: context
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SOURCE_REVISION="$(git rev-parse HEAD)"
+          SOURCE_EPOCH="$(git show --no-patch --format=%ct HEAD)"
+          GENERATED_AT="$(date --utc --date="@${SOURCE_EPOCH}" "+%Y-%m-%dT%H:%M:%SZ")"
+          REVIEW_ARTIFACT_NAME="reflector-pages-review-${SOURCE_REVISION}"
+
+          echo "source_revision=${SOURCE_REVISION}" >> "${GITHUB_OUTPUT}"
+          echo "source_epoch=${SOURCE_EPOCH}" >> "${GITHUB_OUTPUT}"
+          echo "generated_at=${GENERATED_AT}" >> "${GITHUB_OUTPUT}"
+          echo "review_artifact_name=${REVIEW_ARTIFACT_NAME}" >> "${GITHUB_OUTPUT}"
+
+          echo "SOURCE_DATE_EPOCH=${SOURCE_EPOCH}" >> "${GITHUB_ENV}"
+          echo "FORCE_SOURCE_DATE=1" >> "${GITHUB_ENV}"
+          echo "TZ=UTC" >> "${GITHUB_ENV}"
+
+      - name: Determine build scope
+        id: scope
+        env:
+          REQUESTED_SCOPE: ${{ inputs.deploy_scope || 'auto' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUILD_PAPER="true"
+          BUILD_MAGAZINE="true"
+          RESOLVED_SCOPE="full"
+
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            case "${REQUESTED_SCOPE}" in
+              auto|full)
+                ;;
+              paper)
+                BUILD_MAGAZINE="false"
+                RESOLVED_SCOPE="paper"
+                ;;
+              magazine)
+                BUILD_PAPER="false"
+                RESOLVED_SCOPE="magazine"
+                ;;
+              *)
+                echo "::error::Invalid deploy scope: ${REQUESTED_SCOPE}"
+                exit 1
+                ;;
+            esac
+          fi
+
+          echo "build_paper=${BUILD_PAPER}" >> "${GITHUB_OUTPUT}"
+          echo "build_magazine=${BUILD_MAGAZINE}" >> "${GITHUB_OUTPUT}"
+          echo "resolved_scope=${RESOLVED_SCOPE}" >> "${GITHUB_OUTPUT}"
+
+      - name: Install native publication dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes \
+            biber \
+            latexmk \
+            lmodern \
+            poppler-utils \
+            texlive-bibtex-extra \
+            texlive-fonts-recommended \
+            texlive-latex-base \
+            texlive-latex-extra \
+            texlive-latex-recommended \
+            texlive-pictures \
+            webp
+
+      - name: Run Pages contract unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q "scripts/stage-pages.py" "tests/test_stage_pages.py"
+          python3 -m unittest "tests/test_stage_pages.py"
+
+      - name: Resolve protected release fallback
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "${GITHUB_OUTPUT}" <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+          from urllib.parse import urlsplit
+
+          manifest = json.loads(Path("publication.json").read_text(encoding="utf-8"))
+          repository_url = manifest.get("repository_url")
+          release_tag = manifest.get("release_tag")
+          release_url = manifest.get("release_url")
+
+          if repository_url != "https://github.com/egohygiene/reflector":
+              raise SystemExit("publication.json repository_url is not the protected Reflector repository")
+          if not isinstance(release_tag, str) or not re.fullmatch(r"v\d+\.\d+\.\d+", release_tag):
+              raise SystemExit("publication.json release_tag must be a semantic-version tag")
+
+          expected_release_url = f"{repository_url}/releases/tag/{release_tag}"
+          if release_url is None:
+              release_url = expected_release_url
+          if release_url != expected_release_url:
+              raise SystemExit(
+                  "publication.json release_url must agree with repository_url and release_tag"
+              )
+
+          parsed = urlsplit(release_url)
+          if parsed.scheme != "https" or parsed.netloc != "github.com" or parsed.query or parsed.fragment:
+              raise SystemExit("release_url must be a clean HTTPS github.com release URL")
+
+          baseline_path = Path("metadata/releases") / f"{release_tag}.json"
+          baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+          if baseline.get("schema_version") != "1.0.0":
+              raise SystemExit(f"Unsupported release baseline schema: {baseline_path}")
+          if baseline.get("release_tag") != release_tag:
+              raise SystemExit(f"Release baseline tag does not match publication.json: {baseline_path}")
+          if not re.fullmatch(r"[0-9a-f]{40}", str(baseline.get("release_commit", ""))):
+              raise SystemExit(f"Release baseline has an invalid commit: {baseline_path}")
+
+          checksums_asset = baseline.get("checksums_asset", {})
+          if checksums_asset.get("filename") != "checksums.txt" or not re.fullmatch(
+              r"[0-9a-f]{64}", str(checksums_asset.get("sha256", ""))
+          ):
+              raise SystemExit(f"Release baseline has an invalid checksums asset: {baseline_path}")
+
+          required_artifacts = {
+              "reflector.pdf",
+              "reflector-magazine.pdf",
+              "reflector-magazine-print.pdf",
+          }
+          artifacts = baseline.get("artifacts", {})
+          if set(artifacts) != required_artifacts:
+              raise SystemExit(f"Release baseline artifact set is incomplete: {baseline_path}")
+          for filename, record in artifacts.items():
+              if not isinstance(record, dict) or not re.fullmatch(
+                  r"[0-9a-f]{64}", str(record.get("sha256", ""))
+              ):
+                  raise SystemExit(f"Release baseline digest is invalid for {filename}")
+              if not isinstance(record.get("size_bytes"), int) or record["size_bytes"] <= 0:
+                  raise SystemExit(f"Release baseline size is invalid for {filename}")
+
+          download_base = release_url.replace("/releases/tag/", "/releases/download/", 1)
+          output_path = Path(sys.argv[1])
+          with output_path.open("a", encoding="utf-8") as output:
+              output.write(f"release_tag={release_tag}\n")
+              output.write(f"release_url={release_url}\n")
+              output.write(f"download_base={download_base}\n")
+              output.write(f"baseline_path={baseline_path.as_posix()}\n")
+          PY
+
+      - name: Prepare publication artifact inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir --parents ".pages-inputs"
+
+      - name: Build paper with its native builder
+        if: steps.scope.outputs.build_paper == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/build-paper.sh "paper"
+          install --mode="0644" \
+            "paper/.cache/out/paper.pdf" \
+            ".pages-inputs/reflector.pdf"
+
+      - name: Print paper diagnostics on failure
+        if: failure() && steps.scope.outputs.build_paper == 'true'
+        shell: bash
+        run: |
+          set +e
+          ./scripts/print-latex-diagnostics.sh "paper"
+
+      - name: Build magazines with their native builder
+        if: steps.scope.outputs.build_magazine == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./scripts/build-magazine.sh "build-all"
+          install --mode="0644" \
+            "magazine/dist/reflector-magazine.pdf" \
+            ".pages-inputs/reflector-magazine.pdf"
+          install --mode="0644" \
+            "magazine/dist/reflector-magazine-print.pdf" \
+            ".pages-inputs/reflector-magazine-print.pdf"
+
+      - name: Download skipped artifacts from the protected release
+        if: steps.scope.outputs.build_paper != 'true' || steps.scope.outputs.build_magazine != 'true'
+        env:
+          BUILD_MAGAZINE: ${{ steps.scope.outputs.build_magazine }}
+          BUILD_PAPER: ${{ steps.scope.outputs.build_paper }}
+          RELEASE_BASELINE: ${{ steps.release.outputs.baseline_path }}
+          RELEASE_DOWNLOAD_BASE: ${{ steps.release.outputs.download_base }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CURL_OPTIONS=(
+            --fail
+            --location
+            --proto "=https"
+            --proto-redir "=https"
+            --retry 4
+            --retry-all-errors
+            --show-error
+            --silent
+          )
+          CHECKSUMS_FILE=".pages-inputs/release-checksums.txt"
+          curl "${CURL_OPTIONS[@]}" \
+            --output "${CHECKSUMS_FILE}" \
+            "${RELEASE_DOWNLOAD_BASE}/checksums.txt"
+
+          python3 - "${RELEASE_BASELINE}" "${CHECKSUMS_FILE}" <<'PY'
+          import hashlib
+          import json
+          import re
+          import sys
+          from pathlib import Path
+
+          baseline = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          checksums_path = Path(sys.argv[2])
+          checksums_bytes = checksums_path.read_bytes()
+          expected_asset_sha = baseline["checksums_asset"]["sha256"]
+          actual_asset_sha = hashlib.sha256(checksums_bytes).hexdigest()
+          if actual_asset_sha != expected_asset_sha:
+              raise SystemExit(
+                  "Downloaded checksums.txt does not match the reviewed release baseline"
+              )
+
+          release_checksums = {}
+          for line in checksums_bytes.decode("utf-8").splitlines():
+              parts = line.split("  ", 1)
+              if len(parts) != 2 or not re.fullmatch(r"[0-9a-f]{64}", parts[0]):
+                  raise SystemExit(f"Invalid release checksums.txt entry: {line!r}")
+              if parts[1] in release_checksums:
+                  raise SystemExit(f"Duplicate release checksums.txt path: {parts[1]}")
+              release_checksums[parts[1]] = parts[0]
+
+          for filename, record in baseline["artifacts"].items():
+              if release_checksums.get(filename) != record["sha256"]:
+                  raise SystemExit(
+                      f"Release checksums.txt disagrees with the reviewed baseline for {filename}"
+                  )
+          PY
+
+          download_and_verify() {
+            local filename="$1"
+            local target=".pages-inputs/${filename}"
+            local expected
+            local expected_size
+            local actual
+            local actual_size
+
+            read -r expected expected_size < <(python3 - "${RELEASE_BASELINE}" "${filename}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          baseline = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          filename = sys.argv[2]
+          record = baseline["artifacts"].get(filename)
+          if not isinstance(record, dict):
+              raise SystemExit(f"No reviewed release baseline exists for {filename}")
+          print(record["sha256"], record["size_bytes"])
+          PY
+            )
+
+            curl "${CURL_OPTIONS[@]}" \
+              --output "${target}" \
+              "${RELEASE_DOWNLOAD_BASE}/${filename}"
+            actual="$(sha256sum "${target}" | cut --delimiter=" " --fields=1)"
+            actual_size="$(wc --bytes < "${target}" | tr --delete "[:space:]")"
+            if [[ "${actual}" != "${expected}" || "${actual_size}" != "${expected_size}" ]]; then
+              echo "::error::Release baseline mismatch for ${filename}"
+              exit 1
+            fi
+            echo "Verified reviewed release fallback: ${filename} (${actual}, ${actual_size} bytes)"
+          }
+
+          if [[ "${BUILD_PAPER}" != "true" ]]; then
+            download_and_verify "reflector.pdf"
+          fi
+          if [[ "${BUILD_MAGAZINE}" != "true" ]]; then
+            download_and_verify "reflector-magazine.pdf"
+            download_and_verify "reflector-magazine-print.pdf"
+          fi
+
+      - name: Validate PDF inputs and generate previews
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for pdf in \
+            ".pages-inputs/reflector.pdf" \
+            ".pages-inputs/reflector-magazine.pdf" \
+            ".pages-inputs/reflector-magazine-print.pdf"
+          do
+            test -s "${pdf}"
+            pdfinfo "${pdf}" >/dev/null
+          done
+
+          rm --force --recursive ".pages-previews"
+          python3 "scripts/generate_pdf_previews.py" \
+            --output-dir ".pages-previews" \
+            --preview "paper-cover=.pages-inputs/reflector.pdf" \
+            --preview "magazine-cover=.pages-inputs/reflector-magazine.pdf" \
+            --preview "print-cover=.pages-inputs/reflector-magazine-print.pdf"
+
+      - name: Stage and byte-compare the complete site twice
+        env:
+          GENERATED_AT: ${{ steps.context.outputs.generated_at }}
+          SOURCE_REVISION: ${{ steps.context.outputs.source_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          stage_site() {
+            local output_dir="$1"
+            python3 "scripts/stage-pages.py" \
+              --project-root "." \
+              --docs-dir "docs" \
+              --output-dir "${output_dir}" \
+              --publication-manifest "publication.json" \
+              --paper-pdf ".pages-inputs/reflector.pdf" \
+              --magazine-pdf ".pages-inputs/reflector-magazine.pdf" \
+              --magazine-print-pdf ".pages-inputs/reflector-magazine-print.pdf" \
+              --preview-dir ".pages-previews" \
+              --hero "paper/figures/hero.png" \
+              --source-revision "${SOURCE_REVISION}" \
+              --generated-at "${GENERATED_AT}"
+          }
+
+          stage_site "_site"
+          stage_site "_site-recheck"
+          diff --brief --no-dereference --recursive "_site" "_site-recheck"
+
+          python3 "scripts/stage-pages.py" \
+            --project-root "." \
+            --docs-dir "docs" \
+            --output-dir "_site" \
+            --publication-manifest "publication.json" \
+            --paper-pdf ".pages-inputs/reflector.pdf" \
+            --magazine-pdf ".pages-inputs/reflector-magazine.pdf" \
+            --magazine-print-pdf ".pages-inputs/reflector-magazine-print.pdf" \
+            --preview-dir ".pages-previews" \
+            --hero "paper/figures/hero.png" \
+            --source-revision "${SOURCE_REVISION}" \
+            --generated-at "${GENERATED_AT}" \
+            --validate-only
+
+          cmp --silent "publication.json" "_site/publication.json"
+          (
+            cd "_site"
+            sha256sum --check --strict "SHA256SUMS"
+          )
+
+          SOURCE_STATUS="$(git status --porcelain=v1 --untracked-files=all -- "docs" "publication.json")"
+          if [[ -n "${SOURCE_STATUS}" ]]; then
+            echo "::error::Pages staging changed protected repository source paths."
+            printf '%s\n' "${SOURCE_STATUS}"
+            exit 1
+          fi
+
+          rm --force "_site/.reflector-pages-owned"
+          test ! -e "_site/.reflector-pages-owned"
+          rm --force --recursive "_site-recheck"
+
+      - name: Summarize review artifact
+        env:
+          RESOLVED_SCOPE: ${{ steps.scope.outputs.resolved_scope }}
+          SOURCE_REVISION: ${{ steps.context.outputs.source_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## Reflector Pages review"
+            echo
+            echo "- Canonical URL: ${CANONICAL_URL}"
+            echo "- Source revision: \`${SOURCE_REVISION}\`"
+            echo "- Build scope: \`${RESOLVED_SCOPE}\`"
+            echo "- Protected publication manifest: byte-for-byte preserved"
+            echo "- Beacon: not used"
+            echo
+            echo "### Publication artifacts"
+            echo
+            echo "| Artifact | Size (bytes) | SHA-256 |"
+            echo "| --- | ---: | --- |"
+            while read -r digest path; do
+              case "${path}" in
+                reflector.pdf|reflector-magazine.pdf|reflector-magazine-print.pdf)
+                  size="$(wc --bytes < "_site/${path}" | tr --delete "[:space:]")"
+                  echo "| ${path} | ${size} | \`${digest}\` |"
+                  ;;
+              esac
+            done < "_site/SHA256SUMS"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload review artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.context.outputs.review_artifact_name }}
+          path: _site
+          compression-level: 0
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+
+      - name: Upload native build diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reflector-pages-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            paper/.cache/
+            magazine/.cache/
+            magazine/dist/
+          if-no-files-found: warn
+          include-hidden-files: true
+          retention-days: 7
+
   deploy:
-    name: Deploy Pages
-    runs-on: ubuntu-latest
+    name: Deploy canonical publication hub
+    needs:
+      - build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      pages: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - name: Harden runner
+        uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
         with:
-          fetch-depth: 0
+          egress-policy: audit
 
-      - name: Determine deployment scope
-        id: scope
-        run: |
-          set -euo pipefail
-
-          EVENT="${{ github.event_name }}"
-          SCOPE_INPUT="${{ github.event.inputs.deploy_scope || 'auto' }}"
-          BUILD_PAPER="false"
-          BUILD_MAGAZINE="false"
-
-          if [[ "${EVENT}" == "workflow_dispatch" ]]; then
-            case "${SCOPE_INPUT}" in
-              auto|full)
-                BUILD_PAPER="true"
-                BUILD_MAGAZINE="true"
-                ;;
-              paper)
-                BUILD_PAPER="true"
-                ;;
-              magazine)
-                BUILD_MAGAZINE="true"
-                ;;
-              *)
-                echo "::error::Invalid deploy_scope='${SCOPE_INPUT}'. Use auto, paper, magazine, or full."
-                exit 1
-                ;;
-            esac
-          else
-            echo "Push event detected; rebuilding all publication PDFs to guarantee complete Pages artifacts."
-            BUILD_PAPER="true"
-            BUILD_MAGAZINE="true"
-          fi
-
-          echo "build_paper=${BUILD_PAPER}" >> "$GITHUB_OUTPUT"
-          echo "build_magazine=${BUILD_MAGAZINE}" >> "$GITHUB_OUTPUT"
-
-      - name: Install preview tooling
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install --yes poppler-utils webp
-
-      - name: Build reflector PDF
-        if: steps.scope.outputs.build_paper == 'true'
-        uses: xu-cheng/latex-action@v4
+      - name: Download expected review artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          root_file: paper.tex
-          working_directory: paper
-          extra_system_packages: "biber"
-          args: >-
-            -pdf
-            -halt-on-error
-            -interaction=nonstopmode
-            -recorder
-            -synctex=1
-            -file-line-error
-            -shell-escape
-            -f
-            -gg
-            -cd
-            -r
-            ../.latexmkrc
+          name: ${{ needs.build.outputs.review_artifact_name }}
+          path: _expected-site
 
-      - name: Print LaTeX diagnostics on failure
-        if: failure() && steps.scope.outputs.build_paper == 'true'
-        run: ./scripts/print-latex-diagnostics.sh paper
-
-      - name: Build reflector magazine PDF (digital)
-        if: steps.scope.outputs.build_magazine == 'true'
-        uses: xu-cheng/latex-action@v4
-        with:
-          root_file: tex/magazine.tex
-          working_directory: magazine
-          args: >-
-            -pdf
-            -halt-on-error
-            -interaction=nonstopmode
-            -recorder
-            -file-line-error
-            -f
-            -gg
-            -cd
-            -r
-            tex/.latexmkrc
-
-      - name: Build reflector magazine PDF (print)
-        if: steps.scope.outputs.build_magazine == 'true'
-        uses: xu-cheng/latex-action@v4
-        with:
-          root_file: tex/magazine-print.tex
-          working_directory: magazine
-          args: >-
-            -pdf
-            -halt-on-error
-            -interaction=nonstopmode
-            -recorder
-            -file-line-error
-            -f
-            -gg
-            -cd
-            -r
-            tex/.latexmkrc
-
-      - name: Copy magazine PDFs to dist
-        if: steps.scope.outputs.build_magazine == 'true'
-        run: |
-          set -euo pipefail
-          mkdir -p magazine/dist
-          cp magazine/.cache/out/magazine.pdf magazine/dist/reflector-magazine.pdf
-          cp magazine/.cache/out/magazine-print.pdf magazine/dist/reflector-magazine-print.pdf
-          echo "Built: magazine/dist/reflector-magazine.pdf"
-          echo "Built: magazine/dist/reflector-magazine-print.pdf"
-
-      - name: Synchronize publication assets into docs
-        run: |
-          set -euo pipefail
-
-          PAPER_SLUG="reflector"
-          HERO_SOURCE="paper/figures/hero.png"
-          ROOT_MANIFEST="publication.json"
-          DOCS_PDF="docs/${PAPER_SLUG}.pdf"
-          DOCS_MAGAZINE_PDF="docs/reflector-magazine.pdf"
-          DOCS_MAGAZINE_PRINT_PDF="docs/reflector-magazine-print.pdf"
-          DOCS_HERO_DIR="docs/figures"
-          DOCS_HERO="${DOCS_HERO_DIR}/hero.png"
-          DOCS_MANIFEST="docs/publication.json"
-
-          PDF_SOURCE="docs/reflector.pdf"
-          if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
-            PDF_SOURCE="paper/.cache/out/paper.pdf"
-          else
-            echo "Paper build skipped; checking for existing docs/reflector.pdf as fallback."
-          fi
-
-          MAGAZINE_PDF_SOURCE="docs/reflector-magazine.pdf"
-          MAGAZINE_PRINT_PDF_SOURCE="docs/reflector-magazine-print.pdf"
-          if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
-            MAGAZINE_PDF_SOURCE="magazine/dist/reflector-magazine.pdf"
-            MAGAZINE_PRINT_PDF_SOURCE="magazine/dist/reflector-magazine-print.pdf"
-          else
-            echo "Magazine build skipped; checking for existing docs magazine PDFs as fallback."
-          fi
-
-          if [[ ! -f "${PDF_SOURCE}" ]]; then
-            if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
-              echo "Error: Paper was built but PDF not found at '${PDF_SOURCE}'" >&2
-              exit 1
-            else
-              echo "Error: Required fallback PDF not found at '${PDF_SOURCE}'." >&2
-              exit 1
-            fi
-          fi
-
-          if [[ ! -f "${MAGAZINE_PDF_SOURCE}" ]]; then
-            if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
-              echo "Error: Magazine was built but PDF not found at '${MAGAZINE_PDF_SOURCE}'" >&2
-              exit 1
-            else
-              echo "Error: Required fallback magazine PDF not found at '${MAGAZINE_PDF_SOURCE}'." >&2
-              exit 1
-            fi
-          fi
-
-          if [[ ! -f "${MAGAZINE_PRINT_PDF_SOURCE}" ]]; then
-            if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
-              echo "Error: Magazine (print) was built but PDF not found at '${MAGAZINE_PRINT_PDF_SOURCE}'" >&2
-              exit 1
-            else
-              echo "Error: Required fallback magazine print PDF not found at '${MAGAZINE_PRINT_PDF_SOURCE}'." >&2
-              exit 1
-            fi
-          fi
-
-          if [[ ! -f "${HERO_SOURCE}" ]]; then
-            echo "Error: Expected hero image not found at '${HERO_SOURCE}'" >&2
-            exit 1
-          fi
-
-          if [[ ! -f "${ROOT_MANIFEST}" ]]; then
-            echo "Error: Expected canonical publication manifest not found at '${ROOT_MANIFEST}'" >&2
-            exit 1
-          fi
-
-          mkdir --parents "${DOCS_HERO_DIR}"
-          if [[ -n "${PDF_SOURCE}" && "${PDF_SOURCE}" != "${DOCS_PDF}" ]]; then
-            cp "${PDF_SOURCE}" "${DOCS_PDF}"
-          fi
-          if [[ -n "${MAGAZINE_PDF_SOURCE}" && "${MAGAZINE_PDF_SOURCE}" != "${DOCS_MAGAZINE_PDF}" ]]; then
-            cp "${MAGAZINE_PDF_SOURCE}" "${DOCS_MAGAZINE_PDF}"
-          fi
-          if [[ -n "${MAGAZINE_PRINT_PDF_SOURCE}" && "${MAGAZINE_PRINT_PDF_SOURCE}" != "${DOCS_MAGAZINE_PRINT_PDF}" ]]; then
-            cp "${MAGAZINE_PRINT_PDF_SOURCE}" "${DOCS_MAGAZINE_PRINT_PDF}"
-          fi
-          cp "${HERO_SOURCE}" "${DOCS_HERO}"
-          cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"
-
-          echo "Published PDF: ${DOCS_PDF}"
-          echo "Published magazine PDF: ${DOCS_MAGAZINE_PDF}"
-          echo "Published magazine print PDF: ${DOCS_MAGAZINE_PRINT_PDF}"
-          echo "Published hero image: ${DOCS_HERO}"
-          echo "Published canonical publication manifest: ${DOCS_MANIFEST}"
-          echo "docs/ file inventory:"
-          find docs -type f | sort
-
-      - name: Generate publication previews
-        run: |
-          set -euo pipefail
-          python3 scripts/generate_pdf_previews.py \
-            --output-dir docs/previews \
-            --preview paper-cover=docs/reflector.pdf \
-            --preview magazine-cover=docs/reflector-magazine.pdf \
-            --preview print-cover=docs/reflector-magazine-print.pdf
-
-      - name: Inject build metadata into published manifest
-        env:
-          GITHUB_SHA_VALUE: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          manifest_path = Path("docs/publication.json")
-          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-          pages_url = manifest["pages_url"].rstrip("/") + "/"
-          preview_base = pages_url + "previews/"
-          commit_sha = os.environ["GITHUB_SHA_VALUE"]
-
-          manifest["build"] = {
-              "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
-              "commit_sha": commit_sha,
-              "commit_short_sha": commit_sha[:7],
-              "publication_status": manifest.get("status", "draft"),
-              "source_workflow": "pages.yml",
-          }
-          manifest["previews"] = {
-              "paper": {
-                  "path": "previews/paper-cover.webp",
-                  "pages_url": preview_base + "paper-cover.webp",
-                  "alt": "Preview thumbnail of reflector paper first page",
-              },
-              "magazine": {
-                  "path": "previews/magazine-cover.webp",
-                  "pages_url": preview_base + "magazine-cover.webp",
-                  "alt": "Preview thumbnail of reflector magazine first page",
-              },
-              "print": {
-                  "path": "previews/print-cover.webp",
-                  "pages_url": preview_base + "print-cover.webp",
-                  "alt": "Preview thumbnail of reflector print edition first page",
-              },
-          }
-
-          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-          print(f"Enriched {manifest_path} with build metadata and previews.")
-          PY
-
-      - name: Verify publication synchronization
-        run: |
-          set -euo pipefail
-
-          PDF_SOURCE="docs/reflector.pdf"
-          if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
-            PDF_SOURCE="paper/.cache/out/paper.pdf"
-          fi
-          MAGAZINE_SOURCE="docs/reflector-magazine.pdf"
-          MAGAZINE_PRINT_SOURCE="docs/reflector-magazine-print.pdf"
-          if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
-            MAGAZINE_SOURCE="magazine/dist/reflector-magazine.pdf"
-            MAGAZINE_PRINT_SOURCE="magazine/dist/reflector-magazine-print.pdf"
-          fi
-
-          DOCS_PDF="docs/reflector.pdf"
-          DOCS_MAGAZINE_PDF="docs/reflector-magazine.pdf"
-          DOCS_MAGAZINE_PRINT_PDF="docs/reflector-magazine-print.pdf"
-          ROOT_MANIFEST="publication.json"
-
-          mkdir --parents _site
-          cp --recursive docs/. _site/
-
-          echo "_site/ file inventory:"
-          find _site -type f | sort
-
-          # Always-required paths
-          for required_path in \
-            "docs/reflector.pdf" \
-            "docs/reflector-magazine.pdf" \
-            "docs/reflector-magazine-print.pdf" \
-            "docs/figures/hero.png" \
-            "docs/previews/paper-cover.webp" \
-            "docs/previews/magazine-cover.webp" \
-            "docs/previews/print-cover.webp" \
-            "docs/index.html" \
-            "docs/publication.json" \
-            "_site/reflector.pdf" \
-            "_site/reflector-magazine.pdf" \
-            "_site/reflector-magazine-print.pdf" \
-            "_site/index.html" \
-            "_site/figures/hero.png" \
-            "_site/previews/paper-cover.webp" \
-            "_site/previews/magazine-cover.webp" \
-            "_site/previews/print-cover.webp" \
-            "_site/publication.json"
-          do
-            if [[ ! -f "${required_path}" ]]; then
-              echo "Error: Expected published file is missing: ${required_path}" >&2
-              exit 1
-            fi
-          done
-
-          for required_path in "${PDF_SOURCE}" "${DOCS_PDF}" "${MAGAZINE_SOURCE}" "${DOCS_MAGAZINE_PDF}" "${MAGAZINE_PRINT_SOURCE}" "${DOCS_MAGAZINE_PRINT_PDF}"; do
-            if [[ ! -f "${required_path}" ]]; then
-              echo "Error: Expected publication file is missing: ${required_path}" >&2
-              exit 1
-            fi
-          done
-
-          if [[ ! -f "${ROOT_MANIFEST}" ]]; then
-            echo "Error: Expected canonical publication manifest is missing: ${ROOT_MANIFEST}" >&2
-            exit 1
-          fi
-
-          PDF_SOURCE_SHA="$(sha256sum "${PDF_SOURCE}" | awk '{print $1}')"
-          PDF_DOCS_SHA="$(sha256sum "${DOCS_PDF}" | awk '{print $1}')"
-          PDF_SITE_SHA="$(sha256sum "_site/reflector.pdf" | awk '{print $1}')"
-          if [[ "${{ steps.scope.outputs.build_paper }}" == "true" ]]; then
-            if [[ "${PDF_SOURCE_SHA}" != "${PDF_DOCS_SHA}" || "${PDF_SOURCE_SHA}" != "${PDF_SITE_SHA}" ]]; then
-              echo "Error: reflector.pdf checksum mismatch between built source and published routes." >&2
-              exit 1
-            fi
-          elif [[ "${PDF_DOCS_SHA}" != "${PDF_SITE_SHA}" ]]; then
-            echo "Error: reflector.pdf checksum mismatch between docs and _site routes." >&2
-            exit 1
-          fi
-
-          MAG_SOURCE_SHA="$(sha256sum "${MAGAZINE_SOURCE}" | awk '{print $1}')"
-          MAG_DOCS_SHA="$(sha256sum "${DOCS_MAGAZINE_PDF}" | awk '{print $1}')"
-          MAG_SITE_SHA="$(sha256sum "_site/reflector-magazine.pdf" | awk '{print $1}')"
-          if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
-            if [[ "${MAG_SOURCE_SHA}" != "${MAG_DOCS_SHA}" || "${MAG_SOURCE_SHA}" != "${MAG_SITE_SHA}" ]]; then
-              echo "Error: reflector-magazine.pdf checksum mismatch between built source and published routes." >&2
-              exit 1
-            fi
-          elif [[ "${MAG_DOCS_SHA}" != "${MAG_SITE_SHA}" ]]; then
-            echo "Error: reflector-magazine.pdf checksum mismatch between docs and _site routes." >&2
-            exit 1
-          fi
-
-          PRINT_SOURCE_SHA="$(sha256sum "${MAGAZINE_PRINT_SOURCE}" | awk '{print $1}')"
-          PRINT_DOCS_SHA="$(sha256sum "${DOCS_MAGAZINE_PRINT_PDF}" | awk '{print $1}')"
-          PRINT_SITE_SHA="$(sha256sum "_site/reflector-magazine-print.pdf" | awk '{print $1}')"
-          if [[ "${{ steps.scope.outputs.build_magazine }}" == "true" ]]; then
-            if [[ "${PRINT_SOURCE_SHA}" != "${PRINT_DOCS_SHA}" || "${PRINT_SOURCE_SHA}" != "${PRINT_SITE_SHA}" ]]; then
-              echo "Error: reflector-magazine-print.pdf checksum mismatch between built source and published routes." >&2
-              exit 1
-            fi
-          elif [[ "${PRINT_DOCS_SHA}" != "${PRINT_SITE_SHA}" ]]; then
-            echo "Error: reflector-magazine-print.pdf checksum mismatch between docs and _site routes." >&2
-            exit 1
-          fi
-
-          MANIFEST_DOCS_SHA="$(sha256sum "docs/publication.json" | awk '{print $1}')"
-          MANIFEST_SITE_SHA="$(sha256sum "_site/publication.json" | awk '{print $1}')"
-          if [[ "${MANIFEST_DOCS_SHA}" != "${MANIFEST_SITE_SHA}" ]]; then
-            echo "Error: publication.json checksum mismatch between docs and _site routes." >&2
-            exit 1
-          fi
-
-          echo "Published routes:"
-          echo "- /reflector/"
-          echo "- /reflector/reflector.pdf"
-          echo "- /reflector/reflector-magazine.pdf"
-          echo "- /reflector/reflector-magazine-print.pdf"
-          echo "- /reflector/publication.json"
-          echo "- /reflector/figures/hero.png"
-          echo "- /reflector/previews/paper-cover.webp"
-          echo "- /reflector/previews/magazine-cover.webp"
-          echo "- /reflector/previews/print-cover.webp"
-
-          grep -q 'src="./figures/hero.png"' docs/index.html || { echo 'Error: docs/index.html is missing hero image route.' >&2; exit 1; }
-          grep -q 'src="./previews/paper-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing paper preview route.' >&2; exit 1; }
-          grep -q 'src="./previews/magazine-cover.webp"' docs/index.html || { echo 'Error: docs/index.html is missing magazine preview route.' >&2; exit 1; }
-          grep -q 'href="./reflector.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing paper download route.' >&2; exit 1; }
-          grep -q 'href="./reflector-magazine.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing magazine download route.' >&2; exit 1; }
-          grep -q 'href="./reflector-magazine-print.pdf"' docs/index.html || { echo 'Error: docs/index.html is missing print edition download route.' >&2; exit 1; }
-          # Both publication.json references are required: the link is user-facing, while the fetch call powers dynamic metadata in the landing page UI.
-          grep -q 'href="./publication.json"' docs/index.html || { echo 'Error: docs/index.html is missing publication manifest link.' >&2; exit 1; }
-          grep -q "fetch('./publication.json')" docs/index.html || { echo 'Error: docs/index.html is missing publication manifest fetch call.' >&2; exit 1; }
-
-          python - <<'PY'
-          import json
-          import re
-          from pathlib import Path
-
-          index_path = Path("docs/index.html")
-          try:
-              index_html = index_path.read_text(encoding="utf-8")
-          except FileNotFoundError as error:
-              raise SystemExit(
-                  f"Error: expected Pages entrypoint is missing: {index_path.as_posix()}"
-              ) from error
-          iframe_checks = {
-              "reflector.pdf": r'<iframe[^>]+title="reflector paper PDF"[^>]+src="./reflector\.pdf"',
-              "reflector-magazine.pdf": r'<iframe[^>]+title="reflector magazine PDF"[^>]+src="./reflector-magazine\.pdf"',
-              "reflector-magazine-print.pdf": r'<iframe[^>]+title="reflector print edition PDF"[^>]+src="./reflector-magazine-print\.pdf"',
-          }
-          missing_iframes = [
-              filename
-              for filename, pattern in iframe_checks.items()
-              if not re.search(pattern, index_html, flags=re.DOTALL)
-          ]
-          if missing_iframes:
-              raise SystemExit(
-                  "Error: docs/index.html is missing embedded publication iframe routes for: "
-                  + ", ".join(missing_iframes)
-              )
-
-          manifest_path = Path("docs/publication.json")
-          try:
-              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-          except json.JSONDecodeError as error:
-              raise SystemExit(
-                  f"Error: {manifest_path} is not valid JSON at line {error.lineno}, "
-                  f"column {error.colno}: {error.msg}"
-              ) from error
-          required_fields = {
-              "version": manifest.get("version"),
-              "release_tag": manifest.get("release_tag"),
-              "pages_url": manifest.get("pages_url"),
-              "preview_paper_path": manifest.get("previews", {}).get("paper", {}).get("path"),
-              "preview_magazine_path": manifest.get("previews", {}).get("magazine", {}).get("path"),
-              "preview_print_path": manifest.get("previews", {}).get("print", {}).get("path"),
-              "generated_at": manifest.get("build", {}).get("generated_at"),
-              "commit_sha": manifest.get("build", {}).get("commit_sha"),
-              "publication_status": manifest.get("build", {}).get("publication_status"),
-              "paper_pages_url": manifest.get("artifacts", {}).get("paper", {}).get("pages_url"),
-              "magazine_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("pages_url"),
-              "magazine_print_pages_url": manifest.get("artifacts", {}).get("magazine", {}).get("print_pages_url"),
-          }
-          missing = [name for name, value in required_fields.items() if not value]
-          if missing:
-              raise SystemExit(
-                  "Error: docs/publication.json is missing required publication fields: "
-                  + ", ".join(missing)
-              )
-          print("publication.json contains required publication metadata fields.")
-          PY
-
-          VERSION="$(tr -d '[:space:]' < VERSION)"
-          PDF_SIZE="$(wc -c < "${DOCS_PDF}" | tr -d '[:space:]')"
-          MAG_SIZE="$(wc -c < "${DOCS_MAGAZINE_PDF}" | tr -d '[:space:]')"
-          PRINT_SIZE="$(wc -c < "${DOCS_MAGAZINE_PRINT_PDF}" | tr -d '[:space:]')"
-          {
-            echo "## Pages Deployment Summary"
-            echo ""
-            echo "| Artifact | Version | Size (bytes) | Checksum (sha256) | Deployment Target |"
-            echo "| --- | --- | ---: | --- | --- |"
-            echo "| reflector.pdf | ${VERSION} | ${PDF_SIZE} | \`${PDF_DOCS_SHA}\` | /reflector/reflector.pdf |"
-            echo "| reflector-magazine.pdf | ${VERSION} | ${MAG_SIZE} | \`${MAG_DOCS_SHA}\` | /reflector/reflector-magazine.pdf |"
-            echo "| reflector-magazine-print.pdf | ${VERSION} | ${PRINT_SIZE} | \`${PRINT_DOCS_SHA}\` | /reflector/reflector-magazine-print.pdf |"
-          } >> "${GITHUB_STEP_SUMMARY}"
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: _site
-
-      - name: Upload build artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: reflector-pages-build-artifacts
-          path: |
-            paper/.cache/
-            magazine/.cache/
-          include-hidden-files: true
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Print Pages staging diagnostics on failure
-        if: failure()
-        run: |
-          set +e
-          for path in docs _site paper/.cache/out magazine/dist magazine/.cache/out; do
-            if [[ -e "${path}" ]]; then
-              echo "::group::${path}"
-              find "${path}" -maxdepth 2 \( -type f -o -type d \) | sort
-              echo "::endgroup::"
-            else
-              echo "Missing diagnostic path: ${path}"
-            fi
-          done
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Deploy GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
 
-      - name: Validate published publication URLs
+      - name: Verify canonical deployment and complete checksum inventory
+        env:
+          DEPLOYED_URL: ${{ steps.deployment.outputs.page_url }}
+          SOURCE_REVISION: ${{ needs.build.outputs.source_revision }}
+        shell: bash
         run: |
           set -euo pipefail
-          BASE_URL="${{ steps.deployment.outputs.page_url }}"
-          BASE_URL="${BASE_URL//$'\r'/}"
-          BASE_URL="${BASE_URL//$'\n'/}"
-          validate_clean_value() {
-            local label="$1"
-            local value="$2"
-            if [[ "${value}" =~ [[:cntrl:]] ]]; then
-              echo "::error::Malformed validation ${label} (must not contain control characters): $(printf '%q' "${value}")"
-              exit 1
-            fi
-            local trailing_re='[[:space:];,]$'
-            if [[ "${value}" =~ ^[[:space:]] ]] || [[ "${value}" =~ ${trailing_re} ]]; then
-              echo "::error::Malformed validation ${label} (must not start with whitespace or end with trailing whitespace, ';', or ','): $(printf '%q' "${value}")"
-              exit 1
-            fi
-          }
-          BASE_URL="${BASE_URL%/}"
-          validate_clean_value "base URL" "${BASE_URL}"
-          if [[ ! "${BASE_URL}" =~ ^https://[^[:space:]]+$ ]]; then
-            echo "::error::Malformed validation base URL (must start with https://): $(printf '%q' "${BASE_URL}")"
+
+          DEPLOYED_URL="${DEPLOYED_URL//$'\r'/}"
+          DEPLOYED_URL="${DEPLOYED_URL//$'\n'/}"
+          if [[ "${DEPLOYED_URL}" != "${CANONICAL_URL}" ]]; then
+            echo "::error::Pages must report the canonical HTTPS URL ${CANONICAL_URL}; got ${DEPLOYED_URL}"
+            echo "::error::Select GitHub Actions as the sole Pages source and enable Enforce HTTPS."
             exit 1
           fi
-          BASE_URL="${BASE_URL}/"
+
+          CURL_OPTIONS=(
+            --fail
+            --location
+            --proto "=https"
+            --proto-redir "=https"
+            --retry 8
+            --retry-all-errors
+            --retry-delay 5
+            --show-error
+            --silent
+          )
+
+          mkdir --parents "_remote-site"
+
+          published_revision=""
+          for attempt in {1..12}; do
+            curl "${CURL_OPTIONS[@]}" \
+              --output "_remote-site/site.json" \
+              "${CANONICAL_URL}site.json?revision=${SOURCE_REVISION}"
+            published_revision="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          print(json.loads(Path("_remote-site/site.json").read_text(encoding="utf-8")).get("source_revision", ""))
+          PY
+            )"
+            if [[ "${published_revision}" == "${SOURCE_REVISION}" ]]; then
+              break
+            fi
+            echo "Attempt ${attempt}: deployed revision is ${published_revision:-<missing>}; waiting for ${SOURCE_REVISION}."
+            sleep 10
+          done
+          if [[ "${published_revision}" != "${SOURCE_REVISION}" ]]; then
+            echo "::error::Published site.json does not represent ${SOURCE_REVISION}."
+            exit 1
+          fi
+
           ROUTES=(
             ""
+            "paper/"
+            "magazine/"
+            "magazine/print/"
+            "downloads/"
+            "publication.json"
+            "site.json"
+            "SHA256SUMS"
             "reflector.pdf"
             "reflector-magazine.pdf"
             "reflector-magazine-print.pdf"
-            "publication.json"
-            "figures/hero.png"
-            "previews/paper-cover.webp"
-            "previews/magazine-cover.webp"
-            "previews/print-cover.webp"
           )
-
           for route in "${ROUTES[@]}"; do
-            route="${route//$'\r'/}"
-            route="${route//$'\n'/}"
-            validate_clean_value "route" "${route}"
-
-            url="${BASE_URL}${route}"
-            validate_clean_value "URL" "${url}"
-            if [[ ! "${url}" =~ ^https://[^[:space:]]+$ ]]; then
-              echo "::error::Malformed validation URL (must start with https://): $(printf '%q' "${url}")"
-              exit 1
-            fi
-
-            printf 'Checking <%s>\n' "${url}"
-            printf 'Shell-escaped URL: %q\n' "${url}"
-            success="false"
-            for attempt in 1 2 3 4 5; do
-              if curl --silent --show-error --location --fail --head "${url}" >/dev/null; then
-                success="true"
-                break
-              fi
-              printf 'Attempt %s failed for <%s>; retrying...\n' "${attempt}" "${url}"
-              sleep 10
-            done
-
-            if [[ "${success}" != "true" ]]; then
-              printf 'Error: published URL check failed for <%s>\n' "${url}" >&2
+            expected_url="${CANONICAL_URL}${route}"
+            echo "Checking canonical route: ${CANONICAL_URL}${route}"
+            effective_url="$(curl "${CURL_OPTIONS[@]}" \
+              --output "/dev/null" \
+              --write-out "%{url_effective}" \
+              "${expected_url}")"
+            if [[ "${effective_url}" != "${expected_url}" ]]; then
+              echo "::error::Canonical route ${expected_url} resolved to ${effective_url}."
               exit 1
             fi
           done
 
-      - name: Print deployed Pages endpoint
+          curl "${CURL_OPTIONS[@]}" \
+            --output "_remote-site/SHA256SUMS" \
+            "${CANONICAL_URL}SHA256SUMS?revision=${SOURCE_REVISION}"
+          cmp --silent "_expected-site/SHA256SUMS" "_remote-site/SHA256SUMS"
+
+          python3 - <<'PY' > "_remote-files.txt"
+          import re
+          from pathlib import Path, PurePosixPath
+
+          paths = []
+          for line in Path("_expected-site/SHA256SUMS").read_text(encoding="utf-8").splitlines():
+              parts = line.split("  ", 1)
+              if len(parts) != 2 or not re.fullmatch(r"[0-9a-f]{64}", parts[0]):
+                  raise SystemExit(f"Invalid expected SHA256SUMS entry: {line!r}")
+              relative = PurePosixPath(parts[1])
+              if relative.is_absolute() or ".." in relative.parts or not relative.parts:
+                  raise SystemExit(f"Unsafe expected Pages path: {relative}")
+              paths.append(relative.as_posix())
+          if paths != sorted(set(paths)):
+              raise SystemExit("Expected SHA256SUMS paths must be unique and sorted")
+          print("\n".join(paths))
+          PY
+
+          while IFS= read -r relative_path; do
+            mkdir --parents "_remote-site/$(dirname "${relative_path}")"
+            curl "${CURL_OPTIONS[@]}" \
+              --output "_remote-site/${relative_path}" \
+              "${CANONICAL_URL}${relative_path}?revision=${SOURCE_REVISION}"
+          done < "_remote-files.txt"
+
+          (
+            cd "_remote-site"
+            sha256sum --check --strict "SHA256SUMS"
+          )
+
+          cmp --silent "_expected-site/publication.json" "_remote-site/publication.json"
+          cmp --silent "_expected-site/site.json" "_remote-site/site.json"
+
+      - name: Verify fallback URL redirects or serves the canonical revision
+        shell: bash
         run: |
           set -euo pipefail
-          echo "Deployed page_url: ${{ steps.deployment.outputs.page_url }}"
-          echo "Route checks:"
-          echo "- ${{ steps.deployment.outputs.page_url }}"
-          echo "- ${{ steps.deployment.outputs.page_url }}reflector.pdf"
-          echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine.pdf"
-          echo "- ${{ steps.deployment.outputs.page_url }}reflector-magazine-print.pdf"
-          echo "- ${{ steps.deployment.outputs.page_url }}previews/paper-cover.webp"
-          echo "- ${{ steps.deployment.outputs.page_url }}previews/magazine-cover.webp"
-          echo "- ${{ steps.deployment.outputs.page_url }}previews/print-cover.webp"
+
+          mkdir --parents "_fallback-site"
+          python3 - <<'PY' > "_fallback-routes.tsv"
+          import json
+          from pathlib import Path
+
+          catalog = json.loads(
+              Path("_expected-site/site.json").read_text(encoding="utf-8")
+          )
+          for route in catalog["routes"]:
+              public_path = route["path"].lstrip("/") or "."
+              print(f"{public_path}\t{route['physical_path']}")
+          PY
+
+          route_index=0
+          while IFS=$'\t' read -r public_path physical_path; do
+            if [[ "${public_path}" == "." ]]; then
+              public_path=""
+            fi
+            expected_fallback_url="${FALLBACK_URL}${public_path}"
+            expected_canonical_url="${CANONICAL_URL}${public_path}"
+            response_path="_fallback-site/route-${route_index}"
+            effective_url="$(curl \
+              --fail \
+              --location \
+              --proto "=https" \
+              --proto-redir "=https" \
+              --retry 8 \
+              --retry-all-errors \
+              --retry-delay 5 \
+              --show-error \
+              --silent \
+              --output "${response_path}" \
+              --write-out "%{url_effective}" \
+              "${expected_fallback_url}")"
+
+            case "${effective_url}" in
+              "${expected_fallback_url}")
+                echo "Fallback serves ${public_path:-/} directly."
+                ;;
+              "${expected_canonical_url}")
+                echo "Fallback redirects ${public_path:-/} to the canonical HTTPS route."
+                ;;
+              *)
+                echo "::error::Fallback route ${expected_fallback_url} resolved to ${effective_url}."
+                exit 1
+                ;;
+            esac
+
+            cmp --silent "_expected-site/${physical_path}" "${response_path}"
+            route_index=$((route_index + 1))
+          done < "_fallback-routes.tsv"
+
+      - name: Summarize canonical deployment
+        env:
+          SOURCE_REVISION: ${{ needs.build.outputs.source_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## Canonical Reflector deployment"
+            echo
+            echo "- URL: ${CANONICAL_URL}"
+            echo "- Revision: \`${SOURCE_REVISION}\`"
+            echo "- Publication manifest: byte-for-byte verified"
+            echo "- Complete public file inventory: SHA-256 verified"
+            echo "- Fallback: redirect/serve behavior verified over HTTPS"
+          } >> "${GITHUB_STEP_SUMMARY}"

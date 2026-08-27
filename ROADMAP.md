@@ -8,7 +8,7 @@ status: draft
 owners:
   - egohygiene
 created: 2026-08-19
-updated: 2026-08-26
+updated: 2026-08-27
 governed_by:
   - architecture-roadmap
 depends_on:
@@ -35,12 +35,12 @@ publication: composed
 route: /roadmap/
 updated: 2026-08-26
 -->
-## 2026-08-26 execution snapshot
+## 2026-08-27 execution snapshot
 
 > This evidence-reconciled snapshot is the issue-generation and visual-roadmap handoff. The longer-horizon strategy below remains canonical context; generated HTML, JSON, progress, issue plans, and commit lists are projections.
 
 **Lifecycle:** public research preview
-**Current gate:** Prove non-disruptive Beacon compatibility while preserving the native publication system and keeping manuscript revision unblocked.
+**Current gate:** Make the custom-domain paper and magazine hub canonical while preserving every native publication and archival contract.
 **North-star outcome:** A reproducible research and publication platform whose manuscripts, evidence, templates, and public outputs remain traceable.
 
 ### Visual roadmap publication
@@ -168,6 +168,34 @@ issues: [247, 249]
 - Issue #247 scopes a compatibility-first transfer boundary that can proceed independently of manuscript revision and the research loop.
 - Issue #249 tracks the pre-existing 86 MB arXiv bundle against the 50 MB upload limit surfaced by the compatibility validation pass.
 - Reflector remains authoritative for paper, magazine, Pages, DOI, Zenodo, arXiv, and release behavior while the Beacon adapter is proven.
+
+<!-- roadmap-step
+id: REF-Q06
+status: active
+depends_on: [REF-Q01]
+issues: [250]
+-->
+#### REF-Q06 — Reconcile the canonical publication hub
+
+**State:** `active`
+**Depends on:** `REF-Q01`
+
+**Outcome:** `reflector.egohygiene.io` provides stable paper, magazine, print,
+download, manifest, DOI, release, and source routes from one deterministic
+Actions deployment.
+
+**Exit criteria:**
+
+- [x] The complete review artifact is deterministic and retains all root PDF aliases.
+- [x] Native publication commands remain authoritative and Beacon remains optional.
+- [x] The repository-defined Actions workflow is isolated as the intended deployer.
+- [ ] Pages settings use Actions and disable the legacy `main:/docs` deployment path.
+- [ ] The live custom domain, technical fallback, DNS, TLS, and post-deploy checks pass.
+
+**Current evidence:**
+
+- Issue #250 owns the compatibility-preserving site and deployment migration.
+- DOI `10.5281/zenodo.20477044`, release `v0.1.2`, and historical artifacts are protected.
 
 ### Roadmap-to-issue handoff
 

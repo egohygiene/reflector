@@ -474,9 +474,32 @@ def main() -> int:
     # ---------------------------------------------------------------------------
 
     if canonical_repo_github_url is not MISSING and canonical_repo_pages_url is not MISSING:
+        zenodo_documented_by = MISSING
+        zenodo_related_identifiers = zenodo.get("related_identifiers", [])
+        if isinstance(zenodo_related_identifiers, list):
+            documented_by_values = [
+                item.get("identifier", MISSING)
+                for item in zenodo_related_identifiers
+                if isinstance(item, dict)
+                and item.get("relation") == "isDocumentedBy"
+                and item.get("scheme") == "url"
+            ]
+            if len(documented_by_values) == 1:
+                zenodo_documented_by = documented_by_values[0]
+
         repo_url_checks = [
             ("publication.json.repository_url", publication.get("repository_url", MISSING), canonical_repo_github_url),
+            (
+                "publication.json.release_url",
+                publication.get("release_url", MISSING),
+                f"{canonical_repo_github_url}/releases/tag/v{version}",
+            ),
             ("publication.json.pages_url", publication.get("pages_url", MISSING), canonical_repo_pages_url),
+            (
+                ".zenodo.json.related_identifiers[isDocumentedBy]",
+                zenodo_documented_by,
+                canonical_repo_pages_url,
+            ),
             ("paper/00README.json.publication.repository", readme_json.get("publication", {}).get("repository", MISSING), canonical_repo_github_url),
             ("paper/00README.json.publication.pages_url", readme_json.get("publication", {}).get("pages_url", MISSING), canonical_repo_pages_url),
         ]

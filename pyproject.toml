@@ -43,9 +43,9 @@ dev = [
 reflector = "reflector.cli.main:app"
 
 [project.urls]
-Homepage = "https://egohygiene.github.io/reflector/"
+Homepage = "https://reflector.egohygiene.io/"
 Repository = "https://github.com/egohygiene/reflector"
-Documentation = "https://egohygiene.github.io/reflector/"
+Documentation = "https://reflector.egohygiene.io/"
 
 [tool.setuptools.packages.find]
 include = ["reflector*"]

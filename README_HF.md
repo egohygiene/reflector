@@ -5,8 +5,9 @@ This file is a future-facing scaffold for adapting reflector to a Hugging Face S
 ## Canonical project links
 
 - Repository: <https://github.com/egohygiene/reflector>
-- GitHub Pages: <https://egohygiene.github.io/reflector/>
-- Publication PDF: <https://egohygiene.github.io/reflector/reflector.pdf>
+- Canonical publication hub: <https://reflector.egohygiene.io/>
+- Publication PDF: <https://reflector.egohygiene.io/reflector.pdf>
+- Technical Pages fallback: <https://egohygiene.github.io/reflector/>
 - Citation metadata: [`CITATION.cff`](./CITATION.cff)
 
 ## Project summary

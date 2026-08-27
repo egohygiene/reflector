@@ -142,5 +142,5 @@ companion_publications:
       pdf: "reflector-magazine.pdf"
       print_pdf: "reflector-magazine-print.pdf"
     source_directory: "magazine/"
-    pages_url: "https://egohygiene.github.io/reflector/reflector-magazine.pdf"
-    print_pages_url: "https://egohygiene.github.io/reflector/reflector-magazine-print.pdf"
+    pages_url: "https://reflector.egohygiene.io/reflector-magazine.pdf"
+    print_pages_url: "https://reflector.egohygiene.io/reflector-magazine-print.pdf"

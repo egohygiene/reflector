@@ -279,7 +279,7 @@ Upload _site/ as GitHub Pages artifact
 actions/deploy-pages@v5
         │
         ▼
-https://egohygiene.github.io/reflector/
+https://reflector.egohygiene.io/
 ```
 
 ---
@@ -418,12 +418,12 @@ Drift between `VERSION` and any surface is a validation failure that blocks the 
 
 | Resource | URL |
 |---|---|
-| GitHub Pages index | `https://egohygiene.github.io/reflector/` |
-| Paper PDF | `https://egohygiene.github.io/reflector/reflector.pdf` |
-| Magazine PDF | `https://egohygiene.github.io/reflector/reflector-magazine.pdf` |
-| Magazine print PDF | `https://egohygiene.github.io/reflector/reflector-magazine-print.pdf` |
-| Publication manifest | `https://egohygiene.github.io/reflector/publication.json` |
-| Hero image | `https://egohygiene.github.io/reflector/figures/hero.png` |
+| Canonical Pages hub | `https://reflector.egohygiene.io/` |
+| Paper PDF | `https://reflector.egohygiene.io/reflector.pdf` |
+| Magazine PDF | `https://reflector.egohygiene.io/reflector-magazine.pdf` |
+| Magazine print PDF | `https://reflector.egohygiene.io/reflector-magazine-print.pdf` |
+| Publication manifest | `https://reflector.egohygiene.io/publication.json` |
+| Hero image | `https://reflector.egohygiene.io/figures/hero.png` |
 | GitHub Releases | `https://github.com/egohygiene/reflector/releases` |
 | Zenodo DOI (version) | `https://doi.org/10.5281/zenodo.20477044` |
 | Zenodo DOI (concept) | `https://doi.org/10.5281/zenodo.20477045` |

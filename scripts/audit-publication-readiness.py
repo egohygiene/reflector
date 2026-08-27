@@ -606,15 +606,16 @@ def gather_checks() -> list[Check]:
         all(
             token in pages_workflow_text
             for token in (
-                "Build reflector PDF",
-                "Synchronize publication assets into docs",
-                "Verify publication synchronization",
+                "Build paper with its native builder",
+                "Build magazines with their native builder",
+                "Stage and byte-compare the complete site twice",
                 "Deploy GitHub Pages",
-                "docs/publication.json",
-                "docs/reflector.pdf",
+                'cmp --silent "publication.json" "_site/publication.json"',
+                "site.json?revision=",
+                "Verify fallback URL redirects or serves the canonical revision",
             )
         ),
-        "Pages workflow includes build, synchronization, verification, and deploy steps.",
+        "Pages workflow includes native builds, deterministic staging, verification, and deploy steps.",
         "Pages workflow is missing one or more expected publication deployment steps.",
     )
 
@@ -626,13 +627,19 @@ def gather_checks() -> list[Check]:
             token in docs_index_text
             for token in (
                 "./reflector.pdf",
+                "./reflector-magazine.pdf",
+                "./reflector-magazine-print.pdf",
                 "./publication.json",
+                "./site.json",
                 "./figures/hero.png",
+                "./paper/",
+                "./magazine/",
+                "./downloads/",
                 "Abstract preview",
-                "Read online",
+                "Canonical publication hub",
             )
         ),
-        "docs/index.html links canonical publication artifacts.",
+        "docs/index.html links all canonical publication surfaces and artifacts.",
         "docs/index.html is missing one or more publication artifact links.",
     )
 
