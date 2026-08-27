@@ -8,7 +8,7 @@ status: draft
 owners:
   - egohygiene
 created: 2026-08-19
-updated: 2026-08-19
+updated: 2026-08-27
 governed_by:
   - architecture-architecture
 depends_on:
@@ -78,6 +78,21 @@ The diagram is conceptual. [SYSTEM.md](SYSTEM.md) remains authoritative for resp
 ## Deployment and portability
 
 The architecture favors independently usable local and self-hosted operation. Optional managed services may add availability, collaboration, support, and hosted infrastructure without becoming the canonical holder of portable state.
+
+The repository owns publication source and native rendering. The Pages workflow
+is an adapter over those outputs:
+
+1. `paper/` and `scripts/build-paper.sh` own the paper PDF.
+2. `magazine/` and `scripts/build-magazine.sh` own both magazine PDFs.
+3. `docs/` owns static hub source, never generated publication binaries.
+4. `scripts/stage-pages.py` assembles and validates the disposable `_site/`
+   projection without rewriting the protected publication manifest.
+5. GitHub Actions is the sole Pages deployer; Beacon remains an optional,
+   non-deploying compatibility control plane.
+
+The custom domain is canonical. GitHub's project URL is retained as a technical
+fallback, and all nested site links remain relative so the same artifact works
+at either base path.
 
 ## Evidence and uncertainty
 

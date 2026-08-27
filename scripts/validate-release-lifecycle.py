@@ -52,12 +52,24 @@ COMMON_PAGES_VALIDATION_ERROR_TOKENS = (
     'validate_clean_value "route" "${route}"',
 )
 REQUIRED_PAGES_WORKFLOW_TOKENS = (
-    'ROOT_MANIFEST="publication.json"',
-    'cp "${ROOT_MANIFEST}" "${DOCS_MANIFEST}"',
-    '"docs/publication.json"',
+    "pull_request:",
+    'python3 "scripts/stage-pages.py"',
     '"_site/publication.json"',
-    *COMMON_PAGES_VALIDATION_TOKENS,
-    *COMMON_PAGES_VALIDATION_ERROR_TOKENS,
+    'cmp --silent "publication.json" "_site/publication.json"',
+    'sha256sum --check --strict "SHA256SUMS"',
+    "SOURCE_DATE_EPOCH",
+    "metadata/releases",
+    "checksums_asset",
+    "site.json?revision=",
+    "reflector.pdf",
+    "reflector-magazine.pdf",
+    "reflector-magazine-print.pdf",
+    "github.event_name != 'pull_request'",
+    "pages: write",
+    "id-token: write",
+    'rm --force "_site/.reflector-pages-owned"',
+    '"_fallback-routes.tsv"',
+    "actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128",
 )
 REQUIRED_TEMPLATE_PAGES_WORKFLOW_TOKENS = (
     'print(manifest[\'slug\'])',
@@ -103,9 +115,21 @@ def validate_version_surfaces(repo_root: Path) -> bool:
 
     publication_yaml = load_yaml(repo_root / "metadata" / "publication.yaml")
     publication_json = load_json(repo_root / "publication.json")
+    release_baseline = load_json(
+        repo_root / "metadata" / "releases" / f"v{version_value}.json"
+    )
     release_manifest = load_json(repo_root / "release-manifest.json")
     release_please_manifest = load_json(repo_root / ".release-please-manifest.json")
-    if any(item is None for item in (publication_yaml, publication_json, release_manifest, release_please_manifest)):
+    if any(
+        item is None
+        for item in (
+            publication_yaml,
+            publication_json,
+            release_baseline,
+            release_manifest,
+            release_please_manifest,
+        )
+    ):
         return False
 
     checks: list[tuple[str, str | None, str]] = [
@@ -113,6 +137,8 @@ def validate_version_surfaces(repo_root: Path) -> bool:
         ("publication.json.version", str(publication_json.get("version")), version_value),
         ("publication.json.version_source", str(publication_json.get("version_source")), "VERSION"),
         ("publication.json.release_tag", str(publication_json.get("release_tag")), f"v{version_value}"),
+        ("metadata/releases baseline.schema_version", str(release_baseline.get("schema_version")), "1.0.0"),
+        ("metadata/releases baseline.release_tag", str(release_baseline.get("release_tag")), f"v{version_value}"),
         ("release-manifest.json.current_version", str(release_manifest.get("current_version")), version_value),
         (".release-please-manifest.json['.']", str(release_please_manifest.get(".")), version_value),
     ]
@@ -122,6 +148,39 @@ def validate_version_surfaces(repo_root: Path) -> bool:
         if actual != expected:
             valid = False
             log_error(f"{field_name} must equal '{expected}' (found '{actual}').")
+
+    release_commit = str(release_baseline.get("release_commit", ""))
+    if not re.fullmatch(r"[0-9a-f]{40}", release_commit):
+        valid = False
+        log_error("metadata/releases baseline.release_commit must be a 40-character SHA.")
+
+    checksums_asset = release_baseline.get("checksums_asset", {})
+    if not isinstance(checksums_asset, dict) or checksums_asset.get("filename") != "checksums.txt":
+        valid = False
+        log_error("metadata/releases baseline must declare checksums.txt.")
+    elif not re.fullmatch(r"[0-9a-f]{64}", str(checksums_asset.get("sha256", ""))):
+        valid = False
+        log_error("metadata/releases checksums.txt digest must be a SHA-256 value.")
+
+    expected_artifacts = {
+        "reflector.pdf",
+        "reflector-magazine.pdf",
+        "reflector-magazine-print.pdf",
+    }
+    artifacts = release_baseline.get("artifacts", {})
+    if not isinstance(artifacts, dict) or set(artifacts) != expected_artifacts:
+        valid = False
+        log_error("metadata/releases baseline must pin all three publication artifacts exactly.")
+    else:
+        for filename, record in artifacts.items():
+            digest = record.get("sha256", "") if isinstance(record, dict) else ""
+            size_bytes = record.get("size_bytes", 0) if isinstance(record, dict) else 0
+            if not re.fullmatch(r"[0-9a-f]{64}", str(digest)):
+                valid = False
+                log_error(f"metadata/releases baseline digest is invalid for {filename}.")
+            if not isinstance(size_bytes, int) or size_bytes <= 0:
+                valid = False
+                log_error(f"metadata/releases baseline size is invalid for {filename}.")
     return valid
 
 

@@ -126,6 +126,7 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 | Paper overview | [`paper/README.md`](./paper/README.md) |
 | Magazine overview | [`magazine/README.md`](./magazine/README.md) |
 | Beacon compatibility | [`docs/beacon-compatibility.md`](./docs/beacon-compatibility.md) |
+| Pages activation and rollback | [`docs/pages-deployment.md`](./docs/pages-deployment.md) |
 | Publication specs | [`specs/publication/`](./specs/publication/) |
 | Audit archive index | [`audits/README.md`](./audits/README.md) |
 | Research notes | [`docs/research/`](./docs/research/) |
@@ -133,8 +134,13 @@ See [`magazine/README.md`](./magazine/README.md) for the full workflow and outpu
 
 ## Research paper and publication links
 
-- GitHub Pages landing page: <https://egohygiene.github.io/reflector/>
-- Canonical PDF route: <https://egohygiene.github.io/reflector/reflector.pdf>
+- Canonical publication hub: <https://reflector.egohygiene.io/>
+- Canonical PDF route: <https://reflector.egohygiene.io/reflector.pdf>
+- Technical GitHub Pages fallback: <https://egohygiene.github.io/reflector/>
+- Paper reader: <https://reflector.egohygiene.io/paper/>
+- Magazine reader: <https://reflector.egohygiene.io/magazine/>
+- Print edition: <https://reflector.egohygiene.io/magazine/print/>
+- Downloads and integrity evidence: <https://reflector.egohygiene.io/downloads/>
 - DOI (canonical version DOI): <https://doi.org/10.5281/zenodo.20477044>
 - DOI (Zenodo concept DOI): <https://doi.org/10.5281/zenodo.20477045>
 - Citation metadata: [`CITATION.cff`](./CITATION.cff)

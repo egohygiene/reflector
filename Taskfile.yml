@@ -2,6 +2,12 @@ version: "3"
 
 vars:
   PYTHON: '{{default "python3" .PYTHON}}'
+  PAGES_OUTPUT_DIR: '{{default "_site" .PAGES_OUTPUT_DIR}}'
+  PAGES_WORK_DIR: '{{default ".reflector-pages" .PAGES_WORK_DIR}}'
+  PAGES_SOURCE_REVISION:
+    sh: git rev-parse --verify HEAD
+  PAGES_GENERATED_AT:
+    sh: git show --no-patch --format=%cI HEAD
 
 tasks:
   default:
@@ -143,6 +149,82 @@ tasks:
     desc: Build the paper locally
     cmds:
       - ./scripts/build-paper.sh paper
+
+  publication:build:
+    desc: Build the native paper and both magazine editions
+    cmds:
+      - ./scripts/build-paper.sh "paper"
+      - ./scripts/build-magazine.sh "build-all"
+
+  pages:previews:
+    desc: Generate publication previews from the native PDF artifacts
+    deps:
+      - publication:build
+    cmds:
+      - >-
+        {{.PYTHON}} scripts/generate_pdf_previews.py
+        --output-dir "{{.PAGES_WORK_DIR}}/previews"
+        --preview "paper-cover=paper/.cache/out/paper.pdf"
+        --preview "magazine-cover=magazine/dist/reflector-magazine.pdf"
+        --preview "print-cover=magazine/dist/reflector-magazine-print.pdf"
+
+  pages:stage:
+    desc: Build and transactionally stage the complete Pages publication hub
+    deps:
+      - pages:previews
+    cmds:
+      - >-
+        {{.PYTHON}} scripts/stage-pages.py
+        --project-root "."
+        --docs-dir "docs"
+        --output-dir "{{.PAGES_OUTPUT_DIR}}"
+        --publication-manifest "publication.json"
+        --paper-pdf "paper/.cache/out/paper.pdf"
+        --magazine-pdf "magazine/dist/reflector-magazine.pdf"
+        --magazine-print-pdf "magazine/dist/reflector-magazine-print.pdf"
+        --preview-dir "{{.PAGES_WORK_DIR}}/previews"
+        --hero "paper/figures/hero.png"
+        --source-revision "{{.PAGES_SOURCE_REVISION}}"
+        --generated-at "{{.PAGES_GENERATED_AT}}"
+
+  pages:validate:
+    desc: Validate an existing staged Pages publication hub
+    cmds:
+      - >-
+        {{.PYTHON}} scripts/stage-pages.py
+        --project-root "."
+        --docs-dir "docs"
+        --output-dir "{{.PAGES_OUTPUT_DIR}}"
+        --publication-manifest "publication.json"
+        --paper-pdf "paper/.cache/out/paper.pdf"
+        --magazine-pdf "magazine/dist/reflector-magazine.pdf"
+        --magazine-print-pdf "magazine/dist/reflector-magazine-print.pdf"
+        --preview-dir "{{.PAGES_WORK_DIR}}/previews"
+        --hero "paper/figures/hero.png"
+        --source-revision "{{.PAGES_SOURCE_REVISION}}"
+        --generated-at "{{.PAGES_GENERATED_AT}}"
+        --validate-only
+
+  pages:check:
+    desc: Prove deterministic Pages staging and validate the complete route catalog
+    deps:
+      - pages:stage
+    cmds:
+      - >-
+        {{.PYTHON}} scripts/stage-pages.py
+        --project-root "."
+        --docs-dir "docs"
+        --output-dir "_site-recheck"
+        --publication-manifest "publication.json"
+        --paper-pdf "paper/.cache/out/paper.pdf"
+        --magazine-pdf "magazine/dist/reflector-magazine.pdf"
+        --magazine-print-pdf "magazine/dist/reflector-magazine-print.pdf"
+        --preview-dir "{{.PAGES_WORK_DIR}}/previews"
+        --hero "paper/figures/hero.png"
+        --source-revision "{{.PAGES_SOURCE_REVISION}}"
+        --generated-at "{{.PAGES_GENERATED_AT}}"
+      - diff --recursive --brief "{{.PAGES_OUTPUT_DIR}}" "_site-recheck"
+      - task: pages:validate
 
   magazine:build:
     desc: Build the magazine digital PDF

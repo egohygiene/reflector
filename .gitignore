@@ -12,6 +12,8 @@ build/
 develop-eggs/
 dist/
 downloads/
+!docs/downloads/
+!docs/downloads/index.html
 eggs/
 .eggs/
 lib/
@@ -252,3 +254,9 @@ Thumbs.db
 .history
 hts-cache
 audits/audit-*.md
+
+# Disposable GitHub Pages staging output
+/_site/
+/_site-*/
+/.reflector-pages/
+/.reflector-pages-*/

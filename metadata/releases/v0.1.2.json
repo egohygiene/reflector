@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "release_tag": "v0.1.2",
+  "release_commit": "ab341d4757e7a7dabf01eb4d2e62669cde336812",
+  "checksums_asset": {
+    "filename": "checksums.txt",
+    "sha256": "93fd69ddfcd46855135065e46dceff8b751f029c6a8bfeb48dd09d85db939c01"
+  },
+  "artifacts": {
+    "reflector.pdf": {
+      "sha256": "e406e93a59ee2057ae6b720b9d45aca2f01868ad464ef40e50a5912589937ff0",
+      "size_bytes": 18549370
+    },
+    "reflector-magazine.pdf": {
+      "sha256": "9b98c22d1fa6983d997beeaaba1d9ffcebbc817d5488d424412d72e0c42048d2",
+      "size_bytes": 29968314
+    },
+    "reflector-magazine-print.pdf": {
+      "sha256": "821cac55012b61e0727c9cb448e7d271341d72a2635c865a208d99a12c4be8d8",
+      "size_bytes": 29968314
+    }
+  }
+}

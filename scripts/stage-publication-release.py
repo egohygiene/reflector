@@ -72,6 +72,12 @@ def display_path(path: Path, root: Path) -> str:
         return resolved_path.as_posix()
 
 
+def normalize_pages_base_url(repository: str, pages_base_url: str) -> str:
+    owner, repo = repository.split("/", 1)
+    pages_base = pages_base_url.strip() or f"https://{owner}.github.io/{repo}/"
+    return pages_base if pages_base.endswith("/") else f"{pages_base}/"
+
+
 def validate_required_files(release_dir: Path, required_names: list[str]) -> dict[str, Path] | None:
     if len(required_names) != len(set(required_names)):
         duplicates = sorted({name for name in required_names if required_names.count(name) > 1})
@@ -131,10 +137,11 @@ def write_manifest(
     doi_url: str,
     concept_doi: str,
     concept_doi_url: str,
+    pages_base_url: str,
 ) -> Path:
     manifest_path = release_dir / "release-manifest.json"
-    owner, repo = repository.split("/", 1)
     release_download_base = f"https://github.com/{repository}/releases/download/{tag}"
+    pages_base = normalize_pages_base_url(repository, pages_base_url)
 
     artifacts = []
     for name in sorted(required_paths):
@@ -159,7 +166,7 @@ def write_manifest(
         "release_dir": display_path(release_dir, repo_root),
         "repository": f"https://github.com/{repository}",
         "release_url": f"https://github.com/{repository}/releases/tag/{tag}",
-        "pages_url": f"https://{owner}.github.io/{repo}/",
+        "pages_url": pages_base,
         "doi": doi,
         "doi_url": doi_url,
         "concept_doi": concept_doi,
@@ -190,11 +197,8 @@ def write_publication_inventory(
     manifest_path: Path,
 ) -> Path:
     inventory_path = release_dir / "publication-inventory.json"
-    owner, repo = repository.split("/", 1)
     release_download_base = f"https://github.com/{repository}/releases/download/{tag}"
-    pages_base = pages_base_url.strip() or f"https://{owner}.github.io/{repo}/"
-    if not pages_base.endswith("/"):
-        pages_base = f"{pages_base}/"
+    pages_base = normalize_pages_base_url(repository, pages_base_url)
     pages_artifacts = {
         "reflector.pdf",
         "reflector-magazine.pdf",
@@ -265,6 +269,7 @@ def main() -> int:
         doi_url=args.doi_url,
         concept_doi=args.concept_doi,
         concept_doi_url=args.concept_doi_url,
+        pages_base_url=args.pages_base_url,
     )
     inventory_path = write_publication_inventory(
         release_dir=release_dir,

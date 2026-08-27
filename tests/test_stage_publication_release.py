@@ -59,6 +59,8 @@ def run_release_stage(tmp_path: Path, release_dir: Path, *extra_args: str) -> su
         "10.5281/zenodo.20477045",
         "--concept-doi-url",
         "https://doi.org/10.5281/zenodo.20477045",
+        "--pages-base-url",
+        "https://reflector.egohygiene.io/",
     ]
     for name in REQUIRED_FILES:
         command.extend(["--require", name])
@@ -98,6 +100,7 @@ def test_stage_publication_release_generates_deterministic_inventory(tmp_path: P
     assert manifest["doi_url"] == "https://doi.org/10.5281/zenodo.20477044"
     assert manifest["concept_doi"] == "10.5281/zenodo.20477045"
     assert manifest["concept_doi_url"] == "https://doi.org/10.5281/zenodo.20477045"
+    assert manifest["pages_url"] == "https://reflector.egohygiene.io/"
     assert manifest["checksums"]["path"] == "release/reflector-v0.1.0/checksums.txt"
     assert [artifact["filename"] for artifact in manifest["artifacts"]] == sorted(REQUIRED_FILES)
     assert all(
@@ -117,6 +120,14 @@ def test_stage_publication_release_generates_deterministic_inventory(tmp_path: P
         assert item["release_url"].endswith(f"/{item['artifact']}")
         assert isinstance(item["publication_target"], list)
         assert item["publication_target"]
+        if item["artifact"] in {
+            "reflector.pdf",
+            "reflector-magazine.pdf",
+            "reflector-magazine-print.pdf",
+        }:
+            assert item["pages_url"] == (
+                f"https://reflector.egohygiene.io/{item['artifact']}"
+            )
 
 
 def test_stage_publication_release_reports_missing_required_artifact(tmp_path: Path) -> None:

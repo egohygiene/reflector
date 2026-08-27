@@ -1005,12 +1005,14 @@ jobs:
           print(identifiers.get("doi_url", ""))
           print(zenodo.get("concept_doi", ""))
           print(zenodo.get("concept_doi_url", ""))
+          print(repository.get("pages_url", ""))
           PY
           )
           DOI="${DOI_METADATA[0]}"
           DOI_URL="${DOI_METADATA[1]}"
           CONCEPT_DOI="${DOI_METADATA[2]}"
           CONCEPT_DOI_URL="${DOI_METADATA[3]}"
+          PAGES_BASE_URL="${DOI_METADATA[4]}"
 
           python scripts/stage-publication-release.py \
             --release-dir "${{ steps.version.outputs.release_dir }}" \
@@ -1023,6 +1025,7 @@ jobs:
             --doi-url "${DOI_URL}" \
             --concept-doi "${CONCEPT_DOI}" \
             --concept-doi-url "${CONCEPT_DOI_URL}" \
+            --pages-base-url "${PAGES_BASE_URL}" \
             --require reflector.pdf \
             --require reflector-magazine.pdf \
             --require reflector-magazine-print.pdf \
