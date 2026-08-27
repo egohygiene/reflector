@@ -162,7 +162,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m compileall --quiet "scripts/stage-pages.py" "tests/test_stage_pages.py"
+          python3 -m compileall -q "scripts/stage-pages.py" "tests/test_stage_pages.py"
           python3 -m unittest "tests/test_stage_pages.py"
 
       - name: Resolve protected release fallback
