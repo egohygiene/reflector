@@ -267,17 +267,21 @@ def run(base, args, row, allowed, loaded, previous):
                 and item.get("input_sha256") == checksum and item.get("state") in {"complete", "resumed"}), None)
             if prior is not None and prior.get("report") is not None:
                 try:
+                    base.require(prior["report"]["source_revision"] is None)
                     accepted, _findings = base.report(args, prior["report"], row, allowed, loaded, loaded["aether_audit"]["registry"])
                     base.require(accepted["kind"] == kind and accepted["completion"] in {"complete", "not_applicable"})
+                    evidence = base.parse(base.read(owned / prior["report"]["source_path"], MAX_OUTPUT))
                     if kind == "audit":
                         base.require(accepted["profiles"] == [profile]
                             and (inventory["state"] != "partial" or accepted["completion"] != "complete"))
-                        base.require(prior["report"]["source_revision"] is None)
-                        evidence = base.parse(base.read(owned / prior["report"]["source_path"], MAX_OUTPUT))
+                        base.require(prior["report"]["source_path"] == evidence["canonical_report"]["path"][:-3] + ".json")
                         markdown = base.read(owned / evidence["canonical_report"]["path"], MAX_OUTPUT)
                         base.public_report_scope({"visibility": "public", "scope": evidence["scope"],
                             "findings": [], "evidence": [], "text": markdown.decode("utf-8")}, allowed, args.public_names)
                         base.require(base.sha256(markdown) == evidence["canonical_report"]["sha256"])
+                    else:
+                        base.require(prior["report"]["source_path"] == "audits/sanity-" + checksum + ".json"
+                            and evidence["governance"] is None and evidence["reviewer"]["kind"] in {"ai", "tool"})
                     receipt = {**prior, "state": "resumed", "reason": None}
                     selections.append(prior["report"])
                     receipts.append(receipt)
