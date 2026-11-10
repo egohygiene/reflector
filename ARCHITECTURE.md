@@ -94,6 +94,21 @@ The custom domain is canonical. GitHub's project URL is retained as a technical
 fallback, and all nested site links remain relative so the same artifact works
 at either base path.
 
+## Public audit campaign transport
+
+The additive [campaign adapter](docs/audit-campaigns.md) resolves exact Aether
+profiles and indexes already captured repository-owned audit/coherence JSON
+through checksum-pinned owner helpers. Hygiene remains the public roster and
+governance owner. Reflector owns read-only selection, bounded local Git-object
+intake, deterministic run references/checkpoints and the organization index;
+Observatory and Relay retain read-model and publication ownership.
+
+This path is separate from the historical synthetic action/invariant/drift
+demonstration. It does not execute an LLM audit, infer policy applicability,
+authenticate a human claim, create issues or publish. Report capture execution,
+provider/model adapters, real campaigns and host qualification remain explicit
+later acceptance. [ADR-0004](DECISIONS.md#adr-0004-compose-owner-defined-audit-captures-through-a-read-only-campaign) is proposed.
+
 ## Evidence and uncertainty
 
 - **Observed:** The repository README and checked-in implementation establish an open research repository and reference platform for governable recursive AI-assisted engineering.

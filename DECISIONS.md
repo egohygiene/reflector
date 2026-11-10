@@ -40,6 +40,7 @@ Do not rewrite historical context to fit current understanding. Amend a record f
 - ADR-0001: Treat Reflector as both research artifact and reference implementation
 - ADR-0002: Preserve human checkpoints as a system constraint
 - ADR-0003: Keep publication metadata machine-readable and versioned
+- ADR-0004: Compose owner-defined audit captures through a read-only campaign (proposed)
 
 ## ADR-0001: Treat Reflector as both research artifact and reference implementation
 
@@ -67,6 +68,28 @@ Do not rewrite historical context to fit current understanding. Amend a record f
 - **Decision:** Keep publication metadata machine-readable and versioned.
 - **Consequences:** The choice improves ownership and predictability while requiring maintained contracts, validation, and migration discipline.
 - **Reconsider when:** New evidence shows that the boundary prevents standalone usefulness, safety, portability, or maintainability.
+
+## ADR-0004: Compose owner-defined audit captures through a read-only campaign
+
+- **Status:** Proposed; no human disposition is recorded.
+- **Date:** 2026-11-10 (UTC source checkpoint)
+- **Context:** [#258](https://github.com/egohygiene/reflector/issues/258) needs
+  a repository/fleet campaign boundary. Existing `AuditPipeline` produces
+  synthetic action/invariant/drift examples and is not a reusable repository
+  assessment or organization audit.
+- **Proposal:** Add an independently usable offline request/index adapter that
+  selects the exact public Hygiene roster, resolves checksum-pinned Aether
+  audit profiles, and indexes exact repository-owned audit/coherence sidecars.
+  Owner helpers validate report semantics; Reflector records source references,
+  explicit transport states, deterministic checkpoints and bounded finding IDs.
+- **Consequences:** No prose scraping, duplicate auditor, policy authority,
+  human ratification or issue publication is introduced. Missing source/reports
+  remain unavailable. Provider/model execution and candidate backlog synthesis
+  are disabled in this foundation and require later independently reviewed
+  adapters; owner report completion never means conformance or acceptance.
+- **Reconsider when:** A real campaign needs replaceable local/model execution,
+  expanded namespace/privacy support or a separately authorized mutation/export
+  boundary. Preserve immutable captures and source finding IDs through that work.
 
 ## Open decisions
 

@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reflector.egohygiene.io/contracts/audit-campaign-request.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contract_version",
+    "campaign_id",
+    "visibility",
+    "organization",
+    "observed_at",
+    "catalog",
+    "scope",
+    "profiles",
+    "report_kinds",
+    "provider",
+    "budgets",
+    "network_policy",
+    "mutation_authority",
+    "candidate_backlog",
+    "repositories"
+  ],
+  "properties": {
+    "schema": {
+      "const": "egohygiene.reflector.audit-campaign-request/v1"
+    },
+    "contract_version": {
+      "const": "1.0.0-alpha.1"
+    },
+    "campaign_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+    },
+    "visibility": {
+      "const": "public"
+    },
+    "organization": {
+      "const": "egohygiene"
+    },
+    "observed_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "format": "date-time"
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "revision",
+        "path",
+        "sha256",
+        "observed_at"
+      ],
+      "properties": {
+        "repository": {
+          "const": "egohygiene/hygiene"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "path": {
+          "const": "catalog/public-repositories.json"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "selection",
+        "include",
+        "exclude"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "repository",
+            "organization"
+          ]
+        },
+        "selection": {
+          "enum": [
+            "all",
+            "include"
+          ]
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^egohygiene/(?:\\.github|[a-z0-9][a-z0-9.-]*)$"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^egohygiene/(?:\\.github|[a-z0-9][a-z0-9.-]*)$"
+          },
+          "maxItems": 64,
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+          }
+        }
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "report_kinds": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "audit",
+          "sanity"
+        ]
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter",
+        "model"
+      ],
+      "properties": {
+        "adapter": {
+          "const": "captured-owner-reports"
+        },
+        "model": {
+          "type": "null"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximum_repositories",
+        "maximum_reports_per_repository",
+        "maximum_report_bytes",
+        "maximum_findings",
+        "maximum_seconds",
+        "concurrency",
+        "depth"
+      ],
+      "properties": {
+        "maximum_repositories": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "maximum_reports_per_repository": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "maximum_report_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "maximum_findings": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "maximum_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1800
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "network_policy": {
+      "const": "offline"
+    },
+    "mutation_authority": {
+      "const": "none"
+    },
+    "candidate_backlog": {
+      "const": "disabled"
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repository",
+          "represented_commit",
+          "source_observed_at",
+          "reports"
+        ],
+        "properties": {
+          "repository": {
+            "type": "string",
+            "pattern": "^egohygiene/(?:\\.github|[a-z0-9][a-z0-9.-]*)$"
+          },
+          "represented_commit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_observed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "source_revision",
+                "source_path",
+                "sha256"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "audit",
+                    "sanity"
+                  ]
+                },
+                "source_revision": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "source_path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "^[A-Za-z0-9._/-]+$"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            },
+            "maxItems": 16,
+            "minItems": 0
+          }
+        }
+      },
+      "maxItems": 64,
+      "minItems": 0
+    }
+  }
+}

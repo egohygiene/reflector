@@ -1,0 +1,30 @@
+{
+  "schema": "egohygiene.reflector.audit-campaign-owners/v1",
+  "sources": {
+    "aether_audit": {
+      "files": {
+        "catalog/schemas/aether.audit-profile-registry.v1.schema.json": "ad1335fe7662d91308d3d501197df70fac00892de40da8820538631b0f80312d",
+        "catalog/schemas/aether.repository-audit-report.v1.schema.json": "060446225135d573da15d4c31a6a59a89e04665e0c3cce43f8373b1e465bc96b",
+        "library/organization/skills/quality/audit-repository/references/audit-profiles.v1.json": "dde4d72db9e0a952e1e10b01b8fdfa7cfecd4c001095af8b23d9f821ea789737",
+        "library/organization/skills/quality/audit-repository/scripts/audit_contract.py": "74d928b4b76f1a4723f277c7a3cf77010e4b8eb808d4d20b06afb697b0c3afb8"
+      },
+      "helper_path": "library/organization/skills/quality/audit-repository/scripts/audit_contract.py",
+      "registry_path": "library/organization/skills/quality/audit-repository/references/audit-profiles.v1.json",
+      "repository": "egohygiene/aether",
+      "revision": "cdc5470d2d48db82c36ddada62bbcfa83d983b12",
+      "tree": "d1791e0f1c0ea8aca8e0cb7d43f925af85c69906"
+    },
+    "aether_sanity": {
+      "files": {
+        "catalog/schemas/aether.architecture-coherence-review.v1.schema.json": "5875e2563bac3a0d987781aef69742598cd5d840b838759e8abca1efeb61f810",
+        "library/organization/skills/architecture/review-architecture-coherence/scripts/architecture_coherence.py": "d3e751bff903a11c0d01e2b5476836d9c1f9c28df77d7d03f50f8200595521ee",
+        "library/organization/skills/architecture/review-architecture-coherence/scripts/architecture_coherence_governance.py": "cc0608819cf7755fdbcafd279c5b575916fe8d30547c8a17b58c35dcc520c6fe",
+        "library/organization/skills/architecture/review-architecture-coherence/scripts/governance.lock.json": "17005c8a71f75fd8b3dcacf6ba1b0f1a68e91ff5b191ca64041deb2ecb77b3aa"
+      },
+      "helper_path": "library/organization/skills/architecture/review-architecture-coherence/scripts/architecture_coherence.py",
+      "repository": "egohygiene/aether",
+      "revision": "1bef55ac4c526467c050f55972f31e32e79cdb03",
+      "tree": "f25423f812a134928f2ee3ff5b22bd53537f2cd8"
+    }
+  }
+}

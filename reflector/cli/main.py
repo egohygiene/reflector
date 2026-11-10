@@ -172,6 +172,37 @@ def audit(
         pipeline.print_report(report, console)
 
 
+@app.command(name="audit-campaign")
+def audit_campaign(
+    request: str = typer.Option(..., "--request", help="Closed public campaign request JSON."),
+    catalog_root: str = typer.Option(..., "--catalog-root", help="Local immutable Hygiene catalog Git objects."),
+    aether_root: str = typer.Option(..., "--aether-root", help="Local checksum-pinned Aether owner contract Git objects."),
+    output: str = typer.Option(..., "--output", help="New campaign output directory outside inspected sources."),
+    mode: str = typer.Option("plan", "--mode", help="plan or index; neither runs an AI audit or mutations."),
+    repository_root: list[str] = typer.Option([], "--repository-root", help="Explicit public repository=Git-root capture mapping; repeatable."),
+    previous_manifest: str | None = typer.Option(None, "--previous-manifest", help="Exact prior campaign manifest for unchanged-input resume."),
+    previous_sha256: str | None = typer.Option(None, "--previous-sha256", help="SHA-256 of exact previous manifest bytes."),
+    stop_after: int | None = typer.Option(None, "--stop-after", help="Retain an explicit checkpoint after this many sorted public repository selections."),
+) -> None:
+    """Plan or index external owner reports without running the synthetic audit demo."""
+    from pathlib import Path
+    from types import SimpleNamespace
+    from reflector.orchestration import audit_campaign as campaign
+
+    try:
+        result = campaign.execute(SimpleNamespace(mode=mode, request=Path(request),
+            catalog_root=Path(catalog_root), aether_root=Path(aether_root), output=Path(output),
+            repository_root=repository_root,
+            previous_manifest=Path(previous_manifest) if previous_manifest else None,
+            previous_sha256=previous_sha256, stop_after=stop_after))
+    except Exception:
+        console.print("[red]Campaign admission denied; no completed audit or review is claimed.[/red]")
+        raise typer.Exit(3) from None
+    console.print("Campaign transport retained: " + result["status"] + "; analysis and mutations disabled")
+    if result["status"] not in {"planned", "indexed"}:
+        raise typer.Exit(2)
+
+
 @app.command()
 def milestone(
     milestone_id: str | None = typer.Argument(
