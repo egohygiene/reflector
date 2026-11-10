@@ -67,6 +67,11 @@ The repository architecture is intentionally layered:
 
 ## Quick start
 
+For explicit public audit/fleet intent and owner-capture indexing, see
+[audit campaigns](docs/audit-campaigns.md) and the
+[prepared source-only organization sweep](audits/plans/organization-sanity-20261110/README.md).
+This path is separate from the synthetic `reflector audit` demonstration.
+
 See [`docs/getting-started.md`](./docs/getting-started.md) for the complete
 zero-to-working-environment walkthrough.
 

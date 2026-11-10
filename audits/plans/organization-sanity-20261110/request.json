@@ -1,0 +1,217 @@
+{
+  "budgets": {
+    "concurrency": 4,
+    "depth": 1,
+    "maximum_findings": 4096,
+    "maximum_report_bytes": 1048576,
+    "maximum_reports_per_repository": 16,
+    "maximum_repositories": 64,
+    "maximum_seconds": 300
+  },
+  "campaign_id": "organization-sanity-20261110",
+  "candidate_backlog": "disabled",
+  "catalog": {
+    "observed_at": "2026-11-09T14:06:57Z",
+    "path": "catalog/public-repositories.json",
+    "repository": "egohygiene/hygiene",
+    "revision": "49639c1845cdfd08fbd5a768261a8b3cf515f80f",
+    "sha256": "af9c7186ded0bb57b18741eaa5905314b96d6adb03736946c868e0fc4aa50b26"
+  },
+  "contract_version": "1.0.0-alpha.1",
+  "mutation_authority": "none",
+  "network_policy": "offline",
+  "observed_at": "2026-11-10T01:06:48Z",
+  "organization": "egohygiene",
+  "profiles": [
+    {
+      "id": "holistic",
+      "version": "1.0.0"
+    }
+  ],
+  "provider": {
+    "adapter": "captured-owner-reports",
+    "model": null
+  },
+  "report_kinds": [
+    "audit",
+    "sanity"
+  ],
+  "repositories": [
+    {
+      "reports": [],
+      "repository": "egohygiene/.github",
+      "represented_commit": "ac2e4035173ed252d71d6655e723964ef93684df",
+      "source_observed_at": "2026-11-10T01:06:46Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/aether",
+      "represented_commit": "5077797448d32a59b06eabe4b38f091137d58052",
+      "source_observed_at": "2026-11-10T01:06:46Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/akashic",
+      "represented_commit": "dc21c6a24506d748deb45f29ce54fc7e7bf69753",
+      "source_observed_at": "2026-11-10T01:06:46Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/aniflow",
+      "represented_commit": "e87366de65e57c1b6932c76f1057563a142aa21b",
+      "source_observed_at": "2026-11-10T01:06:46Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/antidote",
+      "represented_commit": "34f7653469002c8f19c9adc87d4bfdcecc0eda33",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/athena",
+      "represented_commit": "5c0221deab24a17b007c9aba8217b64fed2f04de",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/beacon",
+      "represented_commit": "1d53983ee1ed760d59802dcb472be4481710d507",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/civics",
+      "represented_commit": "c95596afc206e38b3c5b1f80a3ccbae46326daa8",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/egohygiene.io",
+      "represented_commit": "e02fc595855dcc94256a96ac56bc0446feaf3e35",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/egolint",
+      "represented_commit": "f14f7fd3ab0ce9e87c367352fcb3af11a32eda59",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/empathy",
+      "represented_commit": "18d22e113e87c306b76d24873841249d41358c77",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/filament",
+      "represented_commit": "c3eb64b8087face7504e7571dc8396c19525649f",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/flow",
+      "represented_commit": "e758e428a01d1d13446e928c779894adf299c4cb",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/holon",
+      "represented_commit": "934e559400336cbf1acac325c89754056e27e3f2",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/hygiene",
+      "represented_commit": "e764301251d962f2b886e7805891c9d8f2bfde4c",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/identity",
+      "represented_commit": "401b2f1de298a171fbb5bf4ee6b510e0cf12c301",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/mantle",
+      "represented_commit": "0f54fa6e100c5b86af64aa383e41eed8c64e363a",
+      "source_observed_at": "2026-11-10T01:06:47Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/mindcap",
+      "represented_commit": "02d30d6eb19037b3f770aad3a12c598778b5ae22",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/mindgarden",
+      "represented_commit": "7594921fb89097d9dae04f14e3ebc967055aa470",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/observatory",
+      "represented_commit": "2eebdb63c3239cbb790be4146df5340c7ad59c17",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/optiflow",
+      "represented_commit": "4b4ff465e7974fc08f1959cf72c58662e65a4466",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/pace",
+      "represented_commit": "76a28ee10fdf73e556beacda1893383e3d31cc36",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/realm",
+      "represented_commit": "0a3bbdc379b54db07dc5103887af0dfe05f97a0a",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/reflector",
+      "represented_commit": "4cf36a9050304f4601647bc588eed7a786e260cb",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/relay",
+      "represented_commit": "d97a81d6c9b6425f6ae4ad4c78a68682f2169aff",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/renderflow",
+      "represented_commit": "9bfb49446f6cf570af01e33412b48cbd4ff03763",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/sanctuary",
+      "represented_commit": "0db2d923e110e49dec823c486ec4084d266f3627",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    },
+    {
+      "reports": [],
+      "repository": "egohygiene/store",
+      "represented_commit": "5786fd40bfe40b0d338eb96087355b98f7e16d42",
+      "source_observed_at": "2026-11-10T01:06:48Z"
+    }
+  ],
+  "schema": "egohygiene.reflector.audit-campaign-request/v1",
+  "scope": {
+    "exclude": [],
+    "include": [],
+    "kind": "organization",
+    "selection": "all"
+  },
+  "visibility": "public"
+}

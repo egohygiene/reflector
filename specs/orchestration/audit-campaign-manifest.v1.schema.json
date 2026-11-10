@@ -1,0 +1,828 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reflector.egohygiene.io/contracts/audit-campaign-manifest.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contract_version",
+    "campaign_id",
+    "visibility",
+    "organization",
+    "observed_at",
+    "mode",
+    "status",
+    "mutation_authority",
+    "analysis_execution",
+    "catalog",
+    "owner_inputs",
+    "profiles",
+    "budgets",
+    "passes",
+    "repositories",
+    "request_sha256",
+    "candidate_backlog",
+    "generator"
+  ],
+  "properties": {
+    "schema": {
+      "const": "egohygiene.reflector.audit-campaign-manifest/v1"
+    },
+    "contract_version": {
+      "const": "1.0.0-alpha.1"
+    },
+    "campaign_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+    },
+    "visibility": {
+      "const": "public"
+    },
+    "organization": {
+      "const": "egohygiene"
+    },
+    "observed_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "format": "date-time"
+    },
+    "mode": {
+      "enum": [
+        "plan",
+        "index",
+        "discover",
+        "run"
+      ]
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "indexed",
+        "discovered",
+        "partial",
+        "cancelled"
+      ]
+    },
+    "mutation_authority": {
+      "const": "none"
+    },
+    "analysis_execution": {
+      "enum": [
+        "external-captures-only",
+        "local-adapter-requested",
+        "not-executed"
+      ]
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "revision",
+        "path",
+        "sha256",
+        "observed_at"
+      ],
+      "properties": {
+        "repository": {
+          "const": "egohygiene/hygiene"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "path": {
+          "const": "catalog/public-repositories.json"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "format": "date-time"
+        }
+      }
+    },
+    "owner_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aether_audit",
+        "aether_sanity"
+      ],
+      "properties": {
+        "aether_audit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repository",
+            "revision",
+            "tree",
+            "files"
+          ],
+          "properties": {
+            "repository": {
+              "const": "egohygiene/aether"
+            },
+            "revision": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "tree": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "files": {
+              "type": "object",
+              "minProperties": 1,
+              "maxProperties": 16,
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240,
+                "pattern": "^[A-Za-z0-9._/-]+$"
+              }
+            }
+          }
+        },
+        "aether_sanity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repository",
+            "revision",
+            "tree",
+            "files"
+          ],
+          "properties": {
+            "repository": {
+              "const": "egohygiene/aether"
+            },
+            "revision": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "tree": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "files": {
+              "type": "object",
+              "minProperties": 1,
+              "maxProperties": 16,
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240,
+                "pattern": "^[A-Za-z0-9._/-]+$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "profiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_version",
+        "registry_sha256",
+        "requested",
+        "resolved"
+      ],
+      "properties": {
+        "registry_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "registry_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "requested": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "version"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+              }
+            }
+          },
+          "maxItems": 32,
+          "minItems": 1
+        },
+        "resolved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "version"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+              }
+            }
+          },
+          "maxItems": 32,
+          "minItems": 1
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximum_repositories",
+        "maximum_reports_per_repository",
+        "maximum_report_bytes",
+        "maximum_findings",
+        "maximum_seconds",
+        "concurrency",
+        "depth"
+      ],
+      "properties": {
+        "maximum_repositories": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "maximum_reports_per_repository": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "maximum_report_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "maximum_findings": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "maximum_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1800
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "passes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "public-selection",
+              "profile-resolution",
+              "source-binding",
+              "audit-execution",
+              "coherence-review",
+              "evidence-index",
+              "candidate-backlog",
+              "human-review"
+            ]
+          },
+          "state": {
+            "enum": [
+              "selected",
+              "resolved",
+              "declared",
+              "not-executed",
+              "external-captures",
+              "indexed",
+              "partial",
+              "disabled",
+              "not-requested"
+            ]
+          }
+        }
+      },
+      "maxItems": 8,
+      "minItems": 8
+    },
+    "repositories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repository",
+          "represented_commit",
+          "source_observed_at",
+          "state",
+          "reason",
+          "input_sha256",
+          "reports",
+          "resume"
+        ],
+        "properties": {
+          "repository": {
+            "type": "string",
+            "pattern": "^egohygiene/(?:\\.github|[a-z0-9][a-z0-9.-]*)$"
+          },
+          "represented_commit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_observed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "planned",
+              "indexed",
+              "partial",
+              "blocked",
+              "unavailable",
+              "not-inspected"
+            ]
+          },
+          "reason": {
+            "enum": [
+              null,
+              "source-not-selected",
+              "source-unavailable",
+              "reports-not-selected",
+              "report-unavailable",
+              "report-incompatible",
+              "report-boundary",
+              "report-limit",
+              "budget-exhausted",
+              "cancelled"
+            ]
+          },
+          "input_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "reports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "source_revision",
+                "source_path",
+                "sha256",
+                "owner_schema",
+                "canonical_url",
+                "completion",
+                "findings_count"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "audit",
+                    "sanity"
+                  ]
+                },
+                "source_revision": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source_path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "^[A-Za-z0-9._/-]+$"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "owner_schema": {
+                  "enum": [
+                    "aether.repository-audit-report/v1",
+                    "egohygiene.architecture-coherence-review/v1"
+                  ]
+                },
+                "canonical_url": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 600
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "completion": {
+                  "enum": [
+                    "complete",
+                    "partial",
+                    "blocked",
+                    "failed",
+                    "unsupported",
+                    "not_applicable",
+                    "unknown"
+                  ]
+                },
+                "findings_count": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4096
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "profiles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "version"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+                      },
+                      "version": {
+                        "type": "string",
+                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+                      }
+                    }
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                }
+              }
+            },
+            "maxItems": 16,
+            "minItems": 0
+          },
+          "resume": {
+            "enum": [
+              "new",
+              "unchanged",
+              "not-inspected"
+            ]
+          },
+          "source_capabilities": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "state",
+                  "inventory_sha256",
+                  "captured_bytes",
+                  "captured_files",
+                  "omitted_entries",
+                  "signals",
+                  "source_path",
+                  "observed_at"
+                ],
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "captured",
+                      "partial"
+                    ]
+                  },
+                  "inventory_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "captured_bytes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 16777216
+                  },
+                  "captured_files": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4096
+                  },
+                  "omitted_entries": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4096
+                  },
+                  "signals": {
+                    "type": "object",
+                    "maxProperties": 16,
+                    "additionalProperties": {
+                      "enum": [
+                        "source-present",
+                        "not-captured"
+                      ]
+                    }
+                  },
+                  "source_path": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 240,
+                        "pattern": "^[A-Za-z0-9._/-]+$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "observed_at": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                    "format": "date-time"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "executions": {
+            "type": "array",
+            "maxItems": 33,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "job_id",
+                "input_sha256",
+                "state",
+                "reason",
+                "started_at",
+                "completed_at",
+                "report"
+              ],
+              "properties": {
+                "job_id": {
+                  "type": "string",
+                  "pattern": "^(?:audit:[a-z][a-z0-9-]{0,63}|sanity:coherence)$"
+                },
+                "input_sha256": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "state": {
+                  "enum": [
+                    "blocked",
+                    "failed",
+                    "partial",
+                    "complete",
+                    "resumed"
+                  ]
+                },
+                "reason": {
+                  "enum": [
+                    null,
+                    "source-or-isolation-unavailable",
+                    "budget-exhausted",
+                    "adapter-or-report-denied",
+                    "isolation-unavailable"
+                  ]
+                },
+                "started_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "completed_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "report": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "source_revision",
+                        "source_path",
+                        "sha256"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "audit",
+                            "sanity"
+                          ]
+                        },
+                        "source_revision": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{40}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "source_path": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240,
+                          "pattern": "^[A-Za-z0-9._/-]+$"
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "dependentRequired": {
+          "source_capabilities": [
+            "executions"
+          ],
+          "executions": [
+            "source_capabilities"
+          ]
+        }
+      },
+      "maxItems": 64,
+      "minItems": 0
+    },
+    "request_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "candidate_backlog": {
+      "enum": [
+        "disabled",
+        "proposed"
+      ]
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "revision",
+        "immutable",
+        "implementation_sha256"
+      ],
+      "properties": {
+        "repository": {
+          "const": "egohygiene/reflector"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "immutable": {
+          "type": "boolean"
+        },
+        "implementation_sha256": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reflector/orchestration/audit_campaign.py",
+            "reflector/schemas/audit_campaign.py",
+            "contracts/audit-campaign-owners.v1.lock.json"
+          ],
+          "properties": {
+            "reflector/orchestration/audit_campaign.py": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "reflector/schemas/audit_campaign.py": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "contracts/audit-campaign-owners.v1.lock.json": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "reflector/orchestration/audit_executor.py": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "reflector/orchestration/audit_backlog.py": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "dependentRequired": {
+            "reflector/orchestration/audit_executor.py": [
+              "reflector/orchestration/audit_backlog.py"
+            ],
+            "reflector/orchestration/audit_backlog.py": [
+              "reflector/orchestration/audit_executor.py"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
