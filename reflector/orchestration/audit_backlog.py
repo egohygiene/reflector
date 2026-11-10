@@ -78,7 +78,7 @@ def public_rationale(value, allowed):
             address = ipaddress.ip_address(host)
         except ValueError:
             address = None
-            require(not re.fullmatch(r"[0-9.]+|0x[0-9a-f]+", host, re.I))
+            require(not re.fullmatch(r"[0-9]+|0x[0-9a-f]+", host.rsplit(".", 1)[-1], re.I))
         require(address is None or address.is_global)
         if host in {"github.com", "api.github.com", "raw.githubusercontent.com", "codeload.github.com"}:
             parts = parsed.path.strip("/").split("/")
