@@ -293,15 +293,18 @@ def public_report_scope(value, allowed, public):
         require(visited <= 100000 and depth <= 24)
         if isinstance(item, dict):
             require("visibility" not in item or item["visibility"] == "public")
-            if set(item) == {"kind", "reference"} and item["kind"] == "human":
+            human_reference = set(item) == {"kind", "reference", "evidence_url", "decided_at"} and item["kind"] == "human"
+            if human_reference:
                 require(isinstance(item["reference"], str)
                     and re.fullmatch(r"https://github\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", item["reference"]))
                 # This is a typed public account reference, never authenticated
-                # human proof. All other URLs still require source admission.
-                return
+                # human proof. Its evidence URL and other fields still undergo
+                # normal source/privacy admission before owner validation.
             for key in ("repository", "full_name"):
                 require(key not in item or item[key] is None or item[key] in public)
-            for child in item.values():
+            for key, child in item.items():
+                if human_reference and key == "reference":
+                    continue
                 inspect(child, depth + 1)
         elif isinstance(item, list):
             for child in item:
