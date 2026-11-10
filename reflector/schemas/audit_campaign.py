@@ -78,7 +78,8 @@ def profile_requests(value):
 def report_selection(value):
     exact(value, {"kind", "source_revision", "source_path", "sha256"})
     require(value["kind"] in {"audit", "sanity"})
-    match(value["source_revision"], REVISION)
+    if value["source_revision"] is not None:
+        match(value["source_revision"], REVISION)
     require(relative(value["source_path"]).endswith(".json"))
     match(value["sha256"], SHA256)
 
@@ -115,9 +116,12 @@ def validate_request(value):
     require(isinstance(kinds, list) and 1 <= len(kinds) <= 2
             and len(kinds) == len(set(kinds)) and set(kinds) <= {"audit", "sanity"})
     exact(value["provider"], {"adapter", "model"})
-    require(value["provider"] == {"adapter": "captured-owner-reports", "model": None}
+    require(value["provider"]["adapter"] in {"captured-owner-reports", "local-command"})
+    if value["provider"]["model"] is not None:
+        match(value["provider"]["model"], TOKEN)
+    require((value["provider"]["adapter"] != "captured-owner-reports" or value["provider"]["model"] is None)
             and value["network_policy"] == "offline" and value["mutation_authority"] == "none"
-            and value["candidate_backlog"] == "disabled")
+            and value["candidate_backlog"] in {"disabled", "propose"})
     budgets(value["budgets"])
     rows = value["repositories"]
     require(isinstance(rows, list) and len(rows) <= value["budgets"]["maximum_repositories"])
@@ -150,9 +154,11 @@ def validate_manifest(value):
         "budgets", "passes", "repositories", "request_sha256", "candidate_backlog", "generator"})
     require(value["schema"] == MANIFEST and value["contract_version"] == VERSION
         and value["visibility"] == "public" and value["organization"] == "egohygiene"
-        and value["mode"] in {"plan", "index"} and value["status"] in {"planned", "indexed", "partial", "cancelled"}
-        and value["mutation_authority"] == "none" and value["analysis_execution"] == "external-captures-only"
-        and value["candidate_backlog"] == "disabled")
+        and value["mode"] in {"plan", "index", "discover", "run"}
+        and value["status"] in {"planned", "indexed", "discovered", "partial", "cancelled"}
+        and value["mutation_authority"] == "none"
+        and value["analysis_execution"] in {"external-captures-only", "local-adapter-requested", "not-executed"}
+        and value["candidate_backlog"] in {"disabled", "proposed"})
     match(value["campaign_id"], TOKEN)
     boundary = instant(value["observed_at"])
     catalog(value["catalog"])
@@ -162,8 +168,11 @@ def validate_manifest(value):
     if generator["revision"] is not None:
         match(generator["revision"], REVISION)
     require(not generator["immutable"] or generator["revision"] is not None)
-    exact(generator["implementation_sha256"], {"reflector/orchestration/audit_campaign.py", "reflector/schemas/audit_campaign.py",
-        "contracts/audit-campaign-owners.v1.lock.json"})
+    original_files = {"reflector/orchestration/audit_campaign.py", "reflector/schemas/audit_campaign.py",
+                      "contracts/audit-campaign-owners.v1.lock.json"}
+    files = set(generator["implementation_sha256"])
+    require(files == original_files or files == original_files | {
+        "reflector/orchestration/audit_executor.py", "reflector/orchestration/audit_backlog.py"})
     for checksum in generator["implementation_sha256"].values():
         match(checksum, SHA256)
     match(value["request_sha256"], SHA256)
@@ -192,8 +201,9 @@ def validate_manifest(value):
     require(isinstance(value["repositories"], list) and len(value["repositories"]) <= value["budgets"]["maximum_repositories"])
     names = set()
     for row in value["repositories"]:
-        exact(row, {"repository", "represented_commit", "source_observed_at", "state", "reason",
-            "input_sha256", "reports", "resume"})
+        original_keys = {"repository", "represented_commit", "source_observed_at", "state", "reason",
+            "input_sha256", "reports", "resume"}
+        require(set(row) == original_keys or set(row) == original_keys | {"executions", "source_capabilities"})
         match(row["repository"], REPOSITORY)
         require(row["repository"] not in names)
         names.add(row["repository"])
@@ -209,16 +219,52 @@ def validate_manifest(value):
         require(isinstance(row["reports"], list) and len(row["reports"]) <= value["budgets"]["maximum_reports_per_repository"])
         for report in row["reports"]:
             report_selection({key: report.get(key) for key in ("kind", "source_revision", "source_path", "sha256")})
-            exact(report, {"kind", "owner_schema", "source_revision", "source_path", "sha256", "canonical_url", "completion", "findings_count"})
+            original_report_keys = {"kind", "owner_schema", "source_revision", "source_path", "sha256", "canonical_url", "completion", "findings_count"}
+            require(set(report) == original_report_keys or set(report) == original_report_keys | {"profiles"})
+            if "profiles" in report:
+                require(isinstance(report["profiles"], list) and len(report["profiles"]) <= 32)
+                if report["profiles"]:
+                    profile_requests(report["profiles"])
             expected_schema = {"audit": "aether.repository-audit-report/v1", "sanity": "egohygiene.architecture-coherence-review/v1"}
             require(report["owner_schema"] == expected_schema[report["kind"]])
-            require(report["canonical_url"] == f"https://github.com/{row['repository']}/blob/{report['source_revision']}/{report['source_path']}")
+            require(report["canonical_url"] == (f"https://github.com/{row['repository']}/blob/{report['source_revision']}/{report['source_path']}"
+                    if report["source_revision"] is not None else None))
             require(report["completion"] in {"complete", "partial", "blocked", "failed", "unsupported", "not_applicable", "unknown"})
             if report["kind"] == "sanity":
                 require(report["findings_count"] is None)
             else:
                 require(type(report["findings_count"]) is int
                         and 0 <= report["findings_count"] <= value["budgets"]["maximum_findings"])
-    require(value["status"] != "indexed" or value["mode"] == "index" and bool(value["repositories"])
+        capabilities = row.get("source_capabilities")
+        if capabilities is not None:
+            exact(capabilities, {"state", "inventory_sha256", "captured_bytes", "captured_files", "omitted_entries", "signals", "source_path", "observed_at"})
+            require(capabilities["state"] in {"captured", "partial"})
+            match(capabilities["inventory_sha256"], SHA256)
+            for field, maximum in (("captured_bytes", 16777216), ("captured_files", 4096), ("omitted_entries", 4096)):
+                require(type(capabilities[field]) is int and 0 <= capabilities[field] <= maximum)
+            require(instant(capabilities["observed_at"]) <= boundary)
+            require(isinstance(capabilities["signals"], dict) and len(capabilities["signals"]) <= 16)
+            for name, state in capabilities["signals"].items():
+                relative(name)
+                require(state in {"source-present", "not-captured"})
+            if capabilities["source_path"] is not None:
+                relative(capabilities["source_path"])
+        executions = row.get("executions", [])
+        require(isinstance(executions, list) and len(executions) <= 33)
+        for execution in executions:
+            exact(execution, {"job_id", "input_sha256", "state", "reason", "started_at", "completed_at", "report"})
+            require(isinstance(execution["job_id"], str) and re.fullmatch(r"audit:[a-z][a-z0-9-]{0,63}|sanity:coherence", execution["job_id"]))
+            require(execution["state"] in {"blocked", "failed", "partial", "complete", "resumed"}
+                and execution["reason"] in {None, "source-or-isolation-unavailable", "budget-exhausted", "adapter-or-report-denied", "isolation-unavailable"})
+            if execution["input_sha256"] is not None:
+                match(execution["input_sha256"], SHA256)
+            for field in ("started_at", "completed_at"):
+                if execution[field] is not None:
+                    require(instant(execution[field]) <= boundary)
+            if execution["report"] is not None:
+                report_selection(execution["report"])
+            require(execution["state"] not in {"complete", "resumed"} or execution["input_sha256"] is not None
+                    and execution["report"] is not None and execution["completed_at"] is not None)
+    require(value["status"] != "indexed" or value["mode"] in {"index", "run"} and bool(value["repositories"])
             and all(row["state"] == "indexed" for row in value["repositories"]))
     return value

@@ -164,10 +164,21 @@
       ],
       "properties": {
         "adapter": {
-          "const": "captured-owner-reports"
+          "enum": [
+            "captured-owner-reports",
+            "local-command"
+          ]
         },
         "model": {
-          "type": "null"
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -228,7 +239,10 @@
       "const": "none"
     },
     "candidate_backlog": {
-      "const": "disabled"
+      "enum": [
+        "disabled",
+        "propose"
+      ]
     },
     "repositories": {
       "type": "array",
@@ -288,8 +302,15 @@
                   ]
                 },
                 "source_revision": {
-                  "type": "string",
-                  "pattern": "^[0-9a-f]{40}$"
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
                 "source_path": {
                   "type": "string",
