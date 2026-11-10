@@ -104,10 +104,12 @@ intake, deterministic run references/checkpoints and the organization index;
 Observatory and Relay retain read-model and publication ownership.
 
 This path is separate from the historical synthetic action/invariant/drift
-demonstration. It does not execute an LLM audit, infer policy applicability,
-authenticate a human claim, create issues or publish. Report capture execution,
-provider/model adapters, real campaigns and host qualification remain explicit
-later acceptance. [ADR-0004](DECISIONS.md#adr-0004-compose-owner-defined-audit-captures-through-a-read-only-campaign) is proposed.
+demonstration. Default operation indexes captures; a separately opted-in local
+adapter executes exact Aether methodology inside mandatory read-only/offline
+isolation and records actual source/job checkpoints. It never infers policy
+applicability, authenticates a human claim, creates issues or publishes.
+Actual adapter/campaign and host qualification remain later acceptance.
+[ADR-0004](DECISIONS.md#adr-0004-compose-owner-defined-audit-captures-through-a-read-only-campaign) is proposed.
 
 ## Evidence and uncertainty
 

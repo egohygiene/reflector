@@ -5,10 +5,11 @@ Refs [Reflector #258](https://github.com/egohygiene/reflector/issues/258),
 [Aether #87](https://github.com/egohygiene/aether/issues/87) and
 [Hygiene #59](https://github.com/egohygiene/hygiene/issues/59).
 
-This first checkpoint supplies portable campaign intent, immutable local
-source/owner admission and captured-report indexing. It is separate from
+This implementation supplies portable campaign intent, immutable local
+source/owner admission, captured-report indexing and an explicitly opted-in
+isolated local adapter. It is separate from
 `reflector audit`, whose historical action/invariant/drift example is synthetic.
-It does not execute an AI audit or human ratification. Aether owns audit
+The default performs no AI execution or human ratification. Aether owns audit
 profiles, report semantics and architecture reviews; Hygiene owns policy,
 applicability and the public roster. Reflector composes transport passes.
 Observatory and Relay retain normalized read models and publication ownership.
@@ -100,11 +101,18 @@ atomic directory; historical evidence is not overwritten.
 
 `--stop-after N` produces an explicit checkpoint for the firstN sorted public
 repository selections; the rest are `not-inspected/cancelled`. Supply exact
-`--previous-manifest` and `--previous-sha256` to compare unchanged input/index
-metadata on resume. This checkpoint revalidates captured inputs and marks
-unchanged references; it does not yet skip a model launch because no model
-adapter runs in this checkpoint. External executor and proposed backlog
-adapters remain follow-up implementation under #258.
+`--previous-manifest` and `--previous-sha256` to resume exact completed jobs.
+Before any adapter launch, the implementation checks job input/profile/owner
+and executable/resource hashes and revalidates the retained sidecar plus its
+canonical Markdown. Unchanged complete jobs are marked `resumed`, retain their
+original report/operation times and are not launched again. Partial or invalid
+captures remain retryable. The source pass is shared by all independent profile
+jobs within a repository. See [local adapters](audit-local-adapters.md).
+
+Optional `candidate_backlog: propose` intent plus `--propose-backlog` produces
+[review proposals](audit-candidate-backlog.md) from admitted source facts.
+Grouping is explicit. Experimental opportunities, defects and uncertainty
+remain distinct; issue creation and provider mutation stay unauthorized.
 
 ## Prepared organization sweep
 

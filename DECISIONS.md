@@ -84,9 +84,10 @@ Do not rewrite historical context to fit current understanding. Amend a record f
   explicit transport states, deterministic checkpoints and bounded finding IDs.
 - **Consequences:** No prose scraping, duplicate auditor, policy authority,
   human ratification or issue publication is introduced. Missing source/reports
-  remain unavailable. Provider/model execution and candidate backlog synthesis
-  are disabled in this foundation and require later independently reviewed
-  adapters; owner report completion never means conformance or acceptance.
+  remain unavailable. Optional local execution requires explicit operator
+  selection, exact Aether methodology and mandatory isolation. Optional backlog
+  proposals preserve source classification/uncertainty and require review;
+  owner report completion never means conformance or acceptance.
 - **Reconsider when:** A real campaign needs replaceable local/model execution,
   expanded namespace/privacy support or a separately authorized mutation/export
   boundary. Preserve immutable captures and source finding IDs through that work.

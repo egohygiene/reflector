@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 import hashlib
 import importlib.util
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -22,7 +23,9 @@ import subprocess
 import sys
 import tempfile
 import time
+import threading
 from urllib.parse import urlsplit
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 LOCK = ROOT / "contracts/audit-campaign-owners.v1.lock.json"
@@ -83,7 +86,8 @@ def sha256(content):
 
 def generator():
     files = ("reflector/orchestration/audit_campaign.py", "reflector/schemas/audit_campaign.py",
-             "contracts/audit-campaign-owners.v1.lock.json")
+             "contracts/audit-campaign-owners.v1.lock.json", "reflector/orchestration/audit_executor.py",
+             "reflector/orchestration/audit_backlog.py")
     hashes = {path: sha256(read(ROOT / path)) for path in files}
     revision, immutable = None, False
     try:
@@ -96,15 +100,44 @@ def generator():
             "immutable": immutable, "implementation_sha256": hashes}
 
 
-def git(root, *arguments):
+def git(root, *arguments, deadline=None, maximum_output=MAX_DOCUMENT):
     # Only immutable-object queries are used. Never hooks, consumer scripts,
     # filters, Git global configuration, replacement objects or network access.
     environment = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
     environment.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
-        GIT_NO_REPLACE_OBJECTS="1", GIT_TERMINAL_PROMPT="0", LC_ALL="C.UTF-8")
-    command = ["git", "--no-optional-locks", "--no-replace-objects", "-c", "core.hooksPath=/dev/null",
+        GIT_NO_REPLACE_OBJECTS="1", GIT_NO_LAZY_FETCH="1", GIT_TERMINAL_PROMPT="0", LC_ALL="C.UTF-8")
+    command = ["git", "--no-lazy-fetch", "--no-optional-locks", "--no-replace-objects", "-c", "core.hooksPath=/dev/null",
                "-c", "core.fsmonitor=false", "-C", str(safe(root)), *arguments]
-    return subprocess.check_output(command, env=environment, stderr=subprocess.DEVNULL, timeout=15)
+    require(deadline is None or time.monotonic() < deadline)
+    timeout = 15 if deadline is None else min(15, max(0.1, deadline - time.monotonic()))
+    process = subprocess.Popen(command, env=environment, stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    expired = threading.Event()
+    def terminate():
+        expired.set()
+        try:
+            process.kill()
+        except OSError:
+            pass
+    timer = threading.Timer(timeout, terminate)
+    timer.daemon = True
+    timer.start()
+    try:
+        content = bytearray()
+        while True:
+            chunk = process.stdout.read(min(65536, maximum_output + 1 - len(content)))
+            if not chunk:
+                break
+            content.extend(chunk)
+            require(len(content) <= maximum_output)
+        require(process.wait() == 0 and not expired.is_set())
+        return bytes(content)
+    finally:
+        timer.cancel()
+        if process.poll() is None:
+            process.kill()
+        process.wait()
+        process.stdout.close()
 
 
 def blob(root, revision, path, maximum=MAX_DOCUMENT):
@@ -114,7 +147,7 @@ def blob(root, revision, path, maximum=MAX_DOCUMENT):
     require(len(row) == 4 and row[0] == "100644" and row[3] == path)
     size = git(root, "cat-file", "-s", row[2]).strip()
     require(size.isdigit() and 0 < int(size) <= maximum)
-    content = git(root, "cat-file", "blob", row[2])
+    content = git(root, "cat-file", "blob", row[2], maximum_output=maximum)
     require(len(content) == int(size))
     return content
 
@@ -239,6 +272,13 @@ def public_report_scope(value, allowed, public):
                 and not any(ord(char) < 33 or ord(char) == 127 for char in text))
         require(not any(part in {".", ".."} for part in parsed.path.split("/")))
         host = parsed.hostname.lower()
+        require(not host.endswith(".") and host != "localhost" and not host.endswith((".local", ".internal", ".localhost")))
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError:
+            address = None
+            require(not re.fullmatch(r"[0-9]+|0x[0-9a-f]+", host.rsplit(".", 1)[-1], re.I))
+        require(address is None or address.is_global)
         if host in {"github.com", "raw.githubusercontent.com", "api.github.com", "codeload.github.com"}:
             require(parsed.netloc == host)
             parts = parsed.path.split("/")
@@ -253,6 +293,12 @@ def public_report_scope(value, allowed, public):
         require(visited <= 100000 and depth <= 24)
         if isinstance(item, dict):
             require("visibility" not in item or item["visibility"] == "public")
+            if set(item) == {"kind", "reference"} and item["kind"] == "human":
+                require(isinstance(item["reference"], str)
+                    and re.fullmatch(r"https://github\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", item["reference"]))
+                # This is a typed public account reference, never authenticated
+                # human proof. All other URLs still require source admission.
+                return
             for key in ("repository", "full_name"):
                 require(key not in item or item[key] is None or item[key] in public)
             for child in item.values():
@@ -261,10 +307,11 @@ def public_report_scope(value, allowed, public):
             for child in item:
                 inspect(child, depth + 1)
         elif isinstance(item, str):
-            for match in re.finditer(r"egohygiene/(?:\.github|[a-z0-9][a-z0-9.-]*)", item, re.I):
+            require(not re.search(r"(?i)(?:github_pat_|gh[pousr]_|\b(?:password|token|secret)\s*[:=]\s*[^\s]+|[\w.+-]+@[\w.-]+\.[a-z]{2,}|/(?:home|Users|workspace|tmp)/|[A-Za-z]:\\)", item))
+            for match in re.finditer(r"egohygiene/[A-Za-z0-9_.-]+", item, re.I):
                 require(match[0] in public)
-            for match in re.finditer(r"https?://[^\s<>\"']+", item, re.I):
-                public_url(match[0])
+            for match in re.finditer(r"https?://[^\s<>\"'`)\]}]+", item, re.I):
+                public_url(match[0].rstrip(".,;:"))
     inspect(value)
 
 
@@ -272,7 +319,15 @@ def report(args, selection, row, allowed, loaded, registry):
     repository = row["repository"]
     root = args.roots.get(repository)
     require(root is not None)
-    content = blob(root, selection["source_revision"], selection["source_path"], args.budgets["maximum_report_bytes"])
+    if selection["source_revision"] is None:
+        key = (repository, selection["source_path"], selection["sha256"])
+        content = args.pending_captures.get(key)
+        if content is None:
+            require(repository in args.capture_roots)
+            content = read(args.capture_roots[repository] / selection["source_path"], args.budgets["maximum_report_bytes"])
+        require(len(content) <= args.budgets["maximum_report_bytes"])
+    else:
+        content = blob(root, selection["source_revision"], selection["source_path"], args.budgets["maximum_report_bytes"])
     value = parse(content)
     public_report_scope(value, allowed, args.public_names)
     if selection["kind"] == "audit":
@@ -280,24 +335,33 @@ def report(args, selection, row, allowed, loaded, registry):
         require(set(owner.referenced_repositories(value)) <= args.public_names)
     require(sha256(content) == selection["sha256"])
     findings = []
+    boundary = contract.instant(args.executor_module.now() if args.mode == "run" else args.observed_at)
     if selection["kind"] == "audit":
         owner = loaded["aether_audit"]["helper"]
         owner.validate_report(value, registry)
         require(value["schema"] == "aether.repository-audit-report/v1")
-        require(value["profiles"] == args.profiles)
+        require(value["profiles"]["registry_sha256"] == args.profiles["registry_sha256"]
+            and value["profiles"]["registry_version"] == args.profiles["registry_version"]
+            and all(profile in args.profiles["resolved"] for profile in value["profiles"]["resolved"]))
         scope = {item["full_name"]: item["revision"] for item in value["scope"]["repositories"]}
         require(scope.get(repository) == row["represented_commit"])
-        require(contract.instant(value["started_at"]) <= contract.instant(args.observed_at))
-        require(value["completed_at"] is None or contract.instant(value["completed_at"]) <= contract.instant(args.observed_at))
+        require(contract.instant(value["started_at"]) <= boundary)
+        require(value["completed_at"] is None or contract.instant(value["completed_at"]) <= boundary)
         completion = value["completion"]["state"]
         require(len(value["findings"]) <= args.budgets["maximum_findings"])
         for finding in value["findings"]:
             if finding["repository"] != repository:
                 continue
-            findings.append({"repository": repository, "finding_id": finding["id"],
+            record = {"repository": repository, "finding_id": finding["id"],
                 "report_sha256": selection["sha256"], "source_revision": selection["source_revision"],
-                "source_path": selection["source_path"]})
+                "source_path": selection["source_path"]}
+            if args.propose:
+                record.update({key: finding[key] for key in ("visibility", "title", "classification", "nature", "severity",
+                    "confidence", "status", "source_profile", "evidence_classification", "missing_evidence", "recommendation", "suggested_validation")})
+                record["represented_commit"] = row["represented_commit"]
+            findings.append(record)
         count = len(findings)
+        profiles = value["profiles"]["resolved"]
     else:
         owner = loaded["aether_sanity"]["helper"]
         owner.validate_review(value, public_repositories=args.public_names)
@@ -305,13 +369,15 @@ def report(args, selection, row, allowed, loaded, registry):
         require(value["schema"] == "egohygiene.architecture-coherence-review/v1")
         revisions = {item["repository"]: item["revision"] for item in subject["represented_revisions"]}
         require(revisions.get(repository) == row["represented_commit"])
-        require(contract.instant(value["generated_at"]) <= contract.instant(args.observed_at))
-        require(subject["completed_at"] is None or contract.instant(subject["completed_at"]) <= contract.instant(args.observed_at))
+        require(contract.instant(value["generated_at"]) <= boundary)
+        require(subject["completed_at"] is None or contract.instant(subject["completed_at"]) <= boundary)
         completion = value.get("execution", {}).get("status", "unknown")
         count = None
-    canonical_url = f"https://github.com/{repository}/blob/{selection['source_revision']}/{selection['source_path']}"
+        profiles = []
+    canonical_url = (f"https://github.com/{repository}/blob/{selection['source_revision']}/{selection['source_path']}"
+                     if selection["source_revision"] is not None else None)
     return {**selection, "owner_schema": value["schema"], "canonical_url": canonical_url,
-            "completion": completion, "findings_count": count}, findings
+            "completion": completion, "findings_count": count, "profiles": profiles}, findings
 
 
 def repository_index(args, row, allowed, loaded, registry, inspect):
@@ -319,7 +385,7 @@ def repository_index(args, row, allowed, loaded, registry, inspect):
                                  "report_kinds": args.report_kinds, "budgets": args.budgets})
     result = {"repository": row["repository"], "represented_commit": row["represented_commit"],
         "source_observed_at": row["source_observed_at"], "state": "planned", "reason": None,
-        "input_sha256": input_sha, "reports": [], "resume": "new"}
+        "input_sha256": input_sha, "reports": [], "resume": "new", "executions": [], "source_capabilities": None}
     if not inspect:
         result.update(state="not-inspected", reason="cancelled", resume="not-inspected")
         return result, []
@@ -328,16 +394,33 @@ def repository_index(args, row, allowed, loaded, registry, inspect):
         return result, []
     if args.mode == "plan":
         return result, []
-    if not row["reports"]:
+    if time.monotonic() >= args.deadline:
+        result.update(state="unavailable", reason="budget-exhausted")
+        return result, []
+    if not row["reports"] and args.mode == "index":
         result.update(state="unavailable", reason="reports-not-selected")
         return result, []
     try:
         root = args.roots.get(row["repository"])
-        require(root is not None and git(root, "rev-parse", "--verify", row["represented_commit"] + "^{commit}").decode().strip()
+        require(root is not None and git(root, "rev-parse", "--verify", row["represented_commit"] + "^{commit}", deadline=args.deadline).decode().strip()
                 == row["represented_commit"])
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
         result.update(state="unavailable", reason="source-unavailable")
         return result, []
+    if args.mode in {"run", "discover"}:
+        interface = SimpleNamespace(safe=safe, require=require, contract=contract, read=read, sha256=sha256,
+            git=git, blob=blob, parse=parse, public_report_scope=public_report_scope, report=report)
+        selected, result["executions"], result["source_capabilities"] = args.executor_module.run(
+            interface, args, row, allowed, loaded, args.previous_rows.get(row["repository"], {}))
+        if args.mode == "discover":
+            result["state"] = "planned" if result["source_capabilities"] is not None else "unavailable"
+            result["reason"] = None if result["source_capabilities"] is not None else "source-unavailable"
+            return result, []
+        choices = {(item["kind"], item["source_revision"], item["source_path"], item["sha256"]): item
+                   for item in [*row["reports"], *selected]}
+        row = {**row, "reports": list(choices.values())}
+        if result["executions"] and all(item["state"] == "resumed" for item in result["executions"]):
+            result["resume"] = "unchanged"
     findings = []
     for selection in row["reports"]:
         if time.monotonic() >= args.deadline:
@@ -355,28 +438,31 @@ def repository_index(args, row, allowed, loaded, registry, inspect):
         except (OSError, ValueError, KeyError, TypeError, RecursionError, subprocess.SubprocessError):
             result["reason"] = "report-incompatible"
     kinds = {item["kind"] for item in result["reports"]}
+    covered = {(profile["id"], profile["version"]) for item in result["reports"] for profile in item.get("profiles", [])}
+    required = {(profile["id"], profile["version"]) for profile in args.profiles["resolved"]} if "audit" in args.report_kinds else set()
     complete = kinds >= set(args.report_kinds) and all(item["completion"] in {
-        "complete", "completed", "not_applicable"} for item in result["reports"])
+        "complete", "not_applicable"} for item in result["reports"]) and covered >= required
     result["state"] = "indexed" if complete and result["reason"] is None else "partial" if result["reports"] else "unavailable"
     if not complete and result["reason"] is None:
         result["reason"] = "reports-not-selected"
     return result, findings
 
 
-def write_output(path, manifest, findings):
+def write_output(path, manifest, findings, backlog):
     path = safe(path)
     require(not path.exists())
     path.parent.mkdir(parents=True, exist_ok=True)
     contract.validate_manifest(manifest)
-    backlog = {"schema": "egohygiene.reflector.candidate-backlog/v1", "state": "disabled", "mutation_authority": "none", "items": []}
     summary = (f"# Campaign {manifest['campaign_id']}\n\n"
         f"Mode: {manifest['mode']}. State: {manifest['status']}. Observation boundary: {manifest['observed_at']}.\n\n"
-        "This index references external owner captures; Reflector did not execute an AI audit or human ratification. "
-        "Candidate issue synthesis and provider mutations are disabled. Repository report prose remains canonical at its source.\n")
+        "This index records source/capture/adapter states separately from human ratification. "
+        "Provider mutations are disabled. Repository report prose remains canonical at its source.\n")
+    identifiers = [{key: record[key] for key in ("repository", "finding_id", "report_sha256", "source_revision", "source_path")}
+                   for record in findings]
     documents = {"manifest.json": contract.canonical_bytes(manifest),
         "repositories.json": contract.canonical_bytes({"repositories": manifest["repositories"]}),
         "findings.json": contract.canonical_bytes({"schema": "egohygiene.reflector.campaign-finding-index/v1",
-            "truncated": any(row["reason"] == "report-limit" for row in manifest["repositories"]), "findings": findings}),
+            "truncated": any(row["reason"] == "report-limit" for row in manifest["repositories"]), "findings": identifiers}),
         "candidate-backlog.json": contract.canonical_bytes(backlog), "summary.md": summary.encode()}
     require(all(len(content) <= MAX_MANIFEST for content in documents.values()))
     with tempfile.TemporaryDirectory(prefix="reflector-campaign-write-", dir=path.parent) as temporary:
@@ -388,17 +474,28 @@ def write_output(path, manifest, findings):
 
 
 def execute(args):
-    require(args.mode in {"plan", "index"})
+    require(args.mode in {"plan", "index", "discover", "run"})
     public, metadata = public_catalog(args.catalog_root)
     args.public_names = set(public)
     request = admitted_request(parse(read(args.request)), public, metadata)
     args.budgets = request["budgets"]
     args.observed_at = request["observed_at"]
     args.report_kinds = request["report_kinds"]
+    args.provider = request["provider"]
+    args.propose = request["candidate_backlog"] == "propose"
+    require(not args.propose or getattr(args, "propose_backlog", False))
+    args.pending_captures = {}
     args.roots = source_roots(args.repository_root, {row["repository"] for row in request["repositories"]})
+    args.capture_roots = source_roots(getattr(args, "capture_root", []), {row["repository"] for row in request["repositories"]})
+    args.report_outputs = source_roots(getattr(args, "report_output", []), {row["repository"] for row in request["repositories"]})
+    require(len({str(path.absolute()) for path in args.report_outputs.values()}) == len(args.report_outputs))
+    for name, path in args.report_outputs.items():
+        require(name not in args.capture_roots or args.capture_roots[name].absolute() == path.absolute())
+        args.capture_roots[name] = path
     output = safe(args.output)
     require(not output.exists())
-    protected = [safe(args.catalog_root), safe(args.aether_root), *(path.absolute() for path in args.roots.values())]
+    protected = [safe(args.catalog_root), safe(args.aether_root), *(path.absolute() for path in args.roots.values()),
+                 *(path.absolute() for path in args.capture_roots.values())]
     require(not any(output.is_relative_to(root) for root in protected))
     require(args.stop_after is None or 0 <= args.stop_after <= len(request["repositories"]))
     previous = {}
@@ -418,9 +515,18 @@ def execute(args):
         loaded, args.owner_inputs = owners(stack, args.aether_root)
         audit = loaded["aether_audit"]
         args.profiles = audit["helper"].resolve_profiles(request["profiles"], audit["registry"])
+        args.previous_rows = previous
         allowed = {row["repository"] for row in request["repositories"]}
         rows, findings = [], []
         args.deadline = time.monotonic() + args.budgets["maximum_seconds"]
+        args.executor_module = module("reflector_local_executor", ROOT / "reflector/orchestration/audit_executor.py")
+        args.adapter = None
+        if args.mode in {"run", "discover"}:
+            require(contract.instant(request["observed_at"]) <= contract.instant(args.executor_module.now()))
+        if args.mode == "run":
+            require(args.provider["adapter"] == "local-command")
+            args.execution_runtime = Path(stack.enter_context(tempfile.TemporaryDirectory(prefix="reflector-executor-runtime-")))
+            args.adapter = args.executor_module.prepare_adapter(SimpleNamespace(safe=safe, require=require, contract=contract), args)
         width = args.budgets["concurrency"]
         with ThreadPoolExecutor(max_workers=args.budgets["concurrency"]) as executor:
             for offset in range(0, len(request["repositories"]), width):
@@ -443,7 +549,8 @@ def execute(args):
                     rows.append(row)
                     findings.extend(records)
         cancelled = any(row["state"] == "not-inspected" for row in rows)
-        status = "cancelled" if cancelled else "planned" if args.mode == "plan" else "indexed" if rows and all(
+        status = "cancelled" if cancelled else "planned" if args.mode == "plan" else "discovered" if args.mode == "discover" and rows and all(
+            row["source_capabilities"] is not None and row["source_capabilities"]["state"] == "captured" for row in rows) else "indexed" if rows and all(
             row["state"] == "indexed" for row in rows) else "partial"
         report_kinds = {report["kind"] for row in rows for report in row["reports"]}
         states = ("selected", "resolved", "declared", "external-captures" if "audit" in report_kinds else "not-executed",
@@ -451,22 +558,43 @@ def execute(args):
                   "indexed" if status == "indexed" else "partial", "disabled", "not-requested")
         manifest = {"schema": contract.MANIFEST, "contract_version": contract.VERSION,
             "campaign_id": request["campaign_id"], "visibility": "public", "organization": "egohygiene",
-            "observed_at": request["observed_at"], "mode": args.mode, "status": status,
-            "mutation_authority": "none", "analysis_execution": "external-captures-only", "catalog": metadata,
+            "observed_at": args.executor_module.now() if args.mode in {"run", "discover"} else request["observed_at"],
+            "mode": args.mode, "status": status, "mutation_authority": "none",
+            "analysis_execution": "local-adapter-requested" if args.mode == "run" else "not-executed" if args.mode == "discover" else "external-captures-only", "catalog": metadata,
             "owner_inputs": args.owner_inputs, "profiles": args.profiles, "budgets": args.budgets,
             "generator": generator(),
             "passes": [{"id": name, "state": state} for name, state in zip(contract.PASS_IDS, states)],
-            "repositories": rows, "request_sha256": contract.digest(request), "candidate_backlog": "disabled"}
-        write_output(output, manifest, findings)
+            "repositories": rows, "request_sha256": contract.digest(request), "candidate_backlog": "proposed" if args.propose else "disabled"}
+        backlog = {"schema": "egohygiene.reflector.candidate-backlog/v1", "state": "disabled", "mutation_authority": "none", "items": []}
+        if args.propose:
+            grouping = []
+            if getattr(args, "backlog_groups", None):
+                group_document = parse(read(args.backlog_groups))
+                require(set(group_document) == {"schema", "visibility", "groups"}
+                    and group_document["schema"] == "egohygiene.reflector.audit-proposal-groups/v1"
+                    and group_document["visibility"] == "public")
+                grouping = group_document["groups"]
+            backlog = module("reflector_candidate_backlog", ROOT / "reflector/orchestration/audit_backlog.py").propose_backlog(
+                findings, public_repositories=args.public_names, groups=grouping)
+        write_output(output, manifest, findings, backlog)
     return manifest
 
 
 def parser():
     result = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
-    result.add_argument("mode", choices=("plan", "index"))
+    result.add_argument("mode", choices=("plan", "index", "discover", "run"))
     for name in ("request", "catalog-root", "aether-root", "output"):
         result.add_argument("--" + name, type=Path, required=True)
     result.add_argument("--repository-root", action="append", default=[])
+    result.add_argument("--capture-root", action="append", default=[])
+    result.add_argument("--report-output", action="append", default=[])
+    result.add_argument("--allow-execution", action="store_true")
+    result.add_argument("--executor", type=Path)
+    result.add_argument("--executor-sha256")
+    result.add_argument("--executor-resource", action="append", default=[])
+    result.add_argument("--executor-memory-mib", type=int, default=4096)
+    result.add_argument("--propose-backlog", action="store_true")
+    result.add_argument("--backlog-groups", type=Path)
     result.add_argument("--previous-manifest", type=Path)
     result.add_argument("--previous-sha256")
     result.add_argument("--stop-after", type=int)
@@ -479,8 +607,8 @@ def main():
     except Exception:
         print("Campaign source, profile or report admission denied; no completed run is claimed", file=sys.stderr)
         return 3
-    print("Campaign transport retained: " + manifest["status"] + "; analysis execution and mutations disabled")
-    return 0 if manifest["status"] in {"planned", "indexed"} else 2
+    print("Campaign transport retained: " + manifest["status"] + "; " + manifest["analysis_execution"] + "; mutations disabled")
+    return 0 if manifest["status"] in {"planned", "indexed", "discovered"} else 2
 
 
 if __name__ == "__main__":

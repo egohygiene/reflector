@@ -19,7 +19,7 @@ SCHEMA = "egohygiene.reflector.audit-candidate-backlog/v1"
 VERSION = "1.0.0-alpha.1"
 MAX_FINDINGS = 4096
 MAX_BYTES = 8388608
-FIELDS = {"visibility", "repository", "report_sha256", "finding_id", "source_revision", "source_path",
+FIELDS = {"visibility", "repository", "report_sha256", "finding_id", "source_revision", "source_path", "represented_commit",
           "title", "classification", "nature", "severity", "confidence", "status", "source_profile",
           "evidence_classification", "missing_evidence", "recommendation", "suggested_validation"}
 REPOSITORY = re.compile(r"egohygiene/(?:\.github|[a-z0-9][a-z0-9.-]*)")
@@ -63,7 +63,7 @@ def public_rationale(value, allowed):
     """Admit newly authored grouping text before it enters public output."""
     text(value, 2048)
     require(not SENSITIVE.search(value))
-    for match in re.finditer(r"egohygiene/(?:\.github|[a-z0-9][a-z0-9.-]*)", value, re.I):
+    for match in re.finditer(r"egohygiene/[A-Za-z0-9_.-]+", value, re.I):
         require(match[0] in allowed)
     for match in re.finditer(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+", value):
         uri = match[0].rstrip(".,;)")
@@ -92,8 +92,10 @@ def source_record(value):
     require(isinstance(value, dict) and set(value) == FIELDS)
     require(value["visibility"] == "public" and isinstance(value["repository"], str)
             and REPOSITORY.fullmatch(value["repository"]))
-    for name, size in (("report_sha256", 64), ("source_revision", 40)):
+    for name, size in (("report_sha256", 64), ("represented_commit", 40)):
         require(isinstance(value[name], str) and re.fullmatch("[a-f0-9]{" + str(size) + "}", value[name]))
+    require(value["source_revision"] is None or isinstance(value["source_revision"], str)
+        and re.fullmatch(r"[a-f0-9]{40}", value["source_revision"]))
     require(isinstance(value["finding_id"], str) and re.fullmatch(r"[A-Z][A-Z0-9_-]{0,95}", value["finding_id"]))
     path = value["source_path"]
     require(isinstance(path, str) and len(path) <= 240 and re.fullmatch(r"[A-Za-z0-9._/-]+", path)

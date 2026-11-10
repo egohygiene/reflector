@@ -68,7 +68,8 @@
         "source_profile",
         "missing_evidence",
         "recommendation",
-        "suggested_validation"
+        "suggested_validation",
+        "represented_commit"
       ],
       "properties": {
         "visibility": {
@@ -87,8 +88,15 @@
           "pattern": "^[A-Z][A-Z0-9_-]{0,95}$"
         },
         "source_revision": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{40}$"
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "source_path": {
           "type": "string",
@@ -181,6 +189,10 @@
             "minLength": 1,
             "maxLength": 2048
           }
+        },
+        "represented_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
         }
       }
     },

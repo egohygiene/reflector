@@ -31,3 +31,7 @@ candidate review. Issue creation requires a separately authorized operation.
 
 Source-only validation covered Python syntax, schema definitions and independent
 review. Implementation execution, scenarios, tests and CI remain deferred.
+
+Actual local captures retain `source_revision: null` until the report is committed.
+Every proposal preserves `represented_commit` separately as the assessed immutable
+Git revision; an uncommitted report never receives an invented hosted blob URL.

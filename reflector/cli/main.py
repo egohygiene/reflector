@@ -178,13 +178,22 @@ def audit_campaign(
     catalog_root: str = typer.Option(..., "--catalog-root", help="Local immutable Hygiene catalog Git objects."),
     aether_root: str = typer.Option(..., "--aether-root", help="Local checksum-pinned Aether owner contract Git objects."),
     output: str = typer.Option(..., "--output", help="New campaign output directory outside inspected sources."),
-    mode: str = typer.Option("plan", "--mode", help="plan or index; neither runs an AI audit or mutations."),
+    mode: str = typer.Option("plan", "--mode", help="plan, index, discover or explicitly opted-in run; mutations stay disabled."),
     repository_root: list[str] = typer.Option([], "--repository-root", help="Explicit public repository=Git-root capture mapping; repeatable."),
     previous_manifest: str | None = typer.Option(None, "--previous-manifest", help="Exact prior campaign manifest for unchanged-input resume."),
     previous_sha256: str | None = typer.Option(None, "--previous-sha256", help="SHA-256 of exact previous manifest bytes."),
     stop_after: int | None = typer.Option(None, "--stop-after", help="Retain an explicit checkpoint after this many sorted public repository selections."),
+    capture_root: list[str] = typer.Option([], "--capture-root", help="Explicit public repository=owned local capture root; repeatable."),
+    report_output: list[str] = typer.Option([], "--report-output", help="Explicit per-repository owned report output root for opted-in local execution."),
+    allow_execution: bool = typer.Option(False, "--allow-execution", help="Opt into the separately isolated local adapter; no fallback when isolation is unavailable."),
+    executor: str | None = typer.Option(None, "--executor", help="Trusted executable adapter path supplied by the operator, never repository request data."),
+    executor_sha256: str | None = typer.Option(None, "--executor-sha256", help="Exact executable byte SHA-256."),
+    executor_resource: list[str] = typer.Option([], "--executor-resource", help="Read-only frozen resource binding name=path#sha256; repeatable."),
+    executor_memory_mib: int = typer.Option(4096, "--executor-memory-mib", help="Explicit isolated process address-space bound."),
+    propose_backlog: bool = typer.Option(False, "--propose-backlog", help="Opt into deterministic review proposals; never creates issues."),
+    backlog_groups: str | None = typer.Option(None, "--backlog-groups", help="Optional public proposal-groups JSON; grouping is explicit."),
 ) -> None:
-    """Plan or index external owner reports without running the synthetic audit demo."""
+    """Compose real owner captures or an isolated opt-in adapter, apart from the synthetic demo."""
     from pathlib import Path
     from types import SimpleNamespace
     from reflector.orchestration import audit_campaign as campaign
@@ -194,12 +203,16 @@ def audit_campaign(
             catalog_root=Path(catalog_root), aether_root=Path(aether_root), output=Path(output),
             repository_root=repository_root,
             previous_manifest=Path(previous_manifest) if previous_manifest else None,
-            previous_sha256=previous_sha256, stop_after=stop_after))
+            previous_sha256=previous_sha256, stop_after=stop_after, capture_root=capture_root,
+            report_output=report_output, allow_execution=allow_execution,
+            executor=Path(executor) if executor else None, executor_sha256=executor_sha256,
+            executor_resource=executor_resource, executor_memory_mib=executor_memory_mib,
+            propose_backlog=propose_backlog, backlog_groups=Path(backlog_groups) if backlog_groups else None))
     except Exception:
         console.print("[red]Campaign admission denied; no completed audit or review is claimed.[/red]")
         raise typer.Exit(3) from None
-    console.print("Campaign transport retained: " + result["status"] + "; analysis and mutations disabled")
-    if result["status"] not in {"planned", "indexed"}:
+    console.print("Campaign transport retained: " + result["status"] + "; mutations disabled")
+    if result["status"] not in {"planned", "indexed", "discovered"}:
         raise typer.Exit(2)
 
 

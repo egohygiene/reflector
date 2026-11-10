@@ -5,26 +5,38 @@
       "files": {
         "catalog/schemas/aether.audit-profile-registry.v1.schema.json": "ad1335fe7662d91308d3d501197df70fac00892de40da8820538631b0f80312d",
         "catalog/schemas/aether.repository-audit-report.v1.schema.json": "060446225135d573da15d4c31a6a59a89e04665e0c3cce43f8373b1e465bc96b",
+        "library/organization/skills/quality/audit-repository/SKILL.md": "e5e47f5f28403d361eb30b44cfe5fce6b6b8d2f9b53c48ce321f83affe7e2a07",
+        "library/organization/skills/quality/audit-repository/references/audit-data-contract.md": "cabcaa538cd2282ba32aa1ca8a7703a8b04d6a093d7f656c1daec6c8d2e0ec2e",
         "library/organization/skills/quality/audit-repository/references/audit-profiles.v1.json": "dde4d72db9e0a952e1e10b01b8fdfa7cfecd4c001095af8b23d9f821ea789737",
-        "library/organization/skills/quality/audit-repository/scripts/audit_contract.py": "74d928b4b76f1a4723f277c7a3cf77010e4b8eb808d4d20b06afb697b0c3afb8"
+        "library/organization/skills/quality/audit-repository/references/finding-classification-guide.md": "2486279d7c7ec7567e1c88db6b28e4c8d14d9559b868175f854e508b4fc751fd",
+        "library/organization/skills/quality/audit-repository/references/staged-reconciliation.md": "1e136cb483d3f7e6681163385458cf56d2823734aeaa6fda24c2de9c4881b99b",
+        "library/organization/skills/quality/audit-repository/references/validation-checklist.md": "4a3d43119184a5c2c6f548aa47872f7676d9cac8389c083c21caaf961595dc6c",
+        "library/organization/skills/quality/audit-repository/scripts/audit_contract.py": "a700d9469cae02e9f929bc076cfb37940f3c64349380c0142efe94a7a83e0b85",
+        "library/organization/skills/quality/audit-repository/templates/AUDIT.template.md": "1668f9edd2e8509a923d8fdb955510a5acfbdc030c6d5c3b8551c90aeba06ff5",
+        "library/organization/specs/quality/auditor.spec.md": "f9f4d56673cefac4233fad4d53c78d1ba0726201b7e097bb78f67a721b81e62f",
+        "library/organization/specs/quality/repository-audit-data.spec.md": "b361d567e08dddcae6bf160bcaff61e3fa27d6138fa4da9867725d5186936464"
       },
       "helper_path": "library/organization/skills/quality/audit-repository/scripts/audit_contract.py",
       "registry_path": "library/organization/skills/quality/audit-repository/references/audit-profiles.v1.json",
       "repository": "egohygiene/aether",
-      "revision": "cdc5470d2d48db82c36ddada62bbcfa83d983b12",
-      "tree": "d1791e0f1c0ea8aca8e0cb7d43f925af85c69906"
+      "revision": "74490907bf3979ac45594d97fb1bb5fa7071346d",
+      "tree": "56ea563ac34dd057e0b56feeeb4e459a5b27d8f8"
     },
     "aether_sanity": {
       "files": {
         "catalog/schemas/aether.architecture-coherence-review.v1.schema.json": "5875e2563bac3a0d987781aef69742598cd5d840b838759e8abca1efeb61f810",
+        "library/organization/skills/architecture/review-architecture-coherence/SKILL.md": "4b09afad0fbb95c83025363a551ec10cdb975631badc17b16a3adcc080c3c484",
+        "library/organization/skills/architecture/review-architecture-coherence/references/contract-and-human-boundary.md": "a33289d62c917501a4d2f9dc79c03726cfe8da5fdb71315cb679a0682dbae931",
         "library/organization/skills/architecture/review-architecture-coherence/scripts/architecture_coherence.py": "d3e751bff903a11c0d01e2b5476836d9c1f9c28df77d7d03f50f8200595521ee",
         "library/organization/skills/architecture/review-architecture-coherence/scripts/architecture_coherence_governance.py": "cc0608819cf7755fdbcafd279c5b575916fe8d30547c8a17b58c35dcc520c6fe",
-        "library/organization/skills/architecture/review-architecture-coherence/scripts/governance.lock.json": "17005c8a71f75fd8b3dcacf6ba1b0f1a68e91ff5b191ca64041deb2ecb77b3aa"
+        "library/organization/skills/architecture/review-architecture-coherence/scripts/governance.lock.json": "17005c8a71f75fd8b3dcacf6ba1b0f1a68e91ff5b191ca64041deb2ecb77b3aa",
+        "library/organization/skills/architecture/review-architecture-coherence/templates/REVIEW.template.md": "c0d0bf752825266529624c35d196b1e0587b056d88a300c2a7a0ca12b57a41e4",
+        "library/organization/specs/architecture/architecture-coherence-review.spec.md": "6676d05ac90be62a2128e5cc4d1d5479afc743dece5718ef71ab5f3e279b3a9a"
       },
       "helper_path": "library/organization/skills/architecture/review-architecture-coherence/scripts/architecture_coherence.py",
       "repository": "egohygiene/aether",
-      "revision": "1bef55ac4c526467c050f55972f31e32e79cdb03",
-      "tree": "f25423f812a134928f2ee3ff5b22bd53537f2cd8"
+      "revision": "74490907bf3979ac45594d97fb1bb5fa7071346d",
+      "tree": "56ea563ac34dd057e0b56feeeb4e459a5b27d8f8"
     }
   }
 }
