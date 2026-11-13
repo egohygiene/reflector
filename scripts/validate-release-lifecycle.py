@@ -69,7 +69,6 @@ REQUIRED_PAGES_WORKFLOW_TOKENS = (
     "id-token: write",
     'rm --force "_site/.reflector-pages-owned"',
     '"_fallback-routes.tsv"',
-    "actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128",
 )
 REQUIRED_TEMPLATE_PAGES_WORKFLOW_TOKENS = (
     'print(manifest[\'slug\'])',
@@ -222,6 +221,8 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
             if token not in pages_workflow_text:
                 valid = False
                 log_error(f"pages.yml is missing required token: '{token}'.")
+        if not validate_pages_deployer(pages_workflow_text):
+            valid = False
 
     if template_pages_workflow_path.exists():
         template_pages_workflow_text = template_pages_workflow_path.read_text(encoding="utf-8")
@@ -231,6 +232,30 @@ def validate_workflow_contracts(repo_root: Path) -> bool:
                 log_error(f"template/.github/workflows/pages.yml is missing required token: '{token}'.")
 
     return valid
+
+
+def validate_pages_deployer(workflow_text: str) -> bool:
+    """Require the actual deployment step to retain an immutable upstream pin."""
+    try:
+        workflow = yaml.safe_load(workflow_text)
+        steps = workflow["jobs"]["deploy"]["steps"]
+    except (yaml.YAMLError, KeyError, TypeError):
+        log_error("pages.yml must have a deploy job with structured steps.")
+        return False
+    if not isinstance(steps, list):
+        log_error("pages.yml deploy steps must be a list.")
+        return False
+    refs = [
+        step["uses"]
+        for step in steps
+        if isinstance(step, dict)
+        and isinstance(step.get("uses"), str)
+        and step["uses"].startswith("actions/deploy-pages")
+    ]
+    if len(refs) != 1 or not re.fullmatch(r"actions/deploy-pages@[0-9a-f]{40}", refs[0]):
+        log_error("pages.yml must deploy with exactly one actions/deploy-pages full commit SHA.")
+        return False
+    return True
 
 
 def main() -> int:

@@ -3,9 +3,14 @@
 
 from __future__ import annotations
 
+import importlib.util
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
+import yaml
 
 
 def test_validate_release_lifecycle_passes() -> None:
@@ -73,7 +78,35 @@ def test_pages_workflow_deploys_only_from_main_with_job_scoped_permissions() -> 
     assert "if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'" in workflow
     assert "      id-token: write" in workflow
     assert "      pages: write" in workflow
-    assert "actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128" in workflow
+    deployment = yaml.safe_load(workflow)["jobs"]["deploy"]
+    refs = [step["uses"] for step in deployment["steps"] if "uses" in step]
+    assert any(re.fullmatch(r"actions/deploy-pages@[0-9a-f]{40}", ref) for ref in refs)
+
+
+@pytest.mark.parametrize("reference", [
+    "actions/deploy-pages@v5",
+    "actions/deploy-pages@main",
+    "actions/deploy-pages@368f825",
+    "other/deploy-pages@" + "a" * 40,
+])
+def test_pages_deployer_rejects_mutable_or_wrong_action(reference: str) -> None:
+    script = Path(__file__).resolve().parent.parent / "scripts/validate-release-lifecycle.py"
+    spec = importlib.util.spec_from_file_location("release_lifecycle", script)
+    assert spec and spec.loader
+    validator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(validator)
+    workflow = yaml.safe_dump({"jobs": {"deploy": {"steps": [{"uses": reference}]}}})
+    assert not validator.validate_pages_deployer(workflow)
+
+
+def test_pages_deployer_ignores_pin_text_in_comments() -> None:
+    script = Path(__file__).resolve().parent.parent / "scripts/validate-release-lifecycle.py"
+    spec = importlib.util.spec_from_file_location("release_lifecycle", script)
+    assert spec and spec.loader
+    validator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(validator)
+    workflow = "# actions/deploy-pages@" + "a" * 40 + "\njobs:\n  deploy:\n    steps: []\n"
+    assert not validator.validate_pages_deployer(workflow)
 
 
 def test_template_pages_workflow_validates_clean_urls_from_slug_routes() -> None:

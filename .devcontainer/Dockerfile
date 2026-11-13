@@ -74,8 +74,19 @@ RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/loc
 # ---------------------------------------------------------------------------
 # act — local GitHub Actions runner (nektos/act)
 # ---------------------------------------------------------------------------
-RUN curl -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh \
-    | bash -s -- -b /usr/local/bin
+RUN set -eu; \
+    case "$(dpkg --print-architecture)" in \
+      amd64) act_arch=x86_64; act_sha=67b4976a56f33ea7870b798912e738ec44eef38e7578ae7b532f2def1c73a5ad ;; \
+      arm64) act_arch=arm64; act_sha=44d48e3d4a6409053fdec6fc6518322467d79a2d5be8f72c021b0421e2ac113d ;; \
+      *) printf 'Unsupported act architecture\n' >&2; exit 1 ;; \
+    esac; \
+    curl --fail --location --show-error \
+      "https://github.com/nektos/act/releases/download/v0.2.97/act_Linux_${act_arch}.tar.gz" \
+      --output /tmp/act.tar.gz; \
+    printf '%s  /tmp/act.tar.gz\n' "${act_sha}" | sha256sum --check --strict -; \
+    tar --extract --gzip --file /tmp/act.tar.gz --directory /usr/local/bin act; \
+    rm /tmp/act.tar.gz; \
+    act --version
 
 # ---------------------------------------------------------------------------
 # Shell initialisation for the vscode user

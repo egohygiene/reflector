@@ -81,9 +81,10 @@ task version
 task run
 task examples
 
-# Run GitHub Actions workflows locally with act
-act --list
-act pull_request -W .github/workflows/synchronization.yml
+# Check and run the selected local validation workflow
+task act-doctor
+task act-list
+task act-test
 ```
 
 See [`docs/act.md`](./docs/act.md) for canonical `.actrc` defaults, workflow boundaries, and troubleshooting.
