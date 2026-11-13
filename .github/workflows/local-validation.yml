@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2026 Alan Szmyt
+# SPDX-License-Identifier: Apache-2.0
+
+name: Local Validation
+
+# This entry point is run with act. It has no push/PR/schedule trigger and no
+# provider-dependent setup actions. The hosted synchronization job remains the
+# owner of its Python setup/checkout wiring; both run the same package and tests.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    name: Python runtime tests on the local runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Copy the selected working tree through act checkout emulation
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1; matches pages.yml
+
+      - name: Require local act execution and Python 3.12
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${ACT:-}" = "true"
+          python3 -c 'import sys; assert sys.version_info[:2] == (3, 12), sys.version'
+
+      - name: Install reflector and run the canonical runtime test suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv .cache/local-ci/venv
+          .cache/local-ci/venv/bin/python -m pip install -e ".[dev]"
+          .cache/local-ci/venv/bin/python -m pytest tests/ -q --tb=short

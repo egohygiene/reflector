@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- A selected local `act` runtime workflow, pinned Ubuntu runner, and Realm
+  validation manifest for running the Python tests without hosted runner minutes.
+- Checked act 0.2.97 downloads for Linux AMD64/ARM64 in the Dev Container, plus
+  local setup, cloud proxy/CA, and explicit workflow-coverage guidance.
+
+### Fixed
+
+- Local act defaults no longer select graph-only mode or the obsolete Node 16
+  runner; supported project flags work without trusting host-resource settings.
+- Release-lifecycle validation checks the actual immutable Pages deployer pin
+  instead of rejecting reviewed dependency updates against a superseded hash.
+
 ## [0.1.2](https://github.com/egohygiene/reflector/compare/v0.1.1...v0.1.2) (2026-07-15)
 
 

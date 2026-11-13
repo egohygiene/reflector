@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   PYTHON: '{{default "python3" .PYTHON}}'
+  ACT: '{{default "act" .ACT}}'
   PAGES_OUTPUT_DIR: '{{default "_site" .PAGES_OUTPUT_DIR}}'
   PAGES_WORK_DIR: '{{default ".reflector-pages" .PAGES_WORK_DIR}}'
   PAGES_SOURCE_REVISION:
@@ -309,14 +310,32 @@ tasks:
         done
 
   act-test:
-    desc: Run GitHub Actions synchronization workflow locally with act
+    desc: Run the complete Python test job locally with act (no publication)
     cmds:
-      - act pull_request -W .github/workflows/synchronization.yml
+      - >-
+        {{.ACT}} workflow_dispatch
+        --workflows .github/workflows/local-validation.yml
+        --job runtime
+        --action-cache-path .cache/act/actions
+        --cache-server-path .cache/act/cache
+        --no-cache-server
+        --container-daemon-socket=-
+        --container-options-policy restrict
+        --network bridge
+        --env-file /dev/null
+        --secret-file /dev/null
+        --var-file /dev/null
 
   act-list:
-    desc: List available GitHub Actions jobs for local act execution
+    desc: List the selected local validation job without executing it
     cmds:
-      - act --list
+      - '{{.ACT}} workflow_dispatch --workflows .github/workflows/local-validation.yml --list'
+
+  act-doctor:
+    desc: Check act and Docker availability before local workflow execution
+    cmds:
+      - '{{.ACT}} --version'
+      - docker version
 
   reuse:
     desc: Recursively apply SPDX headers to supported files.

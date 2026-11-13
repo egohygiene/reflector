@@ -7,7 +7,7 @@ repository:
   continuity_path: CONTINUITY.md
 document:
   status: active
-  updated_at: '2026-11-10T02:31:40Z'
+  updated_at: '2026-11-13T08:08:57Z'
   max_bytes: 16384
   max_lines: 240
   stale_reason: null
@@ -90,7 +90,10 @@ state:
       before the foundation merges. Final functional execution source 8c5069dfa8b9a8537ea2cdfbae923730785ae87e
       includes fresh/resumed report parity and Markdown bindings; the pure transport helper/schema remain at
       source 39f7e02.
-  parallel_changes: []
+  parallel_changes:
+  - provider: github
+    id: egohygiene/realm#48
+    url: https://github.com/egohygiene/realm/issues/48
 review:
   status: partial
   reviewed_at: '2026-11-10T02:31:40Z'
@@ -135,6 +138,8 @@ privacy:
 
 User/runtime and repository instructions, live evidence and canonical sources outrank this checkpoint. It grants no release, deployment or human-decision authority.
 
+The current selected follow-up is the local-CI review checkpoint below. The audit-delivery metadata and observations above remain attributed to their earlier checkpoint; they do not describe the current default-branch head or establish completed audit qualification.
+
 ## Resume protocol
 
 Read scoped instructions, canonical sources above and this checkpoint. Verify mutable GitHub state and exact owner pins before continuing.
@@ -170,6 +175,14 @@ Refresh the selected public source heads after the owner/UI merges and configure
 ## Parallel changes and reconciliation
 
 Other Intelligence slices remain separately reviewed. Reconcile the current main and this handoff before integration; preserve all immutable historical recovery bytes and consumer-owned publication gates.
+
+Local-CI review checkpoint (2026-11-13): audit delivery PR #265 is merged at `dfca10718f4cca20cc126d689d1fd70d29c27a02`. The separate `fix/local-act-validation` candidate follows that main and implements the consumer pilot for egohygiene/realm#48, continuing the already closed local-configuration issue #123. Its `.actrc`, selected workflow, `config/local-ci.json`, pinned Dev Container act installation, and `docs/act.md` are the local-CI sources; audit campaign ownership and its next sweep remain unchanged.
+
+Qualified functional source `ead44fea3dea4fb376b8ccaa7063984eeb480588` passes all 265 existing-plus-regression Python tests directly and through real act 0.2.97 on the pinned Ubuntu/Python 3.12 Linux AMD64 runner. The shared Realm launcher reports four required checks passed and four explicit optional coverage groups unsupported; native Git recorded a clean qualified HEAD. Metadata, version-sync and release-lifecycle scripts, Task doctor/list and whitespace checks pass. This handoff-only update does not change those functional bytes.
+
+The first baseline run exposed two stale Pages-pin assertions; the bounded repair now checks the actual deployment action identity and full immutable SHA, with negative controls. Fetching the original hosted job's `actions/setup-python@v7` failed with authentication in this workspace. The local equivalent does not prove that bootstrap, provider uploads, release/deployment behavior, native ARM64, or the full Dev Container build. Git worktreeConfig warnings are retained; audit sandbox/provider correctness remains separately unqualified.
+
+Next local-CI action: review the candidate and compatible Realm source/pins before adoption. The earlier audit continuation remains with #258; passing the scoped runtime suite does not finish that audit or authorize its provider execution.
 
 ## Privacy and redaction
 
