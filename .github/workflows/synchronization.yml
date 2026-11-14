@@ -25,6 +25,12 @@ on:
       - "scripts/validate-arxiv-packaging.py"
       - "scripts/validate_arxiv_packaging.py"
       - "scripts/stage_arxiv_submission.py"
+      - "scripts/publication_integration.py"
+      - "scripts/test-publication-integration.py"
+      - "scripts/audit-magazine-consistency.py"
+      - "scripts/stage-publication-release.py"
+      - "scripts/stage-pages.py"
+      - "Taskfile.yml"
       - "scripts/validate-release-lifecycle.py"
       - ".github/workflows/synchronization.yml"
       - ".github/workflows/release-tag.yml"
@@ -54,6 +60,12 @@ on:
       - "scripts/validate-arxiv-packaging.py"
       - "scripts/validate_arxiv_packaging.py"
       - "scripts/stage_arxiv_submission.py"
+      - "scripts/publication_integration.py"
+      - "scripts/test-publication-integration.py"
+      - "scripts/audit-magazine-consistency.py"
+      - "scripts/stage-publication-release.py"
+      - "scripts/stage-pages.py"
+      - "Taskfile.yml"
       - "scripts/validate-release-lifecycle.py"
       - ".github/workflows/synchronization.yml"
       - ".github/workflows/release-tag.yml"
@@ -86,6 +98,9 @@ jobs:
 
       - name: Run runtime test suite
         run: python -m pytest tests/ -q --tb=short
+
+      - name: Compose local publication interfaces without publishing
+        run: python scripts/test-publication-integration.py
 
   validate-metadata:
     name: Validate Metadata Synchronization

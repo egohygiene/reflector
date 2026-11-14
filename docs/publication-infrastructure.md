@@ -87,5 +87,13 @@ Validation is enforced by `scripts/validate-metadata.py`.
 
 - Remote dry run: dispatch `.github/workflows/publication.yml` with `dry_run: true`.
 - Local smoke test: run `pytest -q tests/test_stage_publication_release.py`.
+- Local contract integration: run `python scripts/test-publication-integration.py`
+  or `task publication:test-integration`; its [coverage contract](publication-integration.md)
+  composes the production interfaces in one disposable synthetic workspace.
 
 The smoke test exercises the same staging/manifest/checksum path logic used by the packaging workflow without creating a GitHub release.
+
+The integration command complements that fast smoke test. The optional
+`task publication:test-integration-native` additionally builds tiny paper and
+magazine fixtures; neither command qualifies the complete canonical manuscript
+or performs a hosted dry run, deployment, release, deposit or submission.

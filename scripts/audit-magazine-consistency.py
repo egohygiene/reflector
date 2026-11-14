@@ -589,9 +589,13 @@ def write_report(
     findings: list[Finding],
     approved_exceptions: list[MappingException],
     output_path: Path,
+    generated_at: str | None = None,
 ) -> None:
     """Write a human-readable markdown audit report to output_path."""
-    timestamp = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    timestamp = generated_at if generated_at is not None else datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", timestamp):
+        raise ValueError("Audit timestamp must use exact UTC YYYY-MM-DDTHH:MM:SSZ")
+    datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
 
     pass_count = sum(1 for f in findings if f.status == "PASS")
     warn_count = sum(1 for f in findings if f.status == "WARN")
@@ -769,6 +773,7 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Output report path (defaults to audits/magazine-consistency.md)",
     )
+    parser.add_argument("--generated-at", default=None, help="Explicit UTC timestamp for deterministic integration reports")
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
     repo_root = args.repo_root or _DEFAULT_REPO_ROOT
@@ -776,7 +781,10 @@ def main(argv: list[str] | None = None) -> int:
 
     findings, approved_exceptions = run_audit(repo_root)
 
-    write_report(findings, approved_exceptions, output_path)
+    try:
+        write_report(findings, approved_exceptions, output_path, args.generated_at)
+    except ValueError:
+        parser.error("--generated-at must use a valid exact UTC YYYY-MM-DDTHH:MM:SSZ timestamp")
 
     fail_count = sum(1 for f in findings if f.status == "FAIL")
     warn_count = sum(1 for f in findings if f.status == "WARN")
