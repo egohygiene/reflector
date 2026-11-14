@@ -7,7 +7,7 @@ repository:
   continuity_path: CONTINUITY.md
 document:
   status: active
-  updated_at: '2026-11-13T08:08:57Z'
+  updated_at: '2026-11-14T04:26:08Z'
   max_bytes: 16384
   max_lines: 240
   stale_reason: null
@@ -183,6 +183,22 @@ Qualified functional source `ead44fea3dea4fb376b8ccaa7063984eeb480588` passes al
 The first baseline run exposed two stale Pages-pin assertions; the bounded repair now checks the actual deployment action identity and full immutable SHA, with negative controls. Fetching the original hosted job's `actions/setup-python@v7` failed with authentication in this workspace. The local equivalent does not prove that bootstrap, provider uploads, release/deployment behavior, native ARM64, or the full Dev Container build. Git worktreeConfig warnings are retained; audit sandbox/provider correctness remains separately unqualified.
 
 Next local-CI action: review the candidate and compatible Realm source/pins before adoption. The earlier audit continuation remains with #258; passing the scoped runtime suite does not finish that audit or authorize its provider execution.
+
+Publication integration checkpoint (#254): candidate `codex/254-publication-integration`
+starts at merged main `23f164cf898e092b62bbdddaf7616c4823208f9b`. The canonical local/CI
+entry point is `python scripts/test-publication-integration.py`, also exposed by
+`task publication:test-integration`. It composes existing production metadata,
+magazine consistency, arXiv, release and Pages interfaces in a disposable
+synthetic workspace. A validated explicit consistency-report clock repairs a
+real reproducibility gap. Runtime checks pass275 tests, including10 new controls;
+both the fast fixture path and actual tiny-native paper/magazine wrapper path
+pass. These synthetic results do not qualify the canonical manuscript/Biber,
+full readiness, preview rendering, hosted/provider actions or real publication.
+The precise boundary and retained follow-ups are in `docs/publication-integration.md`
+and the draft PR; no tags, releases, deployment, deposition or submission occur.
+Dependencies were installed into the isolated development environment before the
+credential-free integration runs; no provider credentials are inherited.
+
 
 ## Privacy and redaction
 

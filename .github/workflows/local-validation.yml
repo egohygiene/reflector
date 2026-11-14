@@ -35,3 +35,7 @@ jobs:
           python3 -m venv .cache/local-ci/venv
           .cache/local-ci/venv/bin/python -m pip install -e ".[dev]"
           .cache/local-ci/venv/bin/python -m pytest tests/ -q --tb=short
+
+      - name: Compose local publication interfaces without publishing
+        shell: bash
+        run: .cache/local-ci/venv/bin/python scripts/test-publication-integration.py

@@ -468,8 +468,14 @@ See `docs/publication-lessons-learned.md` for the full inventory. Key lessons:
    a parallel source tree. There is no automated consistency check between magazine content and
    the manuscript's semantic content.
 
-5. **No integration tests** — the CI workflows are validated independently; there are no
-   end-to-end integration tests that exercise the full publication pipeline locally.
+5. **Local publication integration follow-up (#254)** — the original finding was
+   that isolated workflow checks did not exercise a coordinated local pipeline.
+   `python scripts/test-publication-integration.py` now composes production metadata,
+   consistency, arXiv, release and Pages interfaces using disposable synthetic
+   producer artifacts. Its optional native mode builds tiny paper and magazine
+   fixtures through the existing shell scripts. Full manuscript/bibliography,
+   readiness, preview rendering, hosted actions and external publication remain
+   separately qualified; see [the exact local boundary](../docs/publication-integration.md).
 
 6. **Specification-implementation gap** — `specs/synchronization/` and `specs/governance/` are
    referenced in `docs/architecture-overview.md` as planned spec directories but do not yet

@@ -5,6 +5,12 @@
 
 This document describes the end-to-end publication release lifecycle for reflector.
 
+Before a release review, use the [local publication integration contract](publication-integration.md)
+and `task publication:test-integration` to check interface composition without
+provider credentials. This synthetic local result supplements the focused smoke
+test and hosted dry run; manuscript/readiness and real publication acceptance
+remain separate.
+
 ---
 
 ## Overview

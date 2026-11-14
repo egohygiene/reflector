@@ -60,6 +60,22 @@ The following are intentionally deferred and do not block the v0.1.3 checkpoint:
 
 ## Documentation foundation (completed)
 
+Issue #254 local publication integration checkpoint:
+
+- [x] One credential-free local/CI command composes production metadata/version,
+  magazine consistency, arXiv staging/validation, release manifest/checksum and
+  Pages staging/validation interfaces in an isolated synthetic workspace.
+- [x] Deterministic artifact comparison, missing/corrupted-artifact controls,
+  temporary cleanup and descendant-deadline checks complement existing smoke tests.
+- [x] A separately selected native mode exercises the existing build scripts
+  with tiny synthetic paper and both magazine editions.
+- [ ] Qualify full canonical manuscript, biber/bibliography and editorial readiness.
+- [ ] Qualify native preview/browser/device rendering, hosted workflow setup and
+  upload/deployment, and real GitHub/Zenodo/arXiv publication separately.
+
+These checkmarks cover the [declared local boundary](docs/publication-integration.md),
+not a production-publication acceptance claim.
+
 Tracks the work from issue #202 — Align repository roadmap and documentation entry points.
 
 - [x] `ROADMAP.md` aligned: completed, active, planned, and aspirational phases distinguished

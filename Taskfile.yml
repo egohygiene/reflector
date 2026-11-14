@@ -118,6 +118,16 @@ tasks:
         vars:
           PYTEST_ARGS: "-q -m integration"
 
+  publication:test-integration:
+    desc: Compose publication interfaces locally with isolated synthetic artifacts
+    cmds:
+      - '{{.PYTHON}} scripts/test-publication-integration.py'
+
+  publication:test-integration-native:
+    desc: Also require tiny synthetic paper and magazine TeX builds
+    cmds:
+      - '{{.PYTHON}} scripts/test-publication-integration.py --native-fixture-builds'
+
   test-ci:
     desc: Run CI-like local checks
     cmds:
